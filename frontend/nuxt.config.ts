@@ -1,4 +1,4 @@
-import tailwindcss from "@tailwindcss/vite";
+import tailwindcss from '@tailwindcss/vite'
 
 export default defineNuxtConfig({
   compatibilityDate: '2025-07-15',
@@ -8,15 +8,21 @@ export default defineNuxtConfig({
     '@nuxt/eslint',
     '@nuxt/image',
     '@nuxt/test-utils',
-    '@nuxt/ui'
+    '@nuxt/ui',
   ],
   css: ['./app/assets/css/main.css'],
 
   vite: {
     plugins: [
       // @ts-expect-error - Type incompatibility between Vite 7 and @tailwindcss/vite plugin types
-      tailwindcss()
-    ]
-  }
+      tailwindcss(),
+    ],
+  },
+
+  eslint: {
+    config: {
+      standalone: false,
+    },
+  },
 
 })

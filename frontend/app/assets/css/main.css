@@ -1,1 +1,20 @@
 @import "tailwindcss";
+@import "@nuxt/ui";
+
+@theme {
+  --font-sans: "Inter", system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, monospace;
+}
+
+/* Tokens base Nuxt UI */
+:root {
+  --ui-radius: 0.5rem;
+  --ui-container: 80rem;
+
+  /* opcional: afinar contraste de color semántico */
+  --ui-primary: var(--ui-color-primary-600);
+}
+
+.dark {
+  --ui-primary: var(--ui-color-primary-400);
+}
