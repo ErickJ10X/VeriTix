@@ -6,3 +6,117 @@ generator client {
 datasource db {
   provider = "postgresql"
 }
+
+enum Role {
+  BUYER
+  CREATOR
+  VALIDATOR
+  ADMIN
+}
+
+enum EventStatus {
+  DRAFT
+  PUBLISHED
+  FINISHED
+  CANCELLED
+}
+
+enum TicketStatus {
+  ACTIVE
+  USED
+  CANCELLED
+}
+
+model User {
+  id String @id @default(uuid())
+  email String @unique
+  phone String @unique
+  name String
+  lastName String @map("last_name")
+  password String
+  role Role @default(BUYER)
+  isActive Boolean @default(true) @map("is_active")
+  emailVerified Boolean @default(false) @map("email_verified")
+  resetToken String? @map("reset_token")
+  resetTokenExp DateTime? @map("reset_token_exp")
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  events Event[] @relation("CreatorEvents")
+  tickets Ticket[] @relation("BuyerTickets")
+  validatedTickets Ticket[] @relation("ValidatorTickets")
+
+  @@map("users")
+}
+
+model Event {
+  id          String      @id @default(uuid())
+  name        String
+  description String?
+  location    String?
+  eventDate   DateTime    @map("event_date")
+  startSale   DateTime?   @map("start_sale")
+  endSale     DateTime?   @map("end_sale")
+  maxCapacity Int         @map("max_capacity")
+  status      EventStatus @default(DRAFT)
+  imageUrl    String?     @map("image_url")
+  createdAt   DateTime    @default(now()) @map("created_at")
+  updatedAt   DateTime    @updatedAt @map("updated_at")
+
+  creatorId String @map("creator_id")
+  creator   User   @relation("CreatorEvents", fields: [creatorId], references: [id])
+
+  ticketTypes TicketType[]
+  tickets     Ticket[]
+
+  @@index([status, eventDate])
+  @@index([creatorId])
+  @@map("events")
+}
+
+model TicketType {
+  id                String   @id @default(uuid())
+  name              String
+  description       String?
+  price             Decimal  @db.Decimal(10, 2)
+  totalQuantity     Int      @map("total_quantity")
+  availableQuantity Int      @map("available_quantity")
+  maxPerUser        Int      @default(4) @map("max_per_user")
+  createdAt         DateTime @default(now()) @map("created_at")
+  updatedAt         DateTime @updatedAt @map("updated_at")
+
+  eventId String @map("event_id")
+  event   Event  @relation(fields: [eventId], references: [id], onDelete: Cascade)
+
+  tickets Ticket[]
+
+  @@index([eventId])
+  @@map("ticket_types")
+}
+
+model Ticket {
+  id           String       @id @default(uuid())
+  hash         String       @unique
+  qrPayload    String       @map("qr_payload")
+  status       TicketStatus @default(ACTIVE)
+  purchaseDate DateTime     @default(now()) @map("purchase_date")
+  validatedAt  DateTime?    @map("validated_at")
+  createdAt    DateTime     @default(now()) @map("created_at")
+
+  eventId      String @map("event_id")
+  event        Event  @relation(fields: [eventId], references: [id], onDelete: Cascade)
+
+  buyerId      String @map("buyer_id")
+  buyer        User   @relation("BuyerTickets", fields: [buyerId], references: [id])
+
+  ticketTypeId String     @map("ticket_type_id")
+  ticketType   TicketType @relation(fields: [ticketTypeId], references: [id])
+
+  validatedById String? @map("validated_by")
+  validatedBy   User?   @relation("ValidatorTickets", fields: [validatedById], references: [id])
+
+  @@index([buyerId])
+  @@index([eventId, status])
+  @@index([hash])
+  @@map("tickets")
+}
