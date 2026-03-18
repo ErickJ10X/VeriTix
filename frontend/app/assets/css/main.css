@@ -1,20 +1,156 @@
-@import "tailwindcss";
-@import "@nuxt/ui";
+@import 'tailwindcss';
+@import '@nuxt/ui';
 
 @theme {
-  --font-sans: "Inter", system-ui, sans-serif;
-  --font-mono: "JetBrains Mono", ui-monospace, monospace;
+  --font-display: 'Cormorant Garamond', 'Times New Roman', serif;
+  --font-sans: 'Space Grotesk', 'Segoe UI', sans-serif;
+  --font-mono: 'JetBrains Mono', ui-monospace, monospace;
+
+  --color-brand-50: #fff8eb;
+  --color-brand-100: #feecc8;
+  --color-brand-200: #fddc9a;
+  --color-brand-300: #fbc666;
+  --color-brand-400: #f5b248;
+  --color-brand-500: #ecb04d;
+  --color-brand-600: #d49028;
+  --color-brand-700: #af7120;
+  --color-brand-800: #8f5b20;
+  --color-brand-900: #754b1e;
+  --color-brand-950: #43260e;
+
+  --color-accent-50: #ecfdf7;
+  --color-accent-100: #d1faec;
+  --color-accent-200: #a6f4da;
+  --color-accent-300: #6ee8c0;
+  --color-accent-400: #34d3a1;
+  --color-accent-500: #039b78;
+  --color-accent-600: #047a61;
+  --color-accent-700: #055f4d;
+  --color-accent-800: #074d3f;
+  --color-accent-900: #063f34;
+  --color-accent-950: #02251f;
+
+  --color-vtx-depth: #18191f;
+  --color-vtx-crimson: #cc4a58;
+  --color-vtx-electric: #1480bc;
+  --color-vtx-amber: #ecb04d;
 }
 
-/* Tokens base Nuxt UI */
 :root {
-  --ui-radius: 0.5rem;
+  color-scheme: dark;
+  --ui-radius: 0.85rem;
   --ui-container: 80rem;
-
-  /* opcional: afinar contraste de color semántico */
-  --ui-primary: var(--ui-color-primary-600);
+  --ui-primary: var(--ui-color-primary-500);
+  --ui-secondary: var(--ui-color-secondary-500);
+  --ui-error: var(--ui-color-error-500);
+  --ui-bg: #18191f;
+  --ui-bg-muted: #21232b;
+  --ui-bg-elevated: #2a2d36;
+  --ui-bg-accented: #343844;
+  --ui-bg-inverted: #f8fbff;
+  --ui-border: #3d4351;
+  --ui-border-muted: #4a5161;
+  --ui-border-accented: #5b6375;
+  --ui-border-inverted: #f8fbff;
+  --ui-text-dimmed: #9ea6b4;
+  --ui-text-muted: #b4bbc8;
+  --ui-text-toned: #ccd2dd;
+  --ui-text: #e5ebf5;
+  --ui-text-highlighted: #f8fbff;
+  --ui-text-inverted: #14161b;
 }
 
-.dark {
-  --ui-primary: var(--ui-color-primary-400);
+html,
+body,
+#__nuxt {
+  min-height: 100%;
+}
+
+body {
+  margin: 0;
+  font-family: var(--font-sans);
+  color: var(--ui-text);
+  background:
+    radial-gradient(circle at 20% 20%, rgb(20 128 188 / 0.11), transparent 35%),
+    radial-gradient(circle at 80% 10%, rgb(236 176 77 / 0.14), transparent 35%),
+    radial-gradient(circle at 70% 80%, rgb(204 74 88 / 0.1), transparent 30%), var(--color-vtx-depth);
+}
+
+.font-display {
+  font-family: var(--font-display);
+}
+
+.vtx-page {
+  position: relative;
+  isolation: isolate;
+}
+
+.vtx-noise {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0.12;
+  background-image: repeating-radial-gradient(
+    circle at 0 0,
+    rgb(255 255 255 / 0.12),
+    rgb(255 255 255 / 0.12) 1px,
+    transparent 1px,
+    transparent 3px
+  );
+  mix-blend-mode: soft-light;
+}
+
+.vtx-section-fade {
+  animation: section-fade-in 700ms ease-out both;
+}
+
+.vtx-reveal {
+  animation: hero-reveal 900ms cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.vtx-stagger > * {
+  opacity: 0;
+  transform: translateY(10px);
+  animation: stagger-in 550ms ease-out forwards;
+}
+
+.vtx-stagger > *:nth-child(2) {
+  animation-delay: 60ms;
+}
+
+.vtx-stagger > *:nth-child(3) {
+  animation-delay: 120ms;
+}
+
+.vtx-stagger > *:nth-child(4) {
+  animation-delay: 180ms;
+}
+
+@keyframes hero-reveal {
+  from {
+    opacity: 0;
+    transform: translateY(16px) scale(0.99);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes section-fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(18px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes stagger-in {
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
