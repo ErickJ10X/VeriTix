@@ -1,0 +1,13 @@
+FROM oven/bun:1-alpine
+WORKDIR /app
+
+COPY package.json bun.lock ./
+RUN bun install
+
+COPY prisma ./prisma
+RUN bunx prisma generate --schema=./prisma/schema.prisma
+
+COPY nest-cli.json tsconfig*.json ./
+COPY src ./src
+
+CMD ["bun", "run", "start:dev"]
