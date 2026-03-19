@@ -11,6 +11,5 @@ useSeoMeta({
 <template>
   <SectionsHeroSection />
   <SectionsFeaturedEventsSection />
-  <SectionsGenresSection />
   <SectionsHowItWorksSection />
 </template>
