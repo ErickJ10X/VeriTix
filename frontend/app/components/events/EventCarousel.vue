@@ -15,6 +15,8 @@ defineProps<{
       class="-ms-4"
       :ui="{
         item: 'basis-[86%] ps-4 sm:basis-[48%]',
+        prev: 'border border-default/70 bg-default/80 text-highlighted backdrop-blur-sm hover:bg-default',
+        next: 'border border-default/70 bg-default/80 text-highlighted backdrop-blur-sm hover:bg-default',
       }"
     >
       <template #default="{ item }">
@@ -25,7 +27,7 @@ defineProps<{
 
   <p
     v-else
-    class="rounded-2xl border border-default bg-muted/70 px-6 py-8 text-center text-sm text-muted"
+    class="rounded-2xl border border-default/75 bg-muted/50 px-6 py-8 text-center text-sm text-muted"
   >
     No hay conciertos para esos filtros.
   </p>

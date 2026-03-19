@@ -1,9 +1,9 @@
 <script setup lang="ts">
 useSeoMeta({
-  title: 'Veritix | Venta de tiquetes para conciertos',
-  description: 'Plataforma one-page para descubrir y comprar entradas de conciertos con una estetica inmersiva.',
-  ogTitle: 'Veritix',
-  ogDescription: 'Descubre eventos destacados, filtra por generos y compra tus entradas.',
+  title: 'VeriTix | Atlas de conciertos progresivos',
+  description: 'Landing inmersivo para descubrir y filtrar conciertos con una identidad visual psicodelica, elegante y mobile-first.',
+  ogTitle: 'VeriTix',
+  ogDescription: 'Explora cartel, universos sonoros y compra entradas con una experiencia oscura coherente.',
   ogType: 'website',
 })
 </script>

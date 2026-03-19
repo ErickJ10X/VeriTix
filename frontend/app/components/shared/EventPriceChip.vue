@@ -12,7 +12,7 @@ const formatted = computed(() => {
 </script>
 
 <template>
-  <span class="inline-flex items-center rounded-full border border-secondary/40 bg-secondary/15 px-3 py-1 text-xs font-semibold text-secondary md:text-sm">
+  <span class="inline-flex items-center rounded-full border border-primary/45 bg-primary/14 px-3 py-1 text-xs font-semibold tracking-[0.11em] text-primary uppercase md:text-sm">
     Desde {{ formatted }}
   </span>
 </template>

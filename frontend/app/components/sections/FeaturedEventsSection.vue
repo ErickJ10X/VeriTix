@@ -11,7 +11,7 @@ const featuredEvents = computed(() => {
     <SharedSectionHeading
       eyebrow="Cartel"
       title="Eventos destacados"
-      description="Seleccion premium de conciertos con disponibilidad actualizada y precios claros."
+      description="Seleccion curada de conciertos con disponibilidad en tiempo real y jerarquia visual clara para decidir rapido."
     />
 
     <div
@@ -21,7 +21,7 @@ const featuredEvents = computed(() => {
       <USkeleton
         v-for="i in 3"
         :key="`skeleton-${i}`"
-        class="h-[420px] rounded-2xl"
+        class="h-105 rounded-2xl"
       />
     </div>
 
@@ -30,7 +30,7 @@ const featuredEvents = computed(() => {
         <EventsEventCarousel :events="featuredEvents" />
       </div>
 
-      <div class="mt-8 hidden grid-cols-2 gap-6 md:grid lg:grid-cols-3 vtx-stagger">
+      <div class="vtx-stagger mt-8 hidden grid-cols-2 gap-6 md:grid lg:grid-cols-3">
         <EventsEventCard
           v-for="event in featuredEvents"
           :key="event.id"
@@ -40,7 +40,7 @@ const featuredEvents = computed(() => {
 
       <p
         v-if="!featuredEvents.length"
-        class="mt-8 rounded-2xl border border-default bg-muted/70 px-6 py-8 text-center text-sm text-muted"
+        class="vtx-panel mt-8 rounded-2xl px-6 py-8 text-center text-sm text-muted"
       >
         No encontramos conciertos para tu busqueda actual.
       </p>
