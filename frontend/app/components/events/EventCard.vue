@@ -28,15 +28,19 @@ const eventLocation = computed(() => {
 
 <template>
   <article class="group h-full">
-    <SharedBaseCard>
+    <UCard class="h-full">
       <div class="space-y-4">
-        <div class="relative overflow-hidden rounded-xl border border-default">
+        <div class="relative overflow-hidden rounded-xl border border-default/80">
           <img
             :src="event.cover"
             :alt="`Portada de ${event.artist}`"
             class="h-56 w-full object-cover transition duration-500 group-hover:scale-105"
             loading="lazy"
           >
+
+          <div class="pointer-events-none absolute inset-0 bg-linear-to-t from-black/70 via-black/15 to-transparent" />
+
+          <div class="pointer-events-none absolute inset-x-0 bottom-0 h-20 bg-linear-to-t from-primary/18 to-transparent" />
 
           <UBadge
             :color="availability.color"
@@ -48,11 +52,11 @@ const eventLocation = computed(() => {
         </div>
 
         <div class="space-y-2">
-          <p class="text-xs tracking-[0.2em] text-secondary uppercase">
+          <p class="vtx-prismatic-text text-[0.68rem] tracking-[0.24em] uppercase">
             {{ event.genre }}
           </p>
 
-          <h3 class="font-display text-2xl leading-tight text-highlighted">
+          <h3 class="font-display text-2xl leading-tight text-highlighted md:text-[1.7rem]">
             {{ event.artist }}
           </h3>
 
@@ -65,10 +69,18 @@ const eventLocation = computed(() => {
           </p>
         </div>
 
-        <div>
+        <div class="flex flex-wrap items-center justify-between gap-3 border-t border-default/75 pt-3">
           <SharedEventPriceChip :money="event.price" />
+
+          <SharedCTAButton
+            href="#footer"
+            label="Reservar"
+            tone="primary"
+            variant="outline"
+            size="sm"
+          />
         </div>
       </div>
-    </SharedBaseCard>
+    </UCard>
   </article>
 </template>

@@ -6,6 +6,7 @@ const props = withDefaults(
     to?: string
     href?: string
     type?: 'button' | 'submit' | 'reset'
+    size?: 'xs' | 'sm' | 'md' | 'lg' | 'xl'
     block?: boolean
     variant?: 'solid' | 'outline' | 'soft' | 'subtle' | 'ghost' | 'link'
   }>(),
@@ -13,6 +14,7 @@ const props = withDefaults(
     label: 'Accion',
     tone: 'primary',
     type: 'button',
+    size: 'lg',
     block: false,
     variant: 'solid',
   },
@@ -36,10 +38,10 @@ const color = computed(() => {
     :to="to"
     :href="href"
     :type="type"
+    :size="size"
     :variant="variant"
     :color="color"
     :block="block"
-    class="rounded-full font-semibold transition duration-300 hover:-translate-y-0.5"
   >
     <slot>
       {{ label }}

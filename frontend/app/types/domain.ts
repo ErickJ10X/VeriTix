@@ -31,7 +31,4 @@ export interface Genre {
 export interface SearchParams {
   query: string
   genre: string
-  dateFrom: string
-  dateTo: string
-  city: string
 }
