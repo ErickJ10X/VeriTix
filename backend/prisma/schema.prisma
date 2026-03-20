@@ -71,12 +71,25 @@ model User {
   createdAt     DateTime  @default(now()) @map("created_at")
   updatedAt     DateTime  @updatedAt @map("updated_at")
 
-  events           Event[]  @relation("CreatorEvents")
+  events           Event[]         @relation("CreatorEvents")
   orders           Order[]
-  tickets          Ticket[] @relation("BuyerTickets")
-  validatedTickets Ticket[] @relation("ValidatorTickets")
+  tickets          Ticket[]        @relation("BuyerTickets")
+  validatedTickets Ticket[]        @relation("ValidatorTickets")
+  refreshTokens    RefreshToken[]
 
   @@map("users")
+}
+
+model RefreshToken {
+  // El id ES el jti del JWT — se genera antes de firmar
+  id        String   @id
+  userId    String   @map("user_id")
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  expiresAt DateTime @map("expires_at")
+  createdAt DateTime @default(now()) @map("created_at")
+
+  @@index([userId])
+  @@map("refresh_tokens")
 }
 
 // Recinto físico donde se realiza el concierto (reutilizable entre eventos)
