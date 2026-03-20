@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
-import { RefreshToken, User } from '../generated/prisma/client';
-import { Role } from '../generated/prisma/enums';
-import { PrismaService } from '../prisma/prisma.service';
+import { RefreshToken, User } from '../../generated/prisma/client';
+import { Role } from '../../generated/prisma/enums';
+import { PrismaService } from '../../prisma/prisma.service';
 
 export type CreateUserData = {
   email: string;

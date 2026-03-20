@@ -5,7 +5,7 @@ import {
 } from '@nestjs/common';
 import * as bcrypt from 'bcryptjs';
 import { randomUUID } from 'crypto';
-import { User } from '../generated/prisma/client';
+import { User } from '../../generated/prisma/client';
 import { AuthRepository } from './auth.repository';
 import { AuthResponseDto, AuthUserDto } from './dto/auth-response.dto';
 import { LoginDto } from './dto/login.dto';
@@ -99,16 +99,28 @@ export class AuthService {
 
   // ── Helpers ───────────────────────────────────────────────────────────────
 
-  private async buildTokenPair(user: User): Promise<AuthResponseDto & TokenPair> {
+  private async buildTokenPair(
+    user: User,
+  ): Promise<AuthResponseDto & TokenPair> {
     const jti = randomUUID();
-    const expiresAt = new Date(Date.now() + this.jwtTokenService.refreshDurationMs);
+    const expiresAt = new Date(
+      Date.now() + this.jwtTokenService.refreshDurationMs,
+    );
 
     const [accessToken, refreshToken] = await Promise.all([
-      this.jwtTokenService.signAccess({ sub: user.id, email: user.email, role: user.role }),
+      this.jwtTokenService.signAccess({
+        sub: user.id,
+        email: user.email,
+        role: user.role,
+      }),
       this.jwtTokenService.signRefresh(user.id, jti),
     ]);
 
-    await this.authRepository.createRefreshToken({ id: jti, userId: user.id, expiresAt });
+    await this.authRepository.createRefreshToken({
+      id: jti,
+      userId: user.id,
+      expiresAt,
+    });
 
     return { accessToken, refreshToken, user: this.toUserDto(user) };
   }

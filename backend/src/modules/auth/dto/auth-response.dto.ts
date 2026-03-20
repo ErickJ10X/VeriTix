@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { Role } from '../../generated/prisma/enums';
+import { Role } from '../../../generated/prisma/enums';
 
 export class AuthUserDto {
   @ApiProperty({
@@ -36,7 +36,8 @@ export class AuthUserDto {
 
   @ApiProperty({
     example: 'https://cdn.veritix.com/avatars/usuario.jpg',
-    description: 'URL del avatar del usuario. Puede ser nulo si no ha subido foto.',
+    description:
+      'URL del avatar del usuario. Puede ser nulo si no ha subido foto.',
     nullable: true,
   })
   avatarUrl: string | null;

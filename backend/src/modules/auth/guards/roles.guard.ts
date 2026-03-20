@@ -5,7 +5,7 @@ import {
   Injectable,
 } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
-import { Role } from '../../generated/prisma/enums';
+import { Role } from '../../../generated/prisma/enums';
 import { ROLES_KEY } from '../decorators/roles.decorator';
 import { JwtPayload } from '../interfaces/jwt-payload.interface';
 
@@ -21,8 +21,7 @@ export class RolesGuard implements CanActivate {
 
     if (!requiredRoles || requiredRoles.length === 0) return true;
 
-    const user = context.switchToHttp().getRequest<{ user: JwtPayload }>()
-      .user;
+    const user = context.switchToHttp().getRequest<{ user: JwtPayload }>().user;
 
     if (!requiredRoles.includes(user.role)) {
       throw new ForbiddenException('Insufficient permissions');
