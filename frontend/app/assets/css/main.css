@@ -1,1 +1,251 @@
-@import "tailwindcss";
+@import 'tailwindcss';
+@import '@nuxt/ui';
+
+@theme {
+  --font-display: 'Cinzel Decorative', 'Cinzel', 'Times New Roman', serif;
+  --font-sans: 'Instrument Sans', 'Avenir Next', 'Segoe UI', sans-serif;
+  --font-mono: 'JetBrains Mono', ui-monospace, monospace;
+
+  --color-auric-50: #fff8ea;
+  --color-auric-100: #feedcc;
+  --color-auric-200: #fdd998;
+  --color-auric-300: #f8c267;
+  --color-auric-400: #efaa47;
+  --color-auric-500: #da8f2f;
+  --color-auric-600: #b66f24;
+  --color-auric-700: #90531f;
+  --color-auric-800: #6f401d;
+  --color-auric-900: #5b351b;
+  --color-auric-950: #341d0e;
+
+  --color-nebula-50: #ecfcff;
+  --color-nebula-100: #cff8fd;
+  --color-nebula-200: #9dedfb;
+  --color-nebula-300: #64daf5;
+  --color-nebula-400: #2cbde6;
+  --color-nebula-500: #129ec8;
+  --color-nebula-600: #0f80a7;
+  --color-nebula-700: #116887;
+  --color-nebula-800: #15556f;
+  --color-nebula-900: #16485f;
+  --color-nebula-950: #0f2c3a;
+
+  --color-ember-50: #fff4ef;
+  --color-ember-100: #ffe5da;
+  --color-ember-200: #ffc8b0;
+  --color-ember-300: #ffa17f;
+  --color-ember-400: #f97f5b;
+  --color-ember-500: #e65e3f;
+  --color-ember-600: #c8482f;
+  --color-ember-700: #a53927;
+  --color-ember-800: #873126;
+  --color-ember-900: #702c23;
+  --color-ember-950: #3b130f;
+
+  --color-electric-50: #f0f8ff;
+  --color-electric-100: #dcedfd;
+  --color-electric-200: #c1e1fb;
+  --color-electric-300: #91cdf7;
+  --color-electric-400: #5cb2ef;
+  --color-electric-500: #1480bc;
+  --color-electric-600: #126da2;
+  --color-electric-700: #135985;
+  --color-electric-800: #16496c;
+  --color-electric-900: #153e5a;
+  --color-electric-950: #0e2538;
+
+  --color-crimson-50: #fff1f3;
+  --color-crimson-100: #fee0e5;
+  --color-crimson-200: #fcbec8;
+  --color-crimson-300: #f993a4;
+  --color-crimson-400: #f0647f;
+  --color-crimson-500: #d74261;
+  --color-crimson-600: #bc3350;
+  --color-crimson-700: #9f2c46;
+  --color-crimson-800: #85283d;
+  --color-crimson-900: #702437;
+  --color-crimson-950: #3d111d;
+
+  --color-verdant-50: #eefdf7;
+  --color-verdant-100: #d6f8ea;
+  --color-verdant-200: #b0f0d5;
+  --color-verdant-300: #7ee3bc;
+  --color-verdant-400: #44ce9d;
+  --color-verdant-500: #20af83;
+  --color-verdant-600: #158e6a;
+  --color-verdant-700: #137157;
+  --color-verdant-800: #145a47;
+  --color-verdant-900: #124b3d;
+  --color-verdant-950: #062b22;
+
+  --color-slate-50: #f5f7fb;
+  --color-slate-100: #ecf0f7;
+  --color-slate-200: #d7dfea;
+  --color-slate-300: #b8c5d8;
+  --color-slate-400: #91a1be;
+  --color-slate-500: #7384a4;
+  --color-slate-600: #5f6f8f;
+  --color-slate-700: #4d5873;
+  --color-slate-800: #3f485f;
+  --color-slate-900: #343a4d;
+  --color-slate-950: #1a1f2b;
+
+  --color-vtx-depth: #12131e;
+}
+
+:root {
+  color-scheme: dark;
+  --ui-radius: 1rem;
+  --ui-container: 84rem;
+  --ui-primary: var(--ui-color-primary-400);
+  --ui-secondary: var(--ui-color-secondary-400);
+  --ui-success: var(--ui-color-success-400);
+  --ui-info: var(--ui-color-info-400);
+  --ui-warning: var(--ui-color-warning-400);
+  --ui-error: var(--ui-color-error-400);
+  --ui-bg: #11131f;
+  --ui-bg-muted: #171a2a;
+  --ui-bg-elevated: #1c2133;
+  --ui-bg-accented: #242a40;
+  --ui-bg-inverted: #f4e7cd;
+  --ui-border: #2f3855;
+  --ui-border-muted: #3e4869;
+  --ui-border-accented: #5b6891;
+  --ui-border-inverted: #241f1a;
+  --ui-text-dimmed: #8f9bb8;
+  --ui-text-muted: #aab4cd;
+  --ui-text-toned: #c6cde0;
+  --ui-text: #dde3f0;
+  --ui-text-highlighted: #f6f8ff;
+  --ui-text-inverted: #1c1b1e;
+}
+
+html,
+body,
+#__nuxt {
+  min-height: 100%;
+}
+
+body {
+  margin: 0;
+  font-family: var(--font-sans);
+  color: var(--ui-text);
+  background:
+    radial-gradient(circle at 14% 16%, rgb(239 170 71 / 0.22), transparent 30%),
+    radial-gradient(circle at 84% 14%, rgb(20 128 188 / 0.26), transparent 33%),
+    radial-gradient(circle at 74% 84%, rgb(215 66 97 / 0.22), transparent 34%),
+    conic-gradient(
+      from 206deg at 56% 52%,
+      rgb(14 20 35 / 0.88),
+      rgb(24 31 52 / 0.9),
+      rgb(17 21 38 / 0.9),
+      rgb(14 20 35 / 0.88)
+    );
+}
+
+.font-display {
+  font-family: var(--font-display);
+}
+
+.vtx-panel {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  border: 1px solid rgb(145 161 190 / 0.28);
+  border-radius: 1.25rem;
+  background:
+    linear-gradient(180deg, rgb(255 255 255 / 0.11), rgb(255 255 255 / 0.02)),
+    linear-gradient(150deg, rgb(14 20 35 / 0.8), rgb(16 23 39 / 0.94));
+  box-shadow:
+    0 28px 52px -34px rgb(0 0 0 / 0.8),
+    inset 0 0 0 1px rgb(255 255 255 / 0.06);
+  backdrop-filter: blur(12px);
+}
+
+.vtx-panel::before {
+  content: '';
+  position: absolute;
+  inset: -24% 28% 52% -18%;
+  pointer-events: none;
+  z-index: -1;
+  border-radius: 9999px;
+  background: radial-gradient(circle at 50% 50%, rgb(20 128 188 / 0.24), rgb(255 255 255 / 0));
+}
+
+.vtx-prismatic-text {
+  background-image: linear-gradient(112deg, #f8c267 8%, #64daf5 50%, #f0647f 94%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.vtx-stagger > * {
+  opacity: 0;
+  transform: translateY(10px);
+  animation: stagger-in 560ms ease-out forwards;
+}
+
+.vtx-stagger > *:nth-child(2) {
+  animation-delay: 70ms;
+}
+
+.vtx-stagger > *:nth-child(3) {
+  animation-delay: 140ms;
+}
+
+.vtx-stagger > *:nth-child(4) {
+  animation-delay: 210ms;
+}
+
+.vtx-stagger > *:nth-child(5) {
+  animation-delay: 280ms;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html:focus-within {
+    scroll-behavior: auto;
+  }
+
+  .vtx-stagger > * {
+    animation: none;
+    opacity: 1;
+    transform: none;
+  }
+
+  .vtx-stagger > * {
+    transition: none;
+  }
+}
+
+@keyframes stagger-in {
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+
+.vtx-flow-banner {
+  position: relative;
+  overflow: hidden;
+  border: 1px solid rgb(145 161 190 / 0.34);
+  border-radius: 1rem;
+  background:
+    linear-gradient(150deg, rgb(255 255 255 / 0.1), rgb(255 255 255 / 0.02)),
+    linear-gradient(136deg, rgb(13 19 35 / 0.84), rgb(17 26 44 / 0.85));
+}
+
+.vtx-flow-banner::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background-image: repeating-conic-gradient(
+    from 0deg at 85% 22%,
+    rgb(240 100 127 / 0.18) 0deg,
+    rgb(255 255 255 / 0) 14deg,
+    rgb(44 189 230 / 0.15) 24deg,
+    rgb(255 255 255 / 0) 34deg
+  );
+  opacity: 0.38;
+}
