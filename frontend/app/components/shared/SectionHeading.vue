@@ -56,24 +56,19 @@ withDefaults(
 </template>
 
 <style scoped>
+@reference "tailwindcss";
+
 .vtx-section-sigil {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.5rem;
-  margin-bottom: 0.15rem;
+  @apply inline-flex items-center gap-2 mb-0.5;
 }
 
 .vtx-section-sigil__line {
-  height: 1px;
-  width: 2.2rem;
+  @apply h-px w-[2.2rem];
   background: linear-gradient(90deg, rgb(239 170 71 / 0.8), rgb(20 128 188 / 0.8));
 }
 
 .vtx-section-sigil__core {
-  height: 0.62rem;
-  width: 0.62rem;
-  border-radius: 9999px;
-  border: 1px solid rgb(255 255 255 / 0.34);
+  @apply h-[0.62rem] w-[0.62rem] rounded-full border border-white/35;
   background: radial-gradient(circle at 30% 30%, rgb(255 255 255 / 0.92), rgb(240 100 127 / 0.74));
   box-shadow: 0 0 12px rgb(240 100 127 / 0.4);
 }

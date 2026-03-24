@@ -30,7 +30,7 @@ const featuredEvents = computed(() => {
         <EventsEventCarousel :events="featuredEvents" />
       </div>
 
-      <div class="vtx-stagger mt-8 hidden grid-cols-2 gap-6 md:grid lg:grid-cols-3">
+      <div class="mt-8 hidden grid-cols-2 gap-6 md:grid lg:grid-cols-3">
         <EventsEventCard
           v-for="event in featuredEvents"
           :key="event.id"
@@ -40,7 +40,7 @@ const featuredEvents = computed(() => {
 
       <p
         v-if="!featuredEvents.length"
-        class="vtx-panel mt-8 rounded-2xl px-6 py-8 text-center text-sm text-muted"
+        class="mt-8 rounded-2xl border border-default/75 bg-muted/50 px-6 py-8 text-center text-sm text-muted"
       >
         No encontramos conciertos para tu busqueda actual.
       </p>

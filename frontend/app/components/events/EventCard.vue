@@ -31,12 +31,16 @@ const eventLocation = computed(() => {
     <UCard class="h-full">
       <div class="space-y-4">
         <div class="relative overflow-hidden rounded-xl border border-default/80">
-          <img
+          <NuxtImg
             :src="event.cover"
             :alt="`Portada de ${event.artist}`"
             class="h-56 w-full object-cover transition duration-500 group-hover:scale-105"
             loading="lazy"
-          >
+            width="600"
+            height="336"
+            sizes="(max-width: 767px) 100vw, (max-width: 1023px) 50vw, 33vw"
+            placeholder
+          />
 
           <div class="pointer-events-none absolute inset-0 bg-linear-to-t from-black/70 via-black/15 to-transparent" />
 

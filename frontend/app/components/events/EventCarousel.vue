@@ -15,8 +15,6 @@ defineProps<{
       class="-ms-4"
       :ui="{
         item: 'basis-[86%] ps-4 sm:basis-[48%]',
-        prev: 'border border-default/70 bg-default/80 text-highlighted backdrop-blur-sm hover:bg-default',
-        next: 'border border-default/70 bg-default/80 text-highlighted backdrop-blur-sm hover:bg-default',
       }"
     >
       <template #default="{ item }">

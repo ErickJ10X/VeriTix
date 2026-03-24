@@ -1,5 +1,5 @@
 <script setup lang="ts">
-const rays = Array.from({ length: 14 }, (_, index) => {
+const rays = Array.from({ length: 10 }, (_, index) => {
   return {
     id: index,
     rotate: `${index * 25}deg`,
@@ -53,7 +53,6 @@ const satellites = [
 
 <style scoped>
 .orb-wrapper {
-  filter: drop-shadow(0 28px 36px rgb(0 0 0 / 0.48));
   transform: rotate(-5deg);
 }
 
@@ -105,7 +104,7 @@ const satellites = [
   position: absolute;
   border-radius: 52% 48% 56% 44% / 46% 54% 42% 58%;
   border: 1px solid rgb(237 215 183 / 0.35);
-  animation: orbit-rotate 14s linear infinite;
+  animation: orbit-rotate 17s linear infinite;
 }
 
 .orb-ring--outer {
@@ -115,7 +114,7 @@ const satellites = [
 .orb-ring--inner {
   inset: 15%;
   border-radius: 47% 53% 49% 51% / 57% 43% 55% 45%;
-  animation-duration: 11s;
+  animation-duration: 14s;
   animation-direction: reverse;
 }
 
@@ -123,14 +122,14 @@ const satellites = [
   inset: 0;
   border-color: rgb(240 100 127 / 0.45);
   border-radius: 58% 42% 51% 49% / 44% 56% 40% 60%;
-  animation-duration: 18s;
+  animation-duration: 21s;
 }
 
 .orb-ring--soft {
   inset: 10%;
   border-style: dashed;
   border-color: rgb(246 248 255 / 0.3);
-  animation-duration: 23s;
+  animation-duration: 27s;
 }
 
 .orb-lattice {
@@ -163,7 +162,6 @@ const satellites = [
   position: absolute;
   border-radius: 9999px;
   pointer-events: none;
-  filter: blur(1px);
   transform: rotate(var(--comet-angle));
 }
 
@@ -208,6 +206,7 @@ const satellites = [
 .orb-rays {
   position: absolute;
   inset: 0;
+  opacity: 0.88;
 }
 
 .orb-ray {
@@ -216,20 +215,20 @@ const satellites = [
   position: absolute;
   top: 50%;
   left: 50%;
-  width: 44%;
+  width: 40%;
   height: 1px;
   transform-origin: 0 0;
   transform: rotate(var(--ray-rotate));
   background: linear-gradient(90deg, rgb(255 255 255 / 0), rgb(255 255 255 / 0.45), rgb(255 255 255 / 0));
-  opacity: 0.36;
-  animation: ray-flicker 4.8s ease-in-out infinite;
+  opacity: 0.28;
+  animation: ray-flicker 6.2s ease-in-out infinite;
   animation-delay: var(--ray-delay);
 }
 
 .orb-satellites {
   position: absolute;
   inset: 0;
-  animation: orbit-rotate 19s linear infinite reverse;
+  animation: orbit-rotate 24s linear infinite reverse;
 }
 
 .orb-satellite {
@@ -244,7 +243,7 @@ const satellites = [
   transform: rotate(var(--sat-angle)) translateY(-10.4rem);
   background: radial-gradient(circle at 40% 40%, rgb(255 255 255 / 0.9), rgb(44 189 230 / 0.68));
   box-shadow: 0 0 18px rgb(44 189 230 / 0.65);
-  animation: sat-pulse 3.8s ease-in-out infinite;
+  animation: sat-pulse 5.4s ease-in-out infinite;
   animation-delay: var(--sat-delay);
 }
 

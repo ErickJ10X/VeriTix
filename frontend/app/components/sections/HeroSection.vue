@@ -22,50 +22,56 @@ function onSearch() {
         </h1>
 
         <p class="max-w-2xl text-base leading-relaxed text-toned md:text-lg">
-          Descubre fechas irrepetibles en una experiencia ritual: sombras profundas, prismas electricos y composicion mistica inspirada por Pink Floyd, Yes y King Crimson.
+          Explora el universo de conciertos visionarios con Veritix, tu atlas definitivo para descubrir eventos en vivo que desafían lo convencional.
+        </p>
+        <p class="max-w-2xl text-base leading-relaxed text-toned md:text-lg">
+          Desde artistas emergentes hasta leyendas del escenario, encuentra tu próximo ritual musical con nuestro buscador intuitivo y sumérgete en experiencias sonoras únicas.
         </p>
 
-        <form class="vtx-search-shell" @submit.prevent="onSearch">
-          <div class="flex flex-wrap items-center justify-between gap-3">
-            <div>
-              <p class="text-[0.62rem] tracking-[0.22em] text-primary uppercase">
-                Sintonizador
-              </p>
-              <p class="mt-1 text-sm text-toned">
-                Busca por artista, ciudad o genero con contraste alto y lectura inmediata.
-              </p>
-            </div>
-
-            <span class="rounded-full border border-secondary/45 bg-secondary/12 px-2.5 py-1 text-[0.58rem] tracking-[0.2em] text-secondary uppercase">
-              Ritual en vivo
-            </span>
-          </div>
-
-          <div class="mt-3 flex flex-col gap-3 sm:flex-row sm:items-center">
-            <label class="sr-only" for="hero-search">
-              Buscar eventos
-            </label>
-
-            <UInput
-              id="hero-search"
-              v-model="query"
-              placeholder="Busca artista, ciudad o genero"
-              leading-icon="i-lucide-search"
-              color="neutral"
-              variant="subtle"
-              aria-label="Buscar eventos"
-              class="w-full sm:flex-1"
+        <form class="space-y-3" @submit.prevent="onSearch">
+          <!-- Search Field Container -->
+          <div
+            class="flex items-center gap-2 rounded-full border border-default/50 bg-linear-to-br from-white/10 to-white/5 p-1.5 shadow-lg backdrop-blur-sm transition-all duration-300 focus-within:border-primary/60 focus-within:shadow-primary/30 focus-within:shadow-xl hover:border-primary/50"
+          >
+            <!-- Search Icon -->
+            <UIcon
+              name="i-lucide-search"
+              class="ml-3 h-5 w-5 shrink-0 text-toned transition-colors duration-300"
+              :class="{ 'text-primary': query.length > 0 }"
+              aria-hidden="true"
             />
 
-            <SharedCTAButton
+            <!-- Input using Nuxt UI UInput -->
+            <UInput
+              v-model="query"
+              placeholder="Busca artista, ciudad o género..."
+              color="neutral"
+              variant="none"
+              size="lg"
+              aria-label="Buscar eventos"
+              class="flex-1 border-0 bg-transparent text-base focus:ring-0"
+              :ui="{
+                base: 'border-0 bg-transparent shadow-none ring-0 placeholder:text-toned/80',
+              }"
+            />
+
+            <!-- Submit Button using Nuxt UI UButton directly -->
+            <UButton
               type="submit"
-              label="Buscar ritual"
-              tone="primary"
+              color="primary"
               variant="solid"
               size="md"
-              class="vtx-search-action sm:min-w-44"
-            />
+              class="shrink-0 rounded-full px-6 shadow-md transition-all duration-300 hover:-translate-y-0.5 hover:shadow-lg hover:shadow-primary/30"
+            >
+              Buscar
+            </UButton>
           </div>
+
+          <!-- Hint Text -->
+          <p class="flex items-center gap-2 px-4 text-xs text-toned/90">
+            <UIcon name="i-lucide-sparkles" class="h-3.5 w-3.5 text-primary" aria-hidden="true" />
+            <span>Descubre conciertos progresivos y eventos únicos</span>
+          </p>
         </form>
 
         <div class="flex flex-wrap items-center gap-3">
@@ -73,13 +79,15 @@ function onSearch() {
             {{ pending ? 'Actualizando cartel...' : `Eventos visibles: ${results.length}` }}
           </p>
 
-          <SharedCTAButton
-            href="#generos"
-            label="Explorar generos"
-            tone="secondary"
+          <UButton
+            to="#generos"
+            color="secondary"
             variant="outline"
             size="sm"
-          />
+            class="rounded-full"
+          >
+            Explorar géneros
+          </UButton>
         </div>
       </div>
 
@@ -91,62 +99,9 @@ function onSearch() {
 </template>
 
 <style scoped>
-.vtx-search-shell {
-  position: relative;
-  overflow: hidden;
-  border: 1px solid rgb(145 161 190 / 0.45);
-  border-radius: 1rem;
-  padding: 1rem;
-  background:
-    linear-gradient(180deg, rgb(255 255 255 / 0.1), rgb(255 255 255 / 0.02)),
-    linear-gradient(130deg, rgb(10 15 28 / 0.88), rgb(16 24 43 / 0.9));
-  box-shadow:
-    0 24px 40px -32px rgb(0 0 0 / 0.8),
-    inset 0 0 0 1px rgb(255 255 255 / 0.04);
-}
+@reference "tailwindcss";
 
-.vtx-search-shell::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  pointer-events: none;
-  background:
-    radial-gradient(circle at 14% 20%, rgb(239 170 71 / 0.18), rgb(255 255 255 / 0) 46%),
-    radial-gradient(circle at 88% 78%, rgb(20 128 188 / 0.2), rgb(255 255 255 / 0) 42%);
-}
-
-.vtx-search-shell::after {
-  content: '';
-  position: absolute;
-  inset: auto 0 0;
-  height: 1px;
-  pointer-events: none;
-  background: linear-gradient(
-    90deg,
-    rgb(239 170 71 / 0),
-    rgb(239 170 71 / 0.7),
-    rgb(20 128 188 / 0.65),
-    rgb(239 170 71 / 0)
-  );
-}
-
-.vtx-search-shell :deep(.vtx-search-action) {
-  border-color: rgb(248 194 103 / 0.9);
-  background: linear-gradient(145deg, rgb(254 221 166 / 0.96), rgb(239 170 71 / 0.94));
-  color: rgb(31 23 12 / 0.96);
-  box-shadow:
-    0 14px 26px -16px rgb(239 170 71 / 0.74),
-    inset 0 1px 0 rgb(255 255 255 / 0.46);
-  text-shadow: none;
-}
-
-.vtx-search-shell :deep(.vtx-search-action:hover),
-.vtx-search-shell :deep(.vtx-search-action:focus-visible) {
-  color: rgb(22 15 9 / 0.98);
-  background: linear-gradient(145deg, rgb(255 232 191 / 0.98), rgb(248 194 103 / 0.96));
-}
-
-.vtx-reveal {
+.animate-hero-reveal {
   animation: hero-reveal 920ms cubic-bezier(0.22, 1, 0.36, 1) both;
 }
 

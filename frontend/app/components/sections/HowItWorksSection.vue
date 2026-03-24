@@ -36,7 +36,7 @@ const steps = [
       :center="true"
     />
 
-    <div class="vtx-flow-grid vtx-stagger mt-8 grid gap-5 lg:grid-cols-3">
+    <div class="vtx-flow-grid mt-8 grid gap-5 lg:grid-cols-3">
       <article
         v-for="step in steps"
         :key="step.id"
@@ -49,9 +49,7 @@ const steps = [
           </p>
 
           <div class="flex items-center justify-between gap-3">
-            <span
-              class="vtx-flow-index"
-            >
+            <span class="vtx-flow-index">
               0{{ step.id }}
             </span>
           </div>
@@ -77,18 +75,15 @@ const steps = [
 </template>
 
 <style scoped>
+@reference "tailwindcss";
+
 .vtx-flow-grid {
-  position: relative;
+  @apply relative;
 }
 
 .vtx-flow-grid::before {
+  @apply absolute left-0 right-0 top-1/2 h-px pointer-events-none -translate-y-1/2;
   content: '';
-  position: absolute;
-  top: 50%;
-  left: 0;
-  right: 0;
-  height: 1px;
-  pointer-events: none;
   background: linear-gradient(
     90deg,
     rgb(44 189 230 / 0),
@@ -97,15 +92,11 @@ const steps = [
     rgb(240 100 127 / 0.42),
     rgb(44 189 230 / 0)
   );
-  transform: translateY(-50%);
 }
 
 .vtx-flow-node {
-  position: relative;
-  overflow: hidden;
+  @apply relative overflow-hidden rounded-[1.1rem] p-[1.1rem];
   border: 1px solid rgb(145 161 190 / 0.34);
-  border-radius: 1.1rem;
-  padding: 1.1rem;
   background:
     linear-gradient(170deg, rgb(255 255 255 / 0.1), rgb(255 255 255 / 0.02)),
     linear-gradient(145deg, rgb(12 17 30 / 0.85), rgb(16 23 38 / 0.9));
@@ -115,10 +106,8 @@ const steps = [
 }
 
 .vtx-flow-node::before {
+  @apply absolute inset-0 pointer-events-none;
   content: '';
-  position: absolute;
-  inset: 0;
-  pointer-events: none;
   background: repeating-conic-gradient(
     from 14deg at 84% 18%,
     rgb(255 255 255 / 0.06) 0deg,
@@ -132,13 +121,8 @@ const steps = [
 .vtx-flow-node--nebula::after,
 .vtx-flow-node--auric::after,
 .vtx-flow-node--crimson::after {
+  @apply absolute -top-[35%] -right-[18%] h-44 w-44 rounded-full pointer-events-none;
   content: '';
-  position: absolute;
-  inset: -35% -18% auto auto;
-  width: 11rem;
-  height: 11rem;
-  border-radius: 9999px;
-  pointer-events: none;
 }
 
 .vtx-flow-node--nebula::after {
@@ -154,38 +138,21 @@ const steps = [
 }
 
 .vtx-flow-index {
-  position: relative;
-  z-index: 1;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  min-width: 2.15rem;
-  height: 2.15rem;
+  @apply relative z-10 inline-flex items-center justify-center min-w-[2.15rem] h-[2.15rem] rounded-full text-[0.72rem] font-bold tracking-wide;
   border: 1px solid rgb(145 161 190 / 0.74);
-  border-radius: 9999px;
   background: rgb(17 24 39 / 0.72);
-  font-size: 0.72rem;
-  font-weight: 700;
   color: rgb(221 227 240 / 0.95);
-  letter-spacing: 0.08em;
 }
 
 .vtx-flow-runes {
-  position: relative;
-  z-index: 1;
-  display: inline-flex;
-  align-items: center;
-  gap: 0.45rem;
-  margin-top: 0.55rem;
-  padding: 0.35rem 0.5rem;
+  @apply relative z-10 inline-flex items-center gap-[0.45rem] mt-[0.55rem] px-2 py-[0.35rem] rounded-full;
   border: 1px solid rgb(145 161 190 / 0.32);
-  border-radius: 9999px;
   background: rgb(255 255 255 / 0.03);
 }
 
 @media (max-width: 1023px) {
   .vtx-flow-grid::before {
-    display: none;
+    @apply hidden;
   }
 }
 </style>

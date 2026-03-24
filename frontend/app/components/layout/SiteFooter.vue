@@ -4,6 +4,7 @@ const subscribed = ref(false)
 const subscriptionError = ref('')
 const currentYear = new Date().getFullYear()
 const emailPattern = /^[^\s@]+@[^\s@][^\s.@]*\.[^\s@]+$/
+const sectionLinks = useHomepageSections().filter(section => section.id !== 'footer')
 
 function handleSubscribe() {
   const normalizedEmail = email.value.trim()
@@ -100,17 +101,13 @@ function handleSubscribe() {
               Navegacion
             </p>
             <ul class="space-y-2.5 text-toned">
-              <li>
-                <a class="rounded-sm transition hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/45" href="#hero">Inicio</a>
-              </li>
-              <li>
-                <a class="rounded-sm transition hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/45" href="#eventos">Eventos</a>
-              </li>
-              <li>
-                <a class="rounded-sm transition hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/45" href="#generos">Generos</a>
-              </li>
-              <li>
-                <a class="rounded-sm transition hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/45" href="#como-funciona">Como funciona</a>
+              <li v-for="section in sectionLinks" :key="`footer-${section.id}`">
+                <a
+                  class="rounded-sm transition hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/45"
+                  :href="`#${section.id}`"
+                >
+                  {{ section.label }}
+                </a>
               </li>
             </ul>
           </div>

@@ -1,26 +1,27 @@
 <script setup lang="ts">
 const sections = useHomepageSections()
 const { scrollToSection } = useSectionScroll()
+const mobileSection = ref('')
 
-function onMobileNavigate(event: Event) {
-  const target = event.target
+const mobileSectionOptions = computed(() => {
+  return sections.map(section => ({
+    label: section.label,
+    value: section.id,
+  }))
+})
 
-  if (!(target instanceof HTMLSelectElement)) {
+function onMobileNavigate(value: string | undefined) {
+  if (!value) {
     return
   }
 
-  if (!target.value) {
-    return
-  }
-
-  scrollToSection(target.value)
-
-  target.value = ''
+  scrollToSection(value)
+  mobileSection.value = ''
 }
 </script>
 
 <template>
-  <header class="sticky top-0 z-40 border-b border-default/45 bg-default/72 backdrop-blur-xl">
+  <header class="sticky top-0 z-40 border-b border-default/45 bg-default/82 backdrop-blur-sm">
     <UContainer class="py-2.5 sm:py-3">
       <div class="vtx-header-minimal flex items-center justify-between gap-3 px-3 py-2.5 sm:px-4">
         <a
@@ -39,7 +40,7 @@ function onMobileNavigate(event: Event) {
           </div>
         </a>
 
-        <nav class="vtx-header-nav hidden items-center justify-center gap-6 sm:flex">
+        <nav aria-label="Navegación principal" class="vtx-header-nav relative hidden items-center justify-center gap-6 sm:flex">
           <span class="vtx-header-nav-glow hidden lg:block" aria-hidden="true" />
 
           <a
@@ -52,14 +53,15 @@ function onMobileNavigate(event: Event) {
           </a>
         </nav>
 
-        <SharedCTAButton
-          href="#eventos"
-          label="Cartel"
-          tone="primary"
+        <UButton
+          to="#eventos"
+          color="primary"
           variant="outline"
           size="xs"
-          class="vtx-header-cta shrink-0"
-        />
+          class="shrink-0 border-primary/45 bg-gradient-to-br from-white/10 to-white/0"
+        >
+          Cartel
+        </UButton>
       </div>
 
       <div class="mt-2 sm:hidden">
@@ -68,22 +70,19 @@ function onMobileNavigate(event: Event) {
             Navegacion principal
           </label>
 
-          <select
+          <USelect
             id="header-mobile-nav"
-            class="vtx-mobile-nav-select"
-            @change="onMobileNavigate"
-          >
-            <option value="">
-              Navegar por seccion
-            </option>
-            <option
-              v-for="item in sections"
-              :key="`mobile-${item.id}`"
-              :value="item.id"
-            >
-              {{ item.label }}
-            </option>
-          </select>
+            v-model="mobileSection"
+            class="w-full"
+            color="neutral"
+            variant="subtle"
+            placeholder="Navegar por sección"
+            :items="mobileSectionOptions"
+            :ui="{
+              base: 'w-full text-[0.72rem] tracking-[0.1em] uppercase',
+            }"
+            @update:model-value="onMobileNavigate"
+          />
         </div>
       </div>
     </UContainer>
@@ -91,10 +90,11 @@ function onMobileNavigate(event: Event) {
 </template>
 
 <style scoped>
+@reference "tailwindcss";
+
 .vtx-header-minimal {
-  position: relative;
+  @apply relative rounded-2xl;
   border: 1px solid rgb(145 161 190 / 0.25);
-  border-radius: 1rem;
   background:
     linear-gradient(180deg, rgb(255 255 255 / 0.06), rgb(255 255 255 / 0.01)),
     linear-gradient(136deg, rgb(11 17 31 / 0.74), rgb(16 23 40 / 0.78));
@@ -104,11 +104,8 @@ function onMobileNavigate(event: Event) {
 }
 
 .vtx-header-minimal::after {
+  @apply absolute bottom-0 left-0 right-0 h-px pointer-events-none;
   content: '';
-  position: absolute;
-  inset: auto 0 0;
-  height: 1px;
-  pointer-events: none;
   background: linear-gradient(
     90deg,
     rgb(239 170 71 / 0),
@@ -119,11 +116,7 @@ function onMobileNavigate(event: Event) {
 }
 
 .vtx-header-brand-mark {
-  position: relative;
-  display: inline-flex;
-  height: 2rem;
-  width: 2rem;
-  border-radius: 9999px;
+  @apply relative inline-flex h-8 w-8 rounded-full;
   border: 1px solid rgb(239 170 71 / 0.6);
   background:
     radial-gradient(circle at 32% 30%, rgb(255 255 255 / 0.8), rgb(255 255 255 / 0) 42%),
@@ -134,45 +127,27 @@ function onMobileNavigate(event: Event) {
 }
 
 .vtx-header-brand-mark::before {
+  @apply absolute rounded-full;
   content: '';
-  position: absolute;
   inset: 0.35rem;
-  border-radius: 9999px;
   border: 1px solid rgb(255 255 255 / 0.44);
   background: rgb(10 15 27 / 0.42);
 }
 
-.vtx-header-nav {
-  position: relative;
-}
-
 .vtx-header-nav-glow {
-  width: 2.4rem;
-  height: 1px;
+  @apply h-px w-[2.4rem];
   background: linear-gradient(90deg, rgb(239 170 71 / 0.82), rgb(20 128 188 / 0.82));
 }
 
 .vtx-header-link {
-  position: relative;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  padding: 0.28rem 0;
-  font-size: 0.72rem;
-  letter-spacing: 0.16em;
-  text-decoration: none;
-  transition:
-    color 220ms ease,
-    transform 220ms ease;
+  @apply relative inline-flex items-center justify-center py-1 text-[0.72rem] tracking-[0.16em] no-underline transition-all duration-200;
+  transition-property: color, transform;
 }
 
 .vtx-header-link::after {
+  @apply absolute left-0 right-0 h-px transition-all duration-200;
   content: '';
-  position: absolute;
-  left: 0;
-  right: 0;
   bottom: -0.12rem;
-  height: 1px;
   background: linear-gradient(
     90deg,
     rgb(239 170 71 / 0),
@@ -183,14 +158,12 @@ function onMobileNavigate(event: Event) {
   transform: scaleX(0.2);
   transform-origin: center;
   opacity: 0;
-  transition:
-    transform 220ms ease,
-    opacity 220ms ease;
+  transition-property: transform, opacity;
 }
 
 .vtx-header-link:hover,
 .vtx-header-link:focus-visible {
-  color: rgb(246 248 255 / 0.98);
+  @apply text-white/98;
   transform: translateY(-1px);
 }
 
@@ -198,30 +171,5 @@ function onMobileNavigate(event: Event) {
 .vtx-header-link:focus-visible::after {
   transform: scaleX(1);
   opacity: 1;
-}
-
-:deep(.vtx-header-cta) {
-  border-color: rgb(239 170 71 / 0.44);
-  background: linear-gradient(150deg, rgb(255 255 255 / 0.08), rgb(255 255 255 / 0.02));
-}
-
-.vtx-mobile-nav-select {
-  width: 100%;
-  border: 1px solid rgb(145 161 190 / 0.35);
-  border-radius: 0.78rem;
-  padding: 0.58rem 0.78rem;
-  background:
-    linear-gradient(165deg, rgb(255 255 255 / 0.08), rgb(255 255 255 / 0.02)),
-    linear-gradient(130deg, rgb(9 14 27 / 0.76), rgb(17 24 40 / 0.8));
-  color: rgb(221 227 240 / 0.96);
-  font-size: 0.72rem;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-  box-shadow: inset 0 0 0 1px rgb(255 255 255 / 0.04);
-}
-
-.vtx-mobile-nav-select:focus-visible {
-  outline: 2px solid rgb(239 170 71 / 0.45);
-  outline-offset: 2px;
 }
 </style>
