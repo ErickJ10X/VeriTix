@@ -58,7 +58,7 @@ function onMobileNavigate(value: string | undefined) {
           color="primary"
           variant="outline"
           size="xs"
-          class="shrink-0 border-primary/45 bg-gradient-to-br from-white/10 to-white/0"
+          class="shrink-0 border-primary/45 bg-linear-to-br from-white/10 to-white/0"
         >
           Cartel
         </UButton>
@@ -79,7 +79,7 @@ function onMobileNavigate(value: string | undefined) {
             placeholder="Navegar por sección"
             :items="mobileSectionOptions"
             :ui="{
-              base: 'w-full text-[0.72rem] tracking-[0.1em] uppercase',
+              base: 'w-full text-[0.72rem] tracking-widest uppercase',
             }"
             @update:model-value="onMobileNavigate"
           />
