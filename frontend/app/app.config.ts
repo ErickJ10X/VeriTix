@@ -16,8 +16,26 @@ export default defineAppConfig({
         size: 'lg',
       },
       slots: {
-        base: 'rounded-full border border-default/65 font-semibold tracking-[0.08em] uppercase shadow-[0_0_0_1px_rgba(255,255,255,0.05)] transition duration-300 hover:-translate-y-0.5 disabled:hover:translate-y-0',
+        base: 'rounded-full border font-semibold tracking-[0.08em] uppercase transition duration-300 hover:-translate-y-0.5 disabled:hover:translate-y-0',
+        label: 'text-highlighted',
       },
+      compoundVariants: [
+        {
+          color: 'primary',
+          variant: 'solid',
+          class: 'bg-primary border-primary/80 text-white hover:bg-primary/90',
+        },
+        {
+          color: 'secondary',
+          variant: 'solid',
+          class: 'bg-secondary border-secondary/80 text-white hover:bg-secondary/90',
+        },
+        {
+          color: 'primary',
+          variant: 'outline',
+          class: 'border-primary/60 text-primary hover:bg-primary/10 hover:text-primary',
+        },
+      ],
     },
     input: {
       defaultVariants: {

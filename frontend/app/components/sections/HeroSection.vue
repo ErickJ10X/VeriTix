@@ -13,7 +13,7 @@ function onSearch() {
       <div class="pointer-events-none absolute -left-6 top-6 hidden h-24 w-24 rotate-45 border border-secondary/35 lg:block" />
       <div class="pointer-events-none absolute -right-4 bottom-8 hidden h-16 w-16 rounded-full border border-primary/40 lg:block" />
 
-      <div class="space-y-8 vtx-reveal">
+      <div class="space-y-8 animate-hero-reveal">
         <h1 class="font-display text-5xl leading-[0.94] text-highlighted md:text-6xl lg:text-7xl">
           Veritix
           <span class="vtx-prismatic-text mt-2 block text-3xl md:text-4xl lg:text-5xl">
@@ -55,13 +55,13 @@ function onSearch() {
               }"
             />
 
-            <!-- Submit Button using Nuxt UI UButton directly -->
+            <!-- Submit Button - Subtle outline variant -->
             <UButton
               type="submit"
               color="primary"
-              variant="solid"
+              variant="outline"
               size="md"
-              class="shrink-0 rounded-full px-6 shadow-md transition-all duration-300 hover:-translate-y-0.5 hover:shadow-lg hover:shadow-primary/30"
+              class="shrink-0 rounded-full border-primary/60 px-6 text-primary transition-all duration-300 hover:-translate-y-0.5 hover:bg-primary/10 hover:text-primary"
             >
               Buscar
             </UButton>
@@ -91,7 +91,7 @@ function onSearch() {
         </div>
       </div>
 
-      <div class="vtx-reveal">
+      <div class="animate-hero-reveal">
         <SharedPsychedelicOrb />
       </div>
     </div>
@@ -106,7 +106,7 @@ function onSearch() {
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .vtx-reveal {
+  .animate-hero-reveal {
     animation: none;
     opacity: 1;
     transform: none;
