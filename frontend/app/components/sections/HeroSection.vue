@@ -11,7 +11,6 @@ function onSearch() {
   <SharedBaseSection id="hero">
     <div class="relative grid items-center gap-10 lg:grid-cols-2 lg:gap-16">
       <div class="pointer-events-none absolute -left-6 top-6 hidden h-24 w-24 rotate-45 border border-secondary/35 lg:block" />
-      <div class="pointer-events-none absolute -right-4 bottom-8 hidden h-16 w-16 rounded-full border border-primary/40 lg:block" />
 
       <div class="space-y-8 animate-hero-reveal">
         <h1 class="font-display text-5xl leading-[0.94] text-highlighted md:text-6xl lg:text-7xl">

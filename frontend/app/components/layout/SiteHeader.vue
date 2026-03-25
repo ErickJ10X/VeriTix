@@ -3,6 +3,9 @@ const sections = useHomepageSections()
 const { scrollToSection } = useSectionScroll()
 const mobileSection = ref('')
 
+// TODO: Replace with actual auth state from nuxt-auth-utils or similar
+const isAuthenticated = ref(false)
+
 const mobileSectionOptions = computed(() => {
   return sections.map(section => ({
     label: section.label,
@@ -53,15 +56,34 @@ function onMobileNavigate(value: string | undefined) {
           </a>
         </nav>
 
-        <UButton
-          to="#eventos"
-          color="primary"
-          variant="outline"
-          size="xs"
-          class="shrink-0 border-primary/45 bg-linear-to-br from-white/10 to-white/0"
-        >
-          Cartel
-        </UButton>
+        <!-- Auth buttons -->
+        <div class="vtx-auth-buttons flex shrink-0 items-center gap-3">
+          <template v-if="!isAuthenticated">
+            <NuxtLink
+              to="/login"
+              class="vtx-auth-link vtx-auth-link--ghost"
+            >
+              Iniciar sesion
+            </NuxtLink>
+
+            <NuxtLink
+              to="/register"
+              class="vtx-auth-link vtx-auth-link--primary"
+            >
+              Registrarse
+            </NuxtLink>
+          </template>
+
+          <template v-else>
+            <!-- TODO: Add user dropdown when auth is implemented -->
+            <NuxtLink
+              to="#eventos"
+              class="vtx-auth-link vtx-auth-link--primary"
+            >
+              Cartel
+            </NuxtLink>
+          </template>
+        </div>
       </div>
 
       <div class="mt-2 sm:hidden">
@@ -76,7 +98,7 @@ function onMobileNavigate(value: string | undefined) {
             class="w-full"
             color="neutral"
             variant="subtle"
-            placeholder="Navegar por sección"
+            placeholder="Navegar por seccion"
             :items="mobileSectionOptions"
             :ui="{
               base: 'w-full text-[0.72rem] tracking-widest uppercase',
@@ -170,6 +192,64 @@ function onMobileNavigate(value: string | undefined) {
 .vtx-header-link:hover::after,
 .vtx-header-link:focus-visible::after {
   transform: scaleX(1);
+  opacity: 1;
+}
+
+/* Auth buttons */
+.vtx-auth-buttons {
+  gap: 0.5rem;
+}
+
+.vtx-auth-link {
+  position: relative;
+  padding: 0.375rem 0.875rem;
+  font-size: 0.72rem;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  border-radius: 0.5rem;
+  transition: all 0.25s ease;
+}
+
+.vtx-auth-link--ghost {
+  color: rgb(170 180 205);
+  background: transparent;
+}
+
+.vtx-auth-link--ghost:hover {
+  color: rgb(246 248 255);
+  background: rgb(255 255 255 / 0.08);
+}
+
+.vtx-auth-link--primary {
+  color: rgb(246 248 255);
+  background: linear-gradient(135deg, rgb(239 170 71 / 0.85), rgb(20 128 188 / 0.75));
+  border: 1px solid rgb(239 170 71 / 0.4);
+  box-shadow:
+    0 0 12px rgb(239 170 71 / 0.15),
+    inset 0 1px 0 rgb(255 255 255 / 0.1);
+}
+
+.vtx-auth-link--primary::before {
+  content: '';
+  position: absolute;
+  inset: -1px;
+  border-radius: 0.5rem;
+  background: linear-gradient(135deg, rgb(239 170 71 / 0.3), rgb(100 218 245 / 0.2), rgb(215 66 97 / 0.2));
+  opacity: 0;
+  transition: opacity 0.25s ease;
+  z-index: -1;
+  filter: blur(8px);
+}
+
+.vtx-auth-link--primary:hover {
+  transform: translateY(-1px);
+  box-shadow:
+    0 2px 16px rgb(239 170 71 / 0.25),
+    inset 0 1px 0 rgb(255 255 255 / 0.15);
+}
+
+.vtx-auth-link--primary:hover::before {
   opacity: 1;
 }
 </style>

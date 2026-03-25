@@ -27,14 +27,17 @@ const eventLocation = computed(() => {
 </script>
 
 <template>
-  <article class="group h-full">
-    <UCard class="h-full">
-      <div class="space-y-4">
-        <div class="relative overflow-hidden rounded-xl border border-default/80">
+  <article class="group relative h-full">
+    <!-- Subtle glow behind the card on hover -->
+    <div class="absolute -inset-px rounded-[calc(var(--ui-radius)*1.5)] bg-nebula-400 opacity-0 blur-xl transition duration-300 group-hover:opacity-8" />
+
+    <UCard class="relative h-full overflow-hidden bg-white/5! border-white/10! backdrop-blur-xl transition-all duration-300 group-hover:bg-white/8! group-hover:border-white/15!" :ui="{ body: 'h-full' }">
+      <div class="flex h-full flex-col space-y-4">
+        <div class="relative overflow-hidden rounded-xl border border-white/10">
           <NuxtImg
             :src="event.cover"
             :alt="`Portada de ${event.artist}`"
-            class="h-56 w-full object-cover transition duration-500 group-hover:scale-105"
+            class="h-56 w-full object-cover transition duration-300 group-hover:scale-105"
             loading="lazy"
             width="600"
             height="336"
@@ -42,38 +45,36 @@ const eventLocation = computed(() => {
             placeholder
           />
 
-          <div class="pointer-events-none absolute inset-0 bg-linear-to-t from-black/70 via-black/15 to-transparent" />
-
-          <div class="pointer-events-none absolute inset-x-0 bottom-0 h-20 bg-linear-to-t from-primary/18 to-transparent" />
+          <div class="pointer-events-none absolute inset-0 bg-linear-to-t from-vtx-depth/50 to-transparent" />
 
           <UBadge
             :color="availability.color"
             variant="soft"
-            class="absolute left-3 top-3"
+            class="absolute left-3 top-3 backdrop-blur-md"
           >
             {{ availability.label }}
           </UBadge>
         </div>
 
-        <div class="space-y-2">
-          <p class="vtx-prismatic-text text-[0.68rem] tracking-[0.24em] uppercase">
+        <div class="flex-1 space-y-2">
+          <p class="vtx-prismatic-text text-[0.68rem] tracking-[0.24em] uppercase font-semibold">
             {{ event.genre }}
           </p>
 
-          <h3 class="font-display text-2xl leading-tight text-highlighted md:text-[1.7rem]">
+          <h3 class="font-display text-2xl leading-tight text-white transition-colors duration-300 group-hover:text-auric-200 md:text-[1.7rem]">
             {{ event.artist }}
           </h3>
 
-          <p class="text-sm text-toned">
+          <p class="text-sm text-toned/90">
             {{ eventLocation }}
           </p>
 
-          <p class="text-sm text-default">
+          <p class="text-sm text-default/80">
             {{ eventDate }}
           </p>
         </div>
 
-        <div class="flex flex-wrap items-center justify-between gap-3 border-t border-default/75 pt-3">
+        <div class="mt-auto flex flex-wrap items-center justify-between gap-3 border-t border-white/10 pt-4 transition-colors duration-300 group-hover:border-white/15">
           <SharedEventPriceChip :money="event.price" />
 
           <SharedCTAButton

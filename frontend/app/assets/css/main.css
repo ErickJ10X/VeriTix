@@ -120,19 +120,6 @@
   --ui-text-inverted: #1c1b1e;
 }
 
-body {
-  background:
-    radial-gradient(circle at 14% 16%, rgb(239 170 71 / 0.22), transparent 30%),
-    radial-gradient(circle at 84% 14%, rgb(20 128 188 / 0.26), transparent 33%),
-    conic-gradient(
-      from 206deg at 56% 52%,
-      rgb(14 20 35 / 0.88),
-      rgb(24 31 52 / 0.9),
-      rgb(17 21 38 / 0.9),
-      rgb(14 20 35 / 0.88)
-    );
-}
-
 .vtx-prismatic-text {
   background-image: linear-gradient(112deg, #f8c267 8%, #64daf5 50%, #f0647f 94%);
   -webkit-background-clip: text;
