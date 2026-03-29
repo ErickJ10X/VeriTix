@@ -1,21 +1,36 @@
 import { ValidationPipe } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import { NestFactory } from '@nestjs/core';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import * as cookieParser from 'cookie-parser';
+import helmet from 'helmet';
+import { Logger } from 'nestjs-pino';
 import { AppModule } from './app.module';
 
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule);
+  const app = await NestFactory.create(AppModule, { bufferLogs: true });
+  app.useLogger(app.get(Logger));
+  const config = app.get(ConfigService);
 
+  // Seguridad: headers HTTP (X-Content-Type-Options, Strict-Transport-Security, etc.)
+  app.use(helmet());
   app.use(cookieParser());
 
+  // Prefijo global de la API
+  const apiPrefix = config.get<string>('API_PREFIX', 'api/v1');
+  app.setGlobalPrefix(apiPrefix);
+
   app.enableCors({
-    origin: process.env.FRONTEND_URL,
+    origin: config.get<string>('FRONTEND_URL'),
     credentials: true, // necesario para que el navegador envíe las cookies HTTP-only
   });
 
   app.useGlobalPipes(
-    new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true }),
+    new ValidationPipe({
+      whitelist: true,
+      forbidNonWhitelisted: true,
+      transform: true,
+    }),
   );
 
   const swaggerConfig = new DocumentBuilder()
@@ -55,9 +70,11 @@ async function bootstrap() {
     },
   });
 
-  const port = process.env.PORT ?? 3001;
+  const port = config.get<number>('PORT', 3001);
   await app.listen(port);
-  console.log(`Servidor iniciado en http://localhost:${port}`);
-  console.log(`Documentación Swagger en  http://localhost:${port}/docs`);
+
+  const logger = app.get(Logger);
+  logger.log(`Servidor iniciado en http://localhost:${port}`);
+  logger.log(`Documentación Swagger en http://localhost:${port}/docs`);
 }
 bootstrap();
