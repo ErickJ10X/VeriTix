@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { SignJWT, jwtVerify } from 'jose';
-import { JwtPayload } from './interfaces/jwt-payload.interface';
+import { JwtPayload } from '@common/interfaces';
 
 export interface RefreshPayload {
   sub: string;
