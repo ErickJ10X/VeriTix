@@ -13,7 +13,7 @@ export class ArtistQueryDto extends PaginationQueryDto {
   genreId?: string;
 
   @ApiPropertyOptional({
-    example: 'GB',
+    example: 'ES',
     description: 'Filtrar por país de origen (coincidencia exacta).',
   })
   @IsOptional()
@@ -21,7 +21,7 @@ export class ArtistQueryDto extends PaginationQueryDto {
   country?: string;
 
   @ApiPropertyOptional({
-    example: 'Rolling',
+    example: 'Planetas',
     description: 'Buscar por nombre del artista (búsqueda parcial).',
   })
   @IsOptional()

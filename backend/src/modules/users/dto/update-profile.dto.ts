@@ -21,13 +21,13 @@ export class UpdateProfileDto {
   lastName?: string;
 
   @ApiPropertyOptional({
-    example: '+525512345678',
+    example: '+34958123456',
     description: 'Número de teléfono en formato internacional E.164.',
   })
   @IsOptional()
   @IsString()
   @Matches(/^\+[1-9]\d{7,14}$/, {
-    message: 'El teléfono debe estar en formato E.164 (ej: +525512345678)',
+    message: 'El teléfono debe estar en formato E.164 (ej: +34958123456)',
   })
   phone?: string;
 

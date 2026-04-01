@@ -28,41 +28,41 @@ export class ArtistResponseDto {
   id: string;
 
   @ApiProperty({
-    example: 'The Rolling Stones',
+    example: 'Los Planetas',
     description: 'Nombre del artista.',
   })
   name: string;
 
   @ApiProperty({
-    example: 'the-rolling-stones',
+    example: 'los-planetas',
     description:
       'Slug único del artista (minúsculas, alfanumérico con guiones).',
   })
   slug: string;
 
   @ApiProperty({
-    example: 'Banda de rock británica formada en 1962.',
+    example: 'Banda indie rock originaria de Granada.',
     description: 'Biografía del artista. Puede ser nula.',
     nullable: true,
   })
   bio: string | null;
 
   @ApiProperty({
-    example: 'https://cdn.veritix.com/artists/rolling-stones.jpg',
+    example: 'https://cdn.veritix.com/artists/los-planetas.jpg',
     description: 'URL de la imagen del artista. Puede ser nula.',
     nullable: true,
   })
   imageUrl: string | null;
 
   @ApiProperty({
-    example: 'GB',
+    example: 'ES',
     description: 'País de origen del artista. Puede ser nulo.',
     nullable: true,
   })
   country: string | null;
 
   @ApiProperty({
-    example: 'https://www.rollingstones.com',
+    example: 'https://www.losplanetas.net',
     description: 'Sitio web del artista. Puede ser nulo.',
     nullable: true,
   })

@@ -14,7 +14,7 @@ import { VenueType } from '../../../generated/prisma/enums';
 
 export class UpdateVenueDto {
   @ApiPropertyOptional({
-    example: 'Foro Sol',
+    example: 'Palacio de Congresos de Granada',
     description: 'Nombre del recinto.',
   })
   @IsOptional()
@@ -23,7 +23,7 @@ export class UpdateVenueDto {
   name?: string;
 
   @ApiPropertyOptional({
-    example: 'foro-sol',
+    example: 'palacio-congresos-granada',
     description: 'Slug único del recinto. Solo minúsculas, números y guiones.',
   })
   @IsOptional()
@@ -31,12 +31,12 @@ export class UpdateVenueDto {
   @IsNotEmpty({ message: 'El slug no puede estar vacío' })
   @Matches(/^[a-z0-9]+(?:-[a-z0-9]+)*$/, {
     message:
-      'El slug solo puede contener minúsculas, números y guiones (ej: foro-sol)',
+      'El slug solo puede contener minúsculas, números y guiones (ej: palacio-congresos-granada)',
   })
   slug?: string;
 
   @ApiPropertyOptional({
-    example: 'Av. Viaducto Río de la Piedad s/n, Granjas México',
+    example: 'Paseo del Violon s/n',
     description: 'Dirección del recinto.',
   })
   @IsOptional()
@@ -45,7 +45,7 @@ export class UpdateVenueDto {
   address?: string;
 
   @ApiPropertyOptional({
-    example: 'Ciudad de México',
+    example: 'Granada',
     description: 'Ciudad donde se ubica el recinto.',
   })
   @IsOptional()
@@ -54,7 +54,7 @@ export class UpdateVenueDto {
   city?: string;
 
   @ApiPropertyOptional({
-    example: 'CDMX',
+    example: 'Andalucia',
     description:
       'Estado o provincia donde se ubica el recinto. Puede ser nulo.',
     nullable: true,
@@ -64,7 +64,7 @@ export class UpdateVenueDto {
   state?: string | null;
 
   @ApiPropertyOptional({
-    example: 'MX',
+    example: 'ES',
     description: 'Código de país (ISO 3166-1 alpha-2).',
   })
   @IsOptional()
@@ -72,7 +72,7 @@ export class UpdateVenueDto {
   country?: string;
 
   @ApiPropertyOptional({
-    example: 65000,
+    example: 2000,
     description: 'Capacidad máxima del recinto. Puede ser nulo.',
     nullable: true,
     minimum: 1,
@@ -102,7 +102,7 @@ export class UpdateVenueDto {
   isActive?: boolean;
 
   @ApiPropertyOptional({
-    example: 'https://cdn.veritix.com/venues/foro-sol.jpg',
+    example: 'https://cdn.veritix.com/venues/palacio-congresos-granada.jpg',
     description: 'URL de la imagen del recinto. Puede ser nula.',
     nullable: true,
   })
@@ -111,7 +111,7 @@ export class UpdateVenueDto {
   imageUrl?: string | null;
 
   @ApiPropertyOptional({
-    example: 'https://www.forosol.com.mx',
+    example: 'https://www.pcgr.org',
     description: 'Sitio web del recinto. Puede ser nulo.',
     nullable: true,
   })

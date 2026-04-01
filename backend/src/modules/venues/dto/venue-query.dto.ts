@@ -6,7 +6,7 @@ import { VenueType } from '../../../generated/prisma/enums';
 
 export class VenueQueryDto extends PaginationQueryDto {
   @ApiPropertyOptional({
-    example: 'Ciudad de México',
+    example: 'Granada',
     description:
       'Filtrar por ciudad (búsqueda parcial, insensible a mayúsculas).',
   })
@@ -34,7 +34,7 @@ export class VenueQueryDto extends PaginationQueryDto {
   isActive?: boolean;
 
   @ApiPropertyOptional({
-    example: 'Foro Sol',
+    example: 'Palacio de Congresos',
     description: 'Buscar por nombre o dirección (búsqueda parcial).',
   })
   @IsOptional()

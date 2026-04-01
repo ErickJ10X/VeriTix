@@ -10,7 +10,7 @@ import {
 
 export class CreateArtistDto {
   @ApiProperty({
-    example: 'The Rolling Stones',
+    example: 'Los Planetas',
     description: 'Nombre del artista.',
   })
   @IsString()
@@ -18,20 +18,20 @@ export class CreateArtistDto {
   name: string;
 
   @ApiProperty({
-    example: 'the-rolling-stones',
+    example: 'los-planetas',
     description:
-      'Slug único del artista. Solo minúsculas, números y guiones. Ej: the-rolling-stones.',
+      'Slug único del artista. Solo minúsculas, números y guiones. Ej: los-planetas.',
   })
   @IsString()
   @IsNotEmpty({ message: 'El slug es obligatorio' })
   @Matches(/^[a-z0-9]+(?:-[a-z0-9]+)*$/, {
     message:
-      'El slug solo puede contener minúsculas, números y guiones (ej: the-rolling-stones)',
+      'El slug solo puede contener minúsculas, números y guiones (ej: los-planetas)',
   })
   slug: string;
 
   @ApiPropertyOptional({
-    example: 'Banda de rock británica formada en 1962.',
+    example: 'Banda indie rock originaria de Granada.',
     description: 'Biografía del artista.',
   })
   @IsOptional()
@@ -39,7 +39,7 @@ export class CreateArtistDto {
   bio?: string;
 
   @ApiPropertyOptional({
-    example: 'https://cdn.veritix.com/artists/rolling-stones.jpg',
+    example: 'https://cdn.veritix.com/artists/los-planetas.jpg',
     description: 'URL de la imagen del artista.',
   })
   @IsOptional()
@@ -47,7 +47,7 @@ export class CreateArtistDto {
   imageUrl?: string;
 
   @ApiPropertyOptional({
-    example: 'GB',
+    example: 'ES',
     description: 'País de origen del artista (código ISO 3166-1 alpha-2).',
   })
   @IsOptional()
@@ -55,7 +55,7 @@ export class CreateArtistDto {
   country?: string;
 
   @ApiPropertyOptional({
-    example: 'https://www.rollingstones.com',
+    example: 'https://www.losplanetas.net',
     description: 'Sitio web del artista.',
   })
   @IsOptional()

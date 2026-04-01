@@ -13,7 +13,7 @@ import { VenueType } from '../../../generated/prisma/enums';
 
 export class CreateVenueDto {
   @ApiProperty({
-    example: 'Foro Sol',
+    example: 'Palacio de Congresos de Granada',
     description: 'Nombre del recinto.',
   })
   @IsString()
@@ -21,20 +21,20 @@ export class CreateVenueDto {
   name: string;
 
   @ApiProperty({
-    example: 'foro-sol',
+    example: 'palacio-congresos-granada',
     description:
-      'Slug único del recinto. Solo minúsculas, números y guiones. Ej: foro-sol, auditorio-nacional.',
+      'Slug único del recinto. Solo minúsculas, números y guiones. Ej: palacio-congresos-granada, plaza-toros-granada.',
   })
   @IsString()
   @IsNotEmpty({ message: 'El slug es obligatorio' })
   @Matches(/^[a-z0-9]+(?:-[a-z0-9]+)*$/, {
     message:
-      'El slug solo puede contener minúsculas, números y guiones (ej: foro-sol)',
+      'El slug solo puede contener minúsculas, números y guiones (ej: palacio-congresos-granada)',
   })
   slug: string;
 
   @ApiProperty({
-    example: 'Av. Viaducto Río de la Piedad s/n, Granjas México',
+    example: 'Paseo del Violon s/n',
     description: 'Dirección del recinto.',
   })
   @IsString()
@@ -42,7 +42,7 @@ export class CreateVenueDto {
   address: string;
 
   @ApiProperty({
-    example: 'Ciudad de México',
+    example: 'Granada',
     description: 'Ciudad donde se ubica el recinto.',
   })
   @IsString()
@@ -50,7 +50,7 @@ export class CreateVenueDto {
   city: string;
 
   @ApiPropertyOptional({
-    example: 'CDMX',
+    example: 'Andalucia',
     description: 'Estado o provincia donde se ubica el recinto.',
   })
   @IsOptional()
@@ -58,16 +58,16 @@ export class CreateVenueDto {
   state?: string;
 
   @ApiPropertyOptional({
-    example: 'MX',
-    description: 'Código de país (ISO 3166-1 alpha-2). Por defecto "MX".',
-    default: 'MX',
+    example: 'ES',
+    description: 'Código de país (ISO 3166-1 alpha-2). Por defecto "ES".',
+    default: 'ES',
   })
   @IsOptional()
   @IsString()
   country?: string;
 
   @ApiPropertyOptional({
-    example: 65000,
+    example: 2000,
     description: 'Capacidad máxima del recinto (número entero positivo).',
     minimum: 1,
   })
@@ -87,7 +87,7 @@ export class CreateVenueDto {
   type?: VenueType;
 
   @ApiPropertyOptional({
-    example: 'https://cdn.veritix.com/venues/foro-sol.jpg',
+    example: 'https://cdn.veritix.com/venues/palacio-congresos-granada.jpg',
     description: 'URL de la imagen del recinto.',
   })
   @IsOptional()
@@ -95,7 +95,7 @@ export class CreateVenueDto {
   imageUrl?: string;
 
   @ApiPropertyOptional({
-    example: 'https://www.forosol.com.mx',
+    example: 'https://www.pcgr.org',
     description: 'Sitio web del recinto.',
   })
   @IsOptional()

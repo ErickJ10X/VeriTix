@@ -9,32 +9,32 @@ export class VenueResponseDto {
   id: string;
 
   @ApiProperty({
-    example: 'Foro Sol',
+    example: 'Palacio de Congresos de Granada',
     description: 'Nombre del recinto.',
   })
   name: string;
 
   @ApiProperty({
-    example: 'foro-sol',
+    example: 'palacio-congresos-granada',
     description:
       'Slug único del recinto (minúsculas, alfanumérico con guiones).',
   })
   slug: string;
 
   @ApiProperty({
-    example: 'Av. Viaducto Río de la Piedad s/n, Granjas México',
+    example: 'Paseo del Violon s/n',
     description: 'Dirección del recinto.',
   })
   address: string;
 
   @ApiProperty({
-    example: 'Ciudad de México',
+    example: 'Granada',
     description: 'Ciudad donde se ubica el recinto.',
   })
   city: string;
 
   @ApiProperty({
-    example: 'CDMX',
+    example: 'Andalucia',
     description:
       'Estado o provincia donde se ubica el recinto. Puede ser nulo.',
     nullable: true,
@@ -42,13 +42,13 @@ export class VenueResponseDto {
   state: string | null;
 
   @ApiProperty({
-    example: 'MX',
+    example: 'ES',
     description: 'Código de país del recinto (ISO 3166-1 alpha-2).',
   })
   country: string;
 
   @ApiProperty({
-    example: 65000,
+    example: 2000,
     description: 'Capacidad máxima del recinto. Puede ser nula.',
     nullable: true,
   })
@@ -69,14 +69,14 @@ export class VenueResponseDto {
   isActive: boolean;
 
   @ApiProperty({
-    example: 'https://cdn.veritix.com/venues/foro-sol.jpg',
+    example: 'https://cdn.veritix.com/venues/palacio-congresos-granada.jpg',
     description: 'URL de la imagen del recinto. Puede ser nula.',
     nullable: true,
   })
   imageUrl: string | null;
 
   @ApiProperty({
-    example: 'https://www.forosol.com.mx',
+    example: 'https://www.pcgr.org',
     description: 'Sitio web del recinto. Puede ser nulo.',
     nullable: true,
   })
