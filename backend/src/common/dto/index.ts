@@ -3,8 +3,8 @@ export {
   MAX_PAGE_SIZE,
   PaginationQueryDto,
 } from './pagination-query.dto';
-export {
+export { createPaginatedResponse } from './paginated-response.dto';
+export type {
   PaginationMeta,
   PaginatedResponse,
-  createPaginatedResponse,
 } from './paginated-response.dto';
