@@ -1,0 +1,69 @@
+import {
+  ConflictException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
+import { PaginatedResponse } from '@common/dto';
+import {
+  ArtistQueryDto,
+  ArtistResponseDto,
+  CreateArtistDto,
+  UpdateArtistDto,
+} from './dto';
+import { ArtistsRepository } from './artists.repository';
+
+@Injectable()
+export class ArtistsService {
+  constructor(private readonly artistsRepository: ArtistsRepository) {}
+
+  async create(dto: CreateArtistDto): Promise<ArtistResponseDto> {
+    const existingSlug = await this.artistsRepository.findBySlug(dto.slug);
+    if (existingSlug) {
+      throw new ConflictException('El slug ya está en uso por otro artista');
+    }
+
+    const created = await this.artistsRepository.create(dto);
+    return created as ArtistResponseDto;
+  }
+
+  async findAll(
+    query: ArtistQueryDto,
+  ): Promise<PaginatedResponse<ArtistResponseDto>> {
+    return this.artistsRepository.findAll({
+      page: query.page,
+      limit: query.limit,
+      genreId: query.genreId,
+      country: query.country,
+      isActive: query.isActive,
+      search: query.search,
+    }) as Promise<PaginatedResponse<ArtistResponseDto>>;
+  }
+
+  async findOne(id: string): Promise<ArtistResponseDto> {
+    const artist = await this.artistsRepository.findById(id);
+    if (!artist) throw new NotFoundException('Artista no encontrado');
+    return artist as ArtistResponseDto;
+  }
+
+  async update(id: string, dto: UpdateArtistDto): Promise<ArtistResponseDto> {
+    const current = await this.artistsRepository.findById(id);
+    if (!current) throw new NotFoundException('Artista no encontrado');
+
+    if (dto.slug && dto.slug !== current.slug) {
+      const existingSlug = await this.artistsRepository.findBySlug(dto.slug);
+      if (existingSlug && existingSlug.id !== id) {
+        throw new ConflictException('El slug ya está en uso por otro artista');
+      }
+    }
+
+    const updated = await this.artistsRepository.update(id, dto);
+    return updated as ArtistResponseDto;
+  }
+
+  async remove(id: string): Promise<void> {
+    const artist = await this.artistsRepository.findById(id);
+    if (!artist) throw new NotFoundException('Artista no encontrado');
+
+    await this.artistsRepository.softDelete(id);
+  }
+}
