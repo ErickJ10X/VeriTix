@@ -1,3 +1,5 @@
+name: veritix
+
 services:
   postgres:
     image: postgres:18-alpine
@@ -34,7 +36,15 @@ services:
       - redis_data:/data
     command: redis-server --appendonly yes --requirepass ${REDIS_PASSWORD}
     healthcheck:
-      test: ['CMD', 'redis-cli', '-a', '${REDIS_PASSWORD}', '--no-auth-warning', 'ping']
+      test:
+        [
+          'CMD',
+          'redis-cli',
+          '-a',
+          '${REDIS_PASSWORD}',
+          '--no-auth-warning',
+          'ping',
+        ]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -79,7 +89,9 @@ services:
 
 volumes:
   postgres_data:
+    name: veritix_postgres_data
   redis_data:
+    name: veritix_redis_data
 
 networks:
   veritix_network:
