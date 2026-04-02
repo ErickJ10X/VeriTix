@@ -1,7 +1,6 @@
 import {
   Body,
   Controller,
-  Get,
   HttpCode,
   HttpStatus,
   Post,
@@ -20,13 +19,11 @@ import {
   ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
 import { Request, Response } from 'express';
+import { Public } from '@common/decorators';
 import { AuthService } from './auth.service';
-import { CurrentUser } from './decorators/current-user.decorator';
-import { Public } from './decorators/public.decorator';
-import { AuthResponseDto, AuthUserDto } from './dto/auth-response.dto';
+import { AuthResponseDto } from './dto/auth-response.dto';
 import { LoginDto } from './dto/login.dto';
 import { RegisterDto } from './dto/register.dto';
-import { JwtPayload } from './interfaces/jwt-payload.interface';
 import { JwtTokenService } from './jwt-token.service';
 
 const REFRESH_COOKIE = 'refresh_token';
@@ -50,10 +47,13 @@ export class AuthController {
       'y establece el refresh token como cookie HTTP-only segura.',
   })
   @ApiCreatedResponse({
-    description: 'Usuario registrado exitosamente. Cookie `refresh_token` establecida.',
+    description:
+      'Usuario registrado exitosamente. Cookie `refresh_token` establecida.',
     type: AuthResponseDto,
   })
-  @ApiConflictResponse({ description: 'El correo electrónico ya está registrado.' })
+  @ApiConflictResponse({
+    description: 'El correo electrónico ya está registrado.',
+  })
   async register(
     @Body() dto: RegisterDto,
     @Res({ passthrough: true }) res: Response,
@@ -75,10 +75,13 @@ export class AuthController {
       'y establece el refresh token como cookie HTTP-only segura.',
   })
   @ApiOkResponse({
-    description: 'Sesión iniciada exitosamente. Cookie `refresh_token` establecida.',
+    description:
+      'Sesión iniciada exitosamente. Cookie `refresh_token` establecida.',
     type: AuthResponseDto,
   })
-  @ApiUnauthorizedResponse({ description: 'Credenciales incorrectas o cuenta inactiva.' })
+  @ApiUnauthorizedResponse({
+    description: 'Credenciales incorrectas o cuenta inactiva.',
+  })
   async login(
     @Body() dto: LoginDto,
     @Res({ passthrough: true }) res: Response,
@@ -101,10 +104,13 @@ export class AuthController {
       'emite un nuevo par de tokens (rotación). El refresh token anterior queda invalidado.',
   })
   @ApiOkResponse({
-    description: 'Tokens renovados exitosamente. Nueva cookie `refresh_token` establecida.',
+    description:
+      'Tokens renovados exitosamente. Nueva cookie `refresh_token` establecida.',
     type: AuthResponseDto,
   })
-  @ApiUnauthorizedResponse({ description: 'Refresh token ausente, inválido o revocado.' })
+  @ApiUnauthorizedResponse({
+    description: 'Refresh token ausente, inválido o revocado.',
+  })
   async refresh(
     @Req() req: Request,
     @Res({ passthrough: true }) res: Response,
@@ -129,7 +135,9 @@ export class AuthController {
       'Revoca el refresh token del servidor y elimina la cookie del cliente. ' +
       'El access token sigue siendo válido hasta su expiración natural (15 min).',
   })
-  @ApiOkResponse({ description: 'Sesión cerrada. Cookie `refresh_token` eliminada.' })
+  @ApiOkResponse({
+    description: 'Sesión cerrada. Cookie `refresh_token` eliminada.',
+  })
   async logout(
     @Req() req: Request,
     @Res({ passthrough: true }) res: Response,
@@ -137,24 +145,6 @@ export class AuthController {
     const token = req.cookies?.[REFRESH_COOKIE] as string | undefined;
     if (token) await this.authService.logout(token);
     this.clearRefreshCookie(res);
-  }
-
-  // ── Perfil ─────────────────────────────────────────────────────────────────
-
-  @Get('me')
-  @ApiBearerAuth('access-token')
-  @ApiOperation({
-    summary: 'Obtener perfil del usuario autenticado',
-    description:
-      'Retorna los datos del usuario correspondiente al access token JWT enviado en el header Authorization.',
-  })
-  @ApiOkResponse({
-    description: 'Datos del usuario autenticado (sin contraseña).',
-    type: AuthUserDto,
-  })
-  @ApiUnauthorizedResponse({ description: 'Token ausente, inválido o expirado.' })
-  getProfile(@CurrentUser() user: JwtPayload): Promise<AuthUserDto> {
-    return this.authService.getProfile(user.sub);
   }
 
   // ── Cookie helpers ─────────────────────────────────────────────────────────

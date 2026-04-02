@@ -37,7 +37,7 @@ export class PrismaService
    */
   async onModuleInit() {
     await this.$connect();
-    this.logger.log('Conexcion exitosa');
+    this.logger.log('Conexión exitosa');
   }
 
   /**

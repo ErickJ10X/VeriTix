@@ -20,6 +20,7 @@ WORKDIR /app
 COPY --from=deps /app/node_modules ./node_modules
 COPY package.json bun.lock ./
 COPY prisma ./prisma
+COPY prisma.config.ts ./
 COPY nest-cli.json tsconfig*.json ./
 COPY src ./src
 
@@ -38,6 +39,7 @@ RUN addgroup --system --gid 1001 nestjs && \
 COPY --from=prod-deps --chown=nestjs:nestjs /app/node_modules ./node_modules
 COPY --from=builder --chown=nestjs:nestjs /app/dist ./dist
 COPY --from=builder --chown=nestjs:nestjs /app/prisma ./prisma
+COPY --from=builder --chown=nestjs:nestjs /app/prisma.config.ts ./prisma.config.ts
 COPY --from=builder --chown=nestjs:nestjs /app/src/generated ./src/generated
 COPY --from=builder --chown=nestjs:nestjs /app/package.json ./package.json
 
@@ -47,4 +49,4 @@ USER nestjs
 
 EXPOSE 3001
 
-CMD ["bun", "dist/main.js"]
+CMD ["sh", "-c", "bunx prisma migrate deploy && bun dist/main.js"]

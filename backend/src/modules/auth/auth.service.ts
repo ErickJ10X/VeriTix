@@ -89,14 +89,6 @@ export class AuthService {
     }
   }
 
-  async getProfile(userId: string): Promise<AuthUserDto> {
-    const user = await this.authRepository.findById(userId);
-    if (!user) {
-      throw new UnauthorizedException('Usuario no encontrado');
-    }
-    return this.toUserDto(user);
-  }
-
   // ── Helpers ───────────────────────────────────────────────────────────────
 
   private async buildTokenPair(

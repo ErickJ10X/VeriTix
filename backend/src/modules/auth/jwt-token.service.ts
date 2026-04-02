@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { SignJWT, jwtVerify } from 'jose';
-import { JwtPayload } from './interfaces/jwt-payload.interface';
+import { JwtPayload } from '@common/interfaces';
 
 export interface RefreshPayload {
   sub: string;
@@ -27,7 +27,10 @@ export class JwtTokenService {
     this.refreshSecret = new TextEncoder().encode(
       config.getOrThrow<string>('JWT_REFRESH_SECRET'),
     );
-    this.refreshExpiration = config.get<string>('JWT_REFRESH_EXPIRATION', '7d')!;
+    this.refreshExpiration = config.get<string>(
+      'JWT_REFRESH_EXPIRATION',
+      '7d',
+    )!;
   }
 
   signAccess(payload: JwtPayload): Promise<string> {
@@ -56,7 +59,7 @@ export class JwtTokenService {
   }
 
   signRefresh(userId: string, jti: string): Promise<string> {
-    return new SignJWT({ jti })
+    return new SignJWT({})
       .setProtectedHeader({ alg: 'HS256' })
       .setSubject(userId)
       .setIssuedAt()
@@ -83,11 +86,16 @@ export class JwtTokenService {
     const value = parseInt(duration.slice(0, -1), 10);
     const unit = duration.slice(-1);
     switch (unit) {
-      case 's': return value * 1_000;
-      case 'm': return value * 60 * 1_000;
-      case 'h': return value * 60 * 60 * 1_000;
-      case 'd': return value * 24 * 60 * 60 * 1_000;
-      default:  return 7 * 24 * 60 * 60 * 1_000;
+      case 's':
+        return value * 1_000;
+      case 'm':
+        return value * 60 * 1_000;
+      case 'h':
+        return value * 60 * 60 * 1_000;
+      case 'd':
+        return value * 24 * 60 * 60 * 1_000;
+      default:
+        return 7 * 24 * 60 * 60 * 1_000;
     }
   }
 

@@ -83,67 +83,68 @@ const genres = [
 
 const venues = [
   {
-    name: 'Foro Sol',
-    slug: 'foro-sol',
-    address: 'Av. Viaducto Río de la Piedad s/n',
-    city: 'Ciudad de México',
-    state: 'CDMX',
-    capacity: 65000,
-    type: 'FORO' as const,
-  },
-  {
-    name: 'Auditorio Nacional',
-    slug: 'auditorio-nacional',
-    address: 'Paseo de la Reforma 50',
-    city: 'Ciudad de México',
-    state: 'CDMX',
-    capacity: 10000,
+    name: 'Palacio de Congresos de Granada',
+    slug: 'palacio-congresos-granada',
+    address: 'Paseo del Violon s/n',
+    city: 'Granada',
+    state: 'Andalucia',
+    country: 'ES',
+    capacity: 2000,
     type: 'AUDITORIO' as const,
   },
   {
-    name: 'Arena Ciudad de México',
-    slug: 'arena-cdmx',
-    address: 'Av. de los Insurgentes Sur 3000',
-    city: 'Ciudad de México',
-    state: 'CDMX',
-    capacity: 22000,
-    type: 'ARENA' as const,
-  },
-  {
-    name: 'Palacio de los Deportes',
-    slug: 'palacio-de-los-deportes',
-    address: 'Av. Río Churubusco s/n',
-    city: 'Ciudad de México',
-    state: 'CDMX',
-    capacity: 20000,
-    type: 'ARENA' as const,
-  },
-  {
-    name: 'Foro Indie Rocks',
-    slug: 'foro-indie-rocks',
-    address: 'Av. Sonora 117',
-    city: 'Ciudad de México',
-    state: 'CDMX',
-    capacity: 4500,
-    type: 'FORO' as const,
-  },
-  {
-    name: 'Estadio BBVA',
-    slug: 'estadio-bbva',
-    address: 'Av. Pablo Livas 2011',
-    city: 'Monterrey',
-    state: 'Nuevo León',
-    capacity: 53500,
-    type: 'ESTADIO' as const,
-  },
-  {
-    name: 'Explanada Ciudad Modelo',
-    slug: 'explanada-ciudad-modelo-gdl',
-    address: 'Av. Mariano Otero 1499',
-    city: 'Guadalajara',
-    state: 'Jalisco',
-    capacity: 30000,
+    name: 'Plaza de Toros de Granada',
+    slug: 'plaza-toros-granada',
+    address: 'Avenida del Doctor Oloriz 25',
+    city: 'Granada',
+    state: 'Andalucia',
+    country: 'ES',
+    capacity: 12000,
     type: 'AL_AIRE_LIBRE' as const,
+  },
+  {
+    name: 'Industrial Copera',
+    slug: 'industrial-copera',
+    address: 'Calle Paris 18',
+    city: 'Granada',
+    state: 'Andalucia',
+    country: 'ES',
+    capacity: 4500,
+    type: 'CLUB' as const,
+  },
+  {
+    name: 'Teatro Isabel la Catolica',
+    slug: 'teatro-isabel-la-catolica',
+    address: 'Acera del Casino s/n',
+    city: 'Granada',
+    state: 'Andalucia',
+    country: 'ES',
+    capacity: 662,
+    type: 'TEATRO' as const,
+  },
+];
+
+const artists = [
+  {
+    name: 'Lori Meyers',
+    slug: 'lori-meyers',
+    country: 'ES',
+    bio: 'Banda indie rock granadina.',
+    genres: ['indie', 'rock-alternativo'],
+  },
+  {
+    name: 'Los Planetas',
+    slug: 'los-planetas',
+    country: 'ES',
+    bio: 'Referente del indie rock en Espana, originarios de Granada.',
+    genres: ['indie', 'rock'],
+  },
+  {
+    name: 'Dellafuente',
+    slug: 'dellafuente',
+    country: 'ES',
+    bio: 'Artista urbano granadino que fusiona trap, flamenco y hip-hop.',
+    genres: ['trap', 'hip-hop'],
   },
 ];
 
@@ -159,7 +160,7 @@ async function main() {
     update: {},
     create: {
       email: 'admin@veritix.app',
-      phone: '+52550000001',
+      phone: '+34958000001',
       name: 'Admin',
       lastName: 'VeriTix',
       password: adminPassword,
@@ -174,7 +175,7 @@ async function main() {
     update: {},
     create: {
       email: 'user@veritix.app',
-      phone: '+52550000002',
+      phone: '+34958000002',
       name: 'User',
       lastName: 'VeriTix',
       password: userPassword,
@@ -211,7 +212,196 @@ async function main() {
     });
   }
 
-  console.log('Seed completado: usuarios, formatos, géneros y venues creados');
+  // Artistas
+  for (const artist of artists) {
+    await prisma.artist.upsert({
+      where: { slug: artist.slug },
+      update: {
+        name: artist.name,
+        country: artist.country,
+        bio: artist.bio,
+        genres: {
+          set: [],
+          connect: artist.genres.map((slug) => ({ slug })),
+        },
+      },
+      create: {
+        name: artist.name,
+        slug: artist.slug,
+        country: artist.country,
+        bio: artist.bio,
+        genres: {
+          connect: artist.genres.map((slug) => ({ slug })),
+        },
+      },
+    });
+  }
+
+  const adminUser = await prisma.user.findUniqueOrThrow({
+    where: { email: 'admin@veritix.app' },
+  });
+
+  const indieFormat = await prisma.concertFormat.findUniqueOrThrow({
+    where: { slug: 'concierto' },
+  });
+
+  const palacioCongresos = await prisma.venue.findUniqueOrThrow({
+    where: { slug: 'palacio-congresos-granada' },
+  });
+
+  const plazaToros = await prisma.venue.findUniqueOrThrow({
+    where: { slug: 'plaza-toros-granada' },
+  });
+
+  const losPlanetas = await prisma.artist.findUniqueOrThrow({
+    where: { slug: 'los-planetas' },
+  });
+
+  const loriMeyers = await prisma.artist.findUniqueOrThrow({
+    where: { slug: 'lori-meyers' },
+  });
+
+  const dellafuente = await prisma.artist.findUniqueOrThrow({
+    where: { slug: 'dellafuente' },
+  });
+
+  const indieGenre = await prisma.genre.findUniqueOrThrow({
+    where: { slug: 'indie' },
+  });
+
+  const trapGenre = await prisma.genre.findUniqueOrThrow({
+    where: { slug: 'trap' },
+  });
+
+  await prisma.event.deleteMany({
+    where: {
+      name: {
+        in: ['Granada Indie Night 2026', 'Granada Urban Sessions 2026'],
+      },
+    },
+  });
+
+  // Eventos en Granada con moneda EUR
+  const indieNight = await prisma.event.create({
+    data: {
+      name: 'Granada Indie Night 2026',
+      description: 'Noche indie con artistas emblematicos de Granada.',
+      eventDate: new Date('2026-09-19T21:00:00.000+02:00'),
+      doorsOpenTime: new Date('2026-09-19T19:30:00.000+02:00'),
+      startSale: new Date('2026-05-01T10:00:00.000+02:00'),
+      endSale: new Date('2026-09-19T18:00:00.000+02:00'),
+      maxCapacity: 2000,
+      status: 'PUBLISHED',
+      currency: 'EUR',
+      creatorId: adminUser.id,
+      venueId: palacioCongresos.id,
+      formatId: indieFormat.id,
+      genres: {
+        connect: [{ id: indieGenre.id }],
+      },
+      artists: {
+        create: [
+          {
+            role: 'HEADLINER',
+            performanceOrder: 1,
+            artistId: losPlanetas.id,
+          },
+          {
+            role: 'SPECIAL_GUEST',
+            performanceOrder: 2,
+            artistId: loriMeyers.id,
+          },
+        ],
+      },
+    },
+  });
+
+  await prisma.ticketType.createMany({
+    data: [
+      {
+        name: 'General',
+        description: 'Acceso general',
+        price: '38.00',
+        totalQuantity: 1200,
+        availableQuantity: 1200,
+        maxPerUser: 6,
+        eventId: indieNight.id,
+        saleStartDate: new Date('2026-05-01T10:00:00.000+02:00'),
+        saleEndDate: new Date('2026-09-19T18:00:00.000+02:00'),
+      },
+      {
+        name: 'Preferente',
+        description: 'Zona preferente frente al escenario',
+        price: '65.00',
+        totalQuantity: 500,
+        availableQuantity: 500,
+        maxPerUser: 4,
+        eventId: indieNight.id,
+        saleStartDate: new Date('2026-05-01T10:00:00.000+02:00'),
+        saleEndDate: new Date('2026-09-19T18:00:00.000+02:00'),
+      },
+    ],
+  });
+
+  const urbanFest = await prisma.event.create({
+    data: {
+      name: 'Granada Urban Sessions 2026',
+      description: 'Encuentro urbano en formato al aire libre.',
+      eventDate: new Date('2026-10-03T22:00:00.000+02:00'),
+      doorsOpenTime: new Date('2026-10-03T20:00:00.000+02:00'),
+      startSale: new Date('2026-06-10T10:00:00.000+02:00'),
+      endSale: new Date('2026-10-03T20:30:00.000+02:00'),
+      maxCapacity: 12000,
+      status: 'PUBLISHED',
+      currency: 'EUR',
+      creatorId: adminUser.id,
+      venueId: plazaToros.id,
+      formatId: indieFormat.id,
+      genres: {
+        connect: [{ id: trapGenre.id }],
+      },
+      artists: {
+        create: [
+          {
+            role: 'HEADLINER',
+            performanceOrder: 1,
+            artistId: dellafuente.id,
+          },
+        ],
+      },
+    },
+  });
+
+  await prisma.ticketType.createMany({
+    data: [
+      {
+        name: 'Pista',
+        description: 'Acceso pista general',
+        price: '45.00',
+        totalQuantity: 7000,
+        availableQuantity: 7000,
+        maxPerUser: 6,
+        eventId: urbanFest.id,
+        saleStartDate: new Date('2026-06-10T10:00:00.000+02:00'),
+        saleEndDate: new Date('2026-10-03T20:30:00.000+02:00'),
+      },
+      {
+        name: 'Front Stage',
+        description: 'Zona premium cercana al escenario',
+        price: '85.00',
+        totalQuantity: 1500,
+        availableQuantity: 1500,
+        maxPerUser: 4,
+        eventId: urbanFest.id,
+        saleStartDate: new Date('2026-06-10T10:00:00.000+02:00'),
+        saleEndDate: new Date('2026-10-03T20:30:00.000+02:00'),
+      },
+    ],
+  });
+
+  console.log(
+    'Seed completado: usuarios, formatos, generos, venues, artistas, eventos y ticket types en EUR para Granada, Espana',
+  );
 }
 
 main()

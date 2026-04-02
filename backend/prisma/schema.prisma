@@ -103,6 +103,7 @@ model Venue {
   country   String    @default("MX")
   capacity  Int?
   type      VenueType @default(FORO)
+  isActive  Boolean   @default(true) @map("is_active")
   imageUrl  String?   @map("image_url")
   website   String?
   createdAt DateTime  @default(now()) @map("created_at")
@@ -149,6 +150,7 @@ model Artist {
   imageUrl  String?  @map("image_url")
   country   String?
   website   String?
+  isActive Boolean @default(true) @map("is_active")
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
 
