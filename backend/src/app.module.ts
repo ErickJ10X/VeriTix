@@ -7,6 +7,7 @@ import { envValidationSchema } from './config/env.validation';
 import { AuthModule } from './modules/auth/auth.module';
 import { UsersModule } from './modules/users/users.module';
 import { ArtistsModule } from './modules/artists/artists.module';
+import { ConcertFormatsModule } from './modules/concert-formats/concert-formats.module';
 import { GenresModule } from './modules/genres/genres.module';
 import { VenuesModule } from './modules/venues/venues.module';
 import { PrismaModule } from './prisma/prisma.module';
@@ -43,6 +44,7 @@ import { PrismaModule } from './prisma/prisma.module';
     UsersModule,
     VenuesModule,
     GenresModule,
+    ConcertFormatsModule,
     ArtistsModule,
   ],
   controllers: [],
