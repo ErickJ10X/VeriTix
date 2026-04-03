@@ -8,11 +8,14 @@ export class VenueSummaryDto {
   })
   id: string;
 
-  @ApiProperty({ example: 'Foro Sol', description: 'Nombre del recinto.' })
+  @ApiProperty({
+    example: 'Palacio de Congresos de Granada',
+    description: 'Nombre del recinto.',
+  })
   name: string;
 
   @ApiProperty({
-    example: 'Ciudad de México',
+    example: 'Granada',
     description: 'Ciudad del recinto.',
   })
   city: string;
@@ -40,7 +43,7 @@ export class EventListResponseDto {
   id: string;
 
   @ApiProperty({
-    example: 'Rock en el Foro',
+    example: 'Noche Indie en Granada',
     description: 'Nombre del evento.',
   })
   name: string;
@@ -59,14 +62,14 @@ export class EventListResponseDto {
   status: EventStatus;
 
   @ApiPropertyOptional({
-    example: 'https://cdn.veritix.com/events/rock-en-el-foro.jpg',
+    example: 'https://cdn.veritix.com/events/noche-indie-granada.jpg',
     description: 'URL de la imagen del evento.',
     nullable: true,
   })
   imageUrl: string | null;
 
   @ApiProperty({
-    example: 'MXN',
+    example: 'EUR',
     description: 'Moneda del evento.',
   })
   currency: string;

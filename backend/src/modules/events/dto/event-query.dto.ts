@@ -4,7 +4,7 @@ import { PaginationQueryDto } from '../../../common/dto';
 
 export class EventQueryDto extends PaginationQueryDto {
   @ApiPropertyOptional({
-    example: 'Ciudad de México',
+    example: 'Granada',
     description:
       'Filtrar por ciudad del recinto (búsqueda parcial, insensible a mayúsculas).',
   })
@@ -45,8 +45,9 @@ export class EventQueryDto extends PaginationQueryDto {
   dateTo?: string;
 
   @ApiPropertyOptional({
-    example: 'Rock en el',
-    description: 'Buscar por nombre del evento (búsqueda parcial, insensible a mayúsculas).',
+    example: 'Noche Indie',
+    description:
+      'Buscar por nombre del evento (búsqueda parcial, insensible a mayúsculas).',
   })
   @IsOptional()
   @IsString()

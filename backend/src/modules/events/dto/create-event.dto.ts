@@ -13,7 +13,7 @@ import {
 
 export class CreateEventDto {
   @ApiProperty({
-    example: 'Rock en el Foro',
+    example: 'Noche Indie en Granada',
     description: 'Nombre del evento.',
   })
   @IsString()
@@ -69,7 +69,7 @@ export class CreateEventDto {
   maxCapacity: number;
 
   @ApiPropertyOptional({
-    example: 'https://cdn.veritix.com/events/rock-en-el-foro.jpg',
+    example: 'https://cdn.veritix.com/events/noche-indie-granada.jpg',
     description: 'URL de la imagen del evento.',
   })
   @IsOptional()
@@ -77,9 +77,9 @@ export class CreateEventDto {
   imageUrl?: string;
 
   @ApiPropertyOptional({
-    example: 'MXN',
-    description: 'Moneda del evento (código ISO 4217). Por defecto "MXN".',
-    default: 'MXN',
+    example: 'EUR',
+    description: 'Moneda del evento (código ISO 4217). Por defecto "EUR".',
+    default: 'EUR',
   })
   @IsOptional()
   @IsString()

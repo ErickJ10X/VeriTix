@@ -5,22 +5,22 @@ export class VenueDetailDto {
   @ApiProperty({ example: 'a1b2c3d4-e5f6-7890-abcd-ef1234567890' })
   id: string;
 
-  @ApiProperty({ example: 'Foro Sol' })
+  @ApiProperty({ example: 'Palacio de Congresos de Granada' })
   name: string;
 
-  @ApiProperty({ example: 'foro-sol' })
+  @ApiProperty({ example: 'palacio-congresos-granada' })
   slug: string;
 
-  @ApiProperty({ example: 'Av. Viaducto Río de la Piedad s/n' })
+  @ApiProperty({ example: 'Paseo del Violon, s/n' })
   address: string;
 
-  @ApiProperty({ example: 'Ciudad de México' })
+  @ApiProperty({ example: 'Granada' })
   city: string;
 
-  @ApiProperty({ example: 'CDMX', nullable: true })
+  @ApiProperty({ example: 'Andalucia', nullable: true })
   state: string | null;
 
-  @ApiProperty({ example: 'MX' })
+  @ApiProperty({ example: 'ES' })
   country: string;
 
   @ApiProperty({ example: 65000, nullable: true })
@@ -30,7 +30,7 @@ export class VenueDetailDto {
   type: string;
 
   @ApiPropertyOptional({
-    example: 'https://cdn.veritix.com/venues/foro-sol.jpg',
+    example: 'https://cdn.veritix.com/venues/palacio-congresos-granada.jpg',
     nullable: true,
   })
   imageUrl: string | null;
@@ -46,7 +46,10 @@ export class FormatDetailDto {
   @ApiProperty({ example: 'festival' })
   slug: string;
 
-  @ApiPropertyOptional({ example: 'Evento con múltiples escenarios.', nullable: true })
+  @ApiPropertyOptional({
+    example: 'Evento con múltiples escenarios.',
+    nullable: true,
+  })
   description: string | null;
 
   @ApiPropertyOptional({ example: '🎪', nullable: true })
@@ -71,7 +74,10 @@ export class EventDetailResponseDto {
   })
   id: string;
 
-  @ApiProperty({ example: 'Rock en el Foro', description: 'Nombre del evento.' })
+  @ApiProperty({
+    example: 'Noche Indie en Granada',
+    description: 'Nombre del evento.',
+  })
   name: string;
 
   @ApiPropertyOptional({
@@ -119,13 +125,13 @@ export class EventDetailResponseDto {
   status: EventStatus;
 
   @ApiPropertyOptional({
-    example: 'https://cdn.veritix.com/events/rock-en-el-foro.jpg',
+    example: 'https://cdn.veritix.com/events/noche-indie-granada.jpg',
     description: 'URL de la imagen del evento.',
     nullable: true,
   })
   imageUrl: string | null;
 
-  @ApiProperty({ example: 'MXN', description: 'Moneda del evento.' })
+  @ApiProperty({ example: 'EUR', description: 'Moneda del evento.' })
   currency: string;
 
   @ApiProperty({
@@ -134,13 +140,22 @@ export class EventDetailResponseDto {
   })
   creatorId: string;
 
-  @ApiProperty({ example: '2024-01-15T10:30:00Z', description: 'Fecha de creación.' })
+  @ApiProperty({
+    example: '2024-01-15T10:30:00Z',
+    description: 'Fecha de creación.',
+  })
   createdAt: Date;
 
-  @ApiProperty({ example: '2024-01-20T14:45:00Z', description: 'Fecha de última actualización.' })
+  @ApiProperty({
+    example: '2024-01-20T14:45:00Z',
+    description: 'Fecha de última actualización.',
+  })
   updatedAt: Date;
 
-  @ApiProperty({ type: VenueDetailDto, description: 'Información completa del recinto.' })
+  @ApiProperty({
+    type: VenueDetailDto,
+    description: 'Información completa del recinto.',
+  })
   venue: VenueDetailDto;
 
   @ApiPropertyOptional({

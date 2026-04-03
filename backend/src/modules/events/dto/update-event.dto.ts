@@ -12,7 +12,7 @@ import {
 
 export class UpdateEventDto {
   @ApiPropertyOptional({
-    example: 'Rock en el Foro 2025',
+    example: 'Noche Indie en Granada 2025',
     description: 'Nombre del evento.',
   })
   @IsOptional()
@@ -70,7 +70,7 @@ export class UpdateEventDto {
   maxCapacity?: number;
 
   @ApiPropertyOptional({
-    example: 'https://cdn.veritix.com/events/rock-en-el-foro.jpg',
+    example: 'https://cdn.veritix.com/events/noche-indie-granada.jpg',
     description: 'URL de la imagen del evento.',
   })
   @IsOptional()
@@ -78,7 +78,7 @@ export class UpdateEventDto {
   imageUrl?: string;
 
   @ApiPropertyOptional({
-    example: 'MXN',
+    example: 'EUR',
     description: 'Moneda del evento (código ISO 4217).',
   })
   @IsOptional()
