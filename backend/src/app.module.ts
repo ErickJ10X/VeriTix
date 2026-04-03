@@ -10,6 +10,7 @@ import { ArtistsModule } from './modules/artists/artists.module';
 import { ConcertFormatsModule } from './modules/concert-formats/concert-formats.module';
 import { GenresModule } from './modules/genres/genres.module';
 import { VenuesModule } from './modules/venues/venues.module';
+import { EventsModule } from './modules/events/events.module';
 import { PrismaModule } from './prisma/prisma.module';
 
 @Module({
@@ -43,6 +44,7 @@ import { PrismaModule } from './prisma/prisma.module';
     AuthModule,
     UsersModule,
     VenuesModule,
+    EventsModule,
     GenresModule,
     ConcertFormatsModule,
     ArtistsModule,
