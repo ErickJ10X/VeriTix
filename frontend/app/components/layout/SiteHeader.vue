@@ -1,6 +1,5 @@
 <script setup lang="ts">
-// TODO: Replace with actual auth state from nuxt-auth-utils or similar
-const isAuthenticated = ref(false)
+const { isAuthenticated } = useAuth()
 </script>
 
 <template>
@@ -42,12 +41,11 @@ const isAuthenticated = ref(false)
           </template>
 
           <template v-else>
-            <!-- TODO: Add user dropdown when auth is implemented -->
             <NuxtLink
-              to="#eventos"
+              to="/users/me"
               class="vtx-auth-link vtx-auth-link--primary"
             >
-              Cartel
+              Mi cuenta
             </NuxtLink>
           </template>
         </div>

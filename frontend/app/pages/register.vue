@@ -1,6 +1,10 @@
 <script setup lang="ts">
 import { z } from 'zod'
 
+definePageMeta({
+  middleware: 'guest',
+})
+
 useSeoMeta({
   title: 'Registro | VeriTix',
   description: 'Crea tu cuenta de VeriTix y descubre los mejores conciertos progresivos.',

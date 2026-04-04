@@ -1,6 +1,10 @@
 <script setup lang="ts">
 import { z } from 'zod'
 
+definePageMeta({
+  middleware: 'guest',
+})
+
 useSeoMeta({
   title: 'Iniciar sesion | VeriTix',
   description: 'Accede a tu cuenta de VeriTix para gestionar tus reservas y descubrir nuevos eventos.',
