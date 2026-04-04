@@ -14,6 +14,8 @@ export function useAuth() {
   const accessToken = useState<string | null>('auth-access-token', () => null)
   const user = useState<UserProfile | null>('auth-user', () => null)
   const pending = useState<boolean>('auth-pending', () => false)
+  const hydrated = useState<boolean>('auth-hydrated', () => false)
+  const ensureSessionPromise = useState<Promise<boolean> | null>('auth-ensure-session-promise', () => null)
 
   const apiRequest = useApiRequest()
 
@@ -24,12 +26,41 @@ export function useAuth() {
   function applyAuth(response: AuthResponse): AuthResponse {
     accessToken.value = response.accessToken
     user.value = response.user
+    hydrated.value = true
     return response
   }
 
   function clearAuth(): void {
     accessToken.value = null
     user.value = null
+  }
+
+  async function ensureSession(): Promise<boolean> {
+    if (isAuthenticated.value) {
+      hydrated.value = true
+      return true
+    }
+
+    if (hydrated.value) {
+      return false
+    }
+
+    if (ensureSessionPromise.value) {
+      return await ensureSessionPromise.value
+    }
+
+    ensureSessionPromise.value = (async () => {
+      const response = await refreshSession()
+      hydrated.value = true
+      return Boolean(response)
+    })()
+
+    try {
+      return await ensureSessionPromise.value
+    }
+    finally {
+      ensureSessionPromise.value = null
+    }
   }
 
   async function register(payload: RegisterRequest): Promise<AuthResponse> {
@@ -88,6 +119,7 @@ export function useAuth() {
     }
     finally {
       clearAuth()
+      hydrated.value = true
     }
   }
 
@@ -99,6 +131,7 @@ export function useAuth() {
     register,
     login,
     refreshSession,
+    ensureSession,
     logout,
     clearAuth,
   }

@@ -73,7 +73,7 @@ function forwardSetCookieHeaders(event: H3Event, responseHeaders: Headers): void
 
   if (setCookieHeaders.length > 0) {
     for (const value of setCookieHeaders) {
-      appendResponseHeader(event, 'set-cookie', value)
+      appendResponseHeader(event, 'set-cookie', normalizeCookiePathForFrontend(value))
     }
 
     return
@@ -81,8 +81,14 @@ function forwardSetCookieHeaders(event: H3Event, responseHeaders: Headers): void
 
   const singleCookie = responseHeaders.get('set-cookie')
   if (singleCookie) {
-    appendResponseHeader(event, 'set-cookie', singleCookie)
+    appendResponseHeader(event, 'set-cookie', normalizeCookiePathForFrontend(singleCookie))
   }
+}
+
+const AUTH_COOKIE_PATH_REGEX = /([;\s]path=)\/auth(?=;|$)/i
+
+function normalizeCookiePathForFrontend(cookieHeaderValue: string): string {
+  return cookieHeaderValue.replace(AUTH_COOKIE_PATH_REGEX, '$1/api/auth')
 }
 
 export async function proxyBackendRequest<TResponse, TBody extends BodyInit | object | null = Record<string, unknown>>(

@@ -8,12 +8,13 @@ interface ApiRequestOptions<TBody = unknown> {
 
 export function useApiRequest() {
   const config = useRuntimeConfig()
+  const requestFetch = import.meta.server ? useRequestFetch() : $fetch
 
   return async function apiRequest<TResponse, TBody extends BodyInit | object | null = Record<string, unknown>>(
     path: string,
     options: ApiRequestOptions<TBody> = {},
   ): Promise<TResponse> {
-    const response = await $fetch.raw(path, {
+    const response = await requestFetch(path, {
       baseURL: config.public.apiBase,
       method: options.method,
       body: options.body,
@@ -21,6 +22,6 @@ export function useApiRequest() {
       credentials: 'include',
     })
 
-    return response._data as TResponse
+    return response as TResponse
   }
 }
