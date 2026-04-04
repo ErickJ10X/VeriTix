@@ -1,0 +1,340 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+// ─── ENUMS ────────────────────────────────────────────────────────────────────
+
+enum Role {
+  BUYER
+  CREATOR
+  VALIDATOR
+  ADMIN
+}
+
+enum EventStatus {
+  DRAFT
+  PUBLISHED
+  FINISHED
+  CANCELLED
+}
+
+enum TicketStatus {
+  ACTIVE
+  USED
+  CANCELLED
+}
+
+enum OrderStatus {
+  PENDING
+  COMPLETED
+  CANCELLED
+  REFUNDED
+}
+
+enum VenueType {
+  ESTADIO
+  ARENA
+  FORO
+  AUDITORIO
+  CLUB
+  TEATRO
+  AL_AIRE_LIBRE
+  OTRO
+}
+
+enum ArtistRole {
+  HEADLINER
+  SPECIAL_GUEST
+  OPENER
+}
+
+// ─── MODELS ───────────────────────────────────────────────────────────────────
+
+model User {
+  id            String    @id @default(uuid())
+  email         String    @unique
+  phone         String    @unique
+  name          String
+  lastName      String    @map("last_name")
+  password      String
+  role          Role      @default(BUYER)
+  avatarUrl     String?   @map("avatar_url")
+  isActive      Boolean   @default(true) @map("is_active")
+  emailVerified Boolean   @default(false) @map("email_verified")
+  resetToken    String?   @map("reset_token")
+  resetTokenExp DateTime? @map("reset_token_exp")
+  createdAt     DateTime  @default(now()) @map("created_at")
+  updatedAt     DateTime  @updatedAt @map("updated_at")
+
+  events           Event[]         @relation("CreatorEvents")
+  orders           Order[]
+  tickets          Ticket[]        @relation("BuyerTickets")
+  validatedTickets Ticket[]        @relation("ValidatorTickets")
+  refreshTokens    RefreshToken[]
+
+  @@map("users")
+}
+
+model RefreshToken {
+  // El id ES el jti del JWT — se genera antes de firmar
+  id        String   @id
+  userId    String   @map("user_id")
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  expiresAt DateTime @map("expires_at")
+  createdAt DateTime @default(now()) @map("created_at")
+
+  @@index([userId])
+  @@map("refresh_tokens")
+}
+
+// Recinto físico donde se realiza el concierto (reutilizable entre eventos)
+model Venue {
+  id        String    @id @default(uuid())
+  name      String
+  slug      String    @unique
+  address   String
+  city      String
+  state     String?
+  country   String    @default("MX")
+  capacity  Int?
+  type      VenueType @default(FORO)
+  isActive  Boolean   @default(true) @map("is_active")
+  imageUrl  String?   @map("image_url")
+  website   String?
+  createdAt DateTime  @default(now()) @map("created_at")
+  updatedAt DateTime  @updatedAt @map("updated_at")
+
+  events Event[]
+
+  @@index([city, type])
+  @@map("venues")
+}
+
+// Tipo de show: Concierto, Festival, Tour, Tributo, Acústico, Club Night
+model ConcertFormat {
+  id          String  @id @default(uuid())
+  name        String  @unique
+  slug        String  @unique
+  description String?
+  icon        String?
+
+  events Event[]
+
+  @@map("concert_formats")
+}
+
+// Géneros musicales — M2M con Event y con Artist
+model Genre {
+  id          String  @id @default(uuid())
+  name        String  @unique
+  slug        String  @unique
+  description String?
+
+  events  Event[]
+  artists Artist[]
+
+  @@map("genres")
+}
+
+// Artista musical — núcleo del dominio de conciertos
+model Artist {
+  id        String   @id @default(uuid())
+  name      String
+  slug      String   @unique
+  bio       String?  @db.Text
+  imageUrl  String?  @map("image_url")
+  country   String?
+  website   String?
+  isActive Boolean @default(true) @map("is_active")
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  events EventArtist[]
+  genres Genre[]
+
+  @@map("artists")
+}
+
+// Junction explícita Event ↔ Artist con rol y orden de presentación
+model EventArtist {
+  id               String     @id @default(uuid())
+  role             ArtistRole @default(OPENER)
+  performanceOrder Int        @map("performance_order")
+  performanceTime  DateTime?  @map("performance_time")
+
+  eventId String @map("event_id")
+  event   Event  @relation(fields: [eventId], references: [id], onDelete: Cascade)
+
+  artistId String @map("artist_id")
+  artist   Artist @relation(fields: [artistId], references: [id])
+
+  @@unique([eventId, artistId])
+  @@index([eventId, role])
+  @@index([artistId])
+  @@map("event_artists")
+}
+
+model Event {
+  id            String      @id @default(uuid())
+  name          String
+  description   String?     @db.Text
+  eventDate     DateTime    @map("event_date")
+  doorsOpenTime DateTime?   @map("doors_open_time")
+  startSale     DateTime?   @map("start_sale")
+  endSale       DateTime?   @map("end_sale")
+  maxCapacity   Int         @map("max_capacity")
+  status        EventStatus @default(DRAFT)
+  imageUrl      String?     @map("image_url")
+  currency      String      @default("MXN")
+  createdAt     DateTime    @default(now()) @map("created_at")
+  updatedAt     DateTime    @updatedAt @map("updated_at")
+
+  creatorId String @map("creator_id")
+  creator   User   @relation("CreatorEvents", fields: [creatorId], references: [id])
+
+  venueId String @map("venue_id")
+  venue   Venue  @relation(fields: [venueId], references: [id])
+
+  formatId String?        @map("format_id")
+  format   ConcertFormat? @relation(fields: [formatId], references: [id])
+
+  genres      Genre[]
+  artists     EventArtist[]
+  ticketTypes TicketType[]
+  tickets     Ticket[]
+  orders      Order[]
+
+  @@index([status, eventDate])
+  @@index([status, eventDate, formatId])
+  @@index([creatorId])
+  @@index([venueId])
+  @@map("events")
+}
+
+model TicketType {
+  id                String    @id @default(uuid())
+  name              String
+  description       String?
+  price             Decimal   @db.Decimal(10, 2)
+  totalQuantity     Int       @map("total_quantity")
+  availableQuantity Int       @map("available_quantity")
+  maxPerUser        Int       @default(4) @map("max_per_user")
+  isActive          Boolean   @default(true) @map("is_active")
+  saleStartDate     DateTime? @map("sale_start_date")
+  saleEndDate       DateTime? @map("sale_end_date")
+  createdAt         DateTime  @default(now()) @map("created_at")
+  updatedAt         DateTime  @updatedAt @map("updated_at")
+
+  eventId String @map("event_id")
+  event   Event  @relation(fields: [eventId], references: [id], onDelete: Cascade)
+
+  tickets    Ticket[]
+  orderItems OrderItem[]
+
+  @@index([eventId, isActive])
+  @@map("ticket_types")
+}
+
+model Order {
+  id               String      @id @default(uuid())
+  totalAmount      Decimal     @map("total_amount") @db.Decimal(10, 2)
+  status           OrderStatus @default(PENDING)
+  createdAt        DateTime    @default(now()) @map("created_at")
+  updatedAt        DateTime    @updatedAt @map("updated_at")
+
+  buyerId String @map("buyer_id")
+  buyer   User   @relation(fields: [buyerId], references: [id])
+
+  eventId String @map("event_id")
+  event   Event  @relation(fields: [eventId], references: [id])
+
+  items   OrderItem[]
+  tickets Ticket[]
+  payments Payment[]
+
+  @@index([buyerId, createdAt])
+  @@index([eventId, status])
+  @@map("orders")
+}
+
+model OrderItem {
+  id        String  @id @default(uuid())
+  quantity  Int
+  unitPrice Decimal @map("unit_price") @db.Decimal(10, 2)
+  subtotal  Decimal @db.Decimal(10, 2)
+
+  orderId String @map("order_id")
+  order   Order  @relation(fields: [orderId], references: [id], onDelete: Cascade)
+
+  ticketTypeId String     @map("ticket_type_id")
+  ticketType   TicketType @relation(fields: [ticketTypeId], references: [id])
+
+  tickets Ticket[]
+
+  @@index([orderId])
+  @@map("order_items")
+}
+
+model Ticket {
+  id           String       @id @default(uuid())
+  hash         String       @unique
+  qrPayload    String       @map("qr_payload")
+  status       TicketStatus @default(ACTIVE)
+  purchaseDate DateTime     @default(now()) @map("purchase_date")
+  validatedAt  DateTime?    @map("validated_at")
+  createdAt    DateTime     @default(now()) @map("created_at")
+
+  eventId String @map("event_id")
+  event   Event  @relation(fields: [eventId], references: [id], onDelete: Cascade)
+
+  buyerId String @map("buyer_id")
+  buyer   User   @relation("BuyerTickets", fields: [buyerId], references: [id])
+
+  ticketTypeId String     @map("ticket_type_id")
+  ticketType   TicketType @relation(fields: [ticketTypeId], references: [id])
+
+  orderId String @map("order_id")
+  order   Order  @relation(fields: [orderId], references: [id])
+
+  orderItemId String    @map("order_item_id")
+  orderItem   OrderItem @relation(fields: [orderItemId], references: [id])
+
+  validatedById String? @map("validated_by")
+  validatedBy   User?   @relation("ValidatorTickets", fields: [validatedById], references: [id])
+
+  @@index([buyerId, status])
+  @@index([eventId, status])
+  @@index([hash])
+  @@map("tickets")
+}
+
+enum PaymentStatus {
+  PENDING
+  COMPLETED
+  FAILED
+  REFUNDED
+}
+
+model Payment {
+  id                String        @id @default(uuid())
+  amount            Decimal       @db.Decimal(10, 2)
+  currency          String
+  status            PaymentStatus @default(PENDING)
+  provider          String        @default("stripe")
+  providerPaymentId String?       @unique @map("provider_payment_id")
+  providerSessionId String?       @unique @map("provider_session_id")
+  failureReason     String?       @map("failure_reason")
+  paidAt            DateTime?     @map("paid_at")
+  createdAt         DateTime      @default(now()) @map("created_at")
+  updatedAt         DateTime      @updatedAt @map("updated_at")
+  orderId String @map("order_id")
+  order   Order  @relation(fields: [orderId], references: [id])
+  @@index([orderId])
+  @@index([providerPaymentId])
+  @@map("payments")
+}
