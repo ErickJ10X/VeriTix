@@ -243,9 +243,7 @@ model TicketType {
 model Order {
   id               String      @id @default(uuid())
   totalAmount      Decimal     @map("total_amount") @db.Decimal(10, 2)
-  currency         String      @default("MXN")
   status           OrderStatus @default(PENDING)
-  paymentReference String?     @map("payment_reference")
   createdAt        DateTime    @default(now()) @map("created_at")
   updatedAt        DateTime    @updatedAt @map("updated_at")
 
@@ -257,6 +255,7 @@ model Order {
 
   items   OrderItem[]
   tickets Ticket[]
+  payments Payment[]
 
   @@index([buyerId, createdAt])
   @@index([eventId, status])
@@ -312,4 +311,30 @@ model Ticket {
   @@index([eventId, status])
   @@index([hash])
   @@map("tickets")
+}
+
+enum PaymentStatus {
+  PENDING
+  COMPLETED
+  FAILED
+  REFUNDED
+}
+
+model Payment {
+  id                String        @id @default(uuid())
+  amount            Decimal       @db.Decimal(10, 2)
+  currency          String
+  status            PaymentStatus @default(PENDING)
+  provider          String        @default("stripe")
+  providerPaymentId String?       @unique @map("provider_payment_id")
+  providerSessionId String?       @unique @map("provider_session_id")
+  failureReason     String?       @map("failure_reason")
+  paidAt            DateTime?     @map("paid_at")
+  createdAt         DateTime      @default(now()) @map("created_at")
+  updatedAt         DateTime      @updatedAt @map("updated_at")
+  orderId String @map("order_id")
+  order   Order  @relation(fields: [orderId], references: [id])
+  @@index([orderId])
+  @@index([providerPaymentId])
+  @@map("payments")
 }

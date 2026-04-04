@@ -1,5 +1,13 @@
 import { PrismaPg } from '@prisma/adapter-pg';
-import { PrismaClient, Role } from '../generated/prisma/client';
+import {
+  ArtistRole,
+  EventStatus,
+  OrderStatus,
+  PaymentStatus,
+  PrismaClient,
+  Role,
+  VenueType,
+} from '../generated/prisma/client';
 import * as bcrypt from 'bcryptjs';
 
 const prisma = new PrismaClient({
@@ -45,6 +53,12 @@ const concertFormats = [
     icon: '🎧',
     description: 'Show de DJ o música electrónica en club',
   },
+  {
+    name: 'Ciclo Flamenco',
+    slug: 'ciclo-flamenco',
+    icon: '💃',
+    description: 'Serie de presentaciones de flamenco tradicional y fusión',
+  },
 ];
 
 const genres = [
@@ -79,6 +93,8 @@ const genres = [
   { name: 'Clásica', slug: 'clasica' },
   { name: 'Reggae', slug: 'reggae' },
   { name: 'Folk', slug: 'folk' },
+  { name: 'Flamenco', slug: 'flamenco' },
+  { name: 'Urbano Espanol', slug: 'urbano-espanol' },
 ];
 
 const venues = [
@@ -120,7 +136,27 @@ const venues = [
     state: 'Andalucia',
     country: 'ES',
     capacity: 662,
-    type: 'TEATRO' as const,
+    type: VenueType.TEATRO,
+  },
+  {
+    name: 'WiZink Center',
+    slug: 'wizink-center',
+    address: 'Avenida Felipe II s/n',
+    city: 'Madrid',
+    state: 'Comunidad de Madrid',
+    country: 'ES',
+    capacity: 17000,
+    type: VenueType.ARENA,
+  },
+  {
+    name: 'Palau Sant Jordi',
+    slug: 'palau-sant-jordi',
+    address: 'Passeig Olimpic 5-7',
+    city: 'Barcelona',
+    state: 'Cataluna',
+    country: 'ES',
+    capacity: 18000,
+    type: VenueType.ARENA,
   },
 ];
 
@@ -145,6 +181,20 @@ const artists = [
     country: 'ES',
     bio: 'Artista urbano granadino que fusiona trap, flamenco y hip-hop.',
     genres: ['trap', 'hip-hop'],
+  },
+  {
+    name: 'Vetusta Morla',
+    slug: 'vetusta-morla',
+    country: 'ES',
+    bio: 'Banda madrilena de rock alternativo.',
+    genres: ['rock-alternativo', 'indie'],
+  },
+  {
+    name: 'Rosalia',
+    slug: 'rosalia',
+    country: 'ES',
+    bio: 'Artista espanola que fusiona flamenco, pop y urbano.',
+    genres: ['flamenco', 'pop', 'urbano-espanol'],
   },
 ];
 
@@ -253,6 +303,14 @@ async function main() {
     where: { slug: 'plaza-toros-granada' },
   });
 
+  const wizinkCenter = await prisma.venue.findUniqueOrThrow({
+    where: { slug: 'wizink-center' },
+  });
+
+  const palauSantJordi = await prisma.venue.findUniqueOrThrow({
+    where: { slug: 'palau-sant-jordi' },
+  });
+
   const losPlanetas = await prisma.artist.findUniqueOrThrow({
     where: { slug: 'los-planetas' },
   });
@@ -265,6 +323,14 @@ async function main() {
     where: { slug: 'dellafuente' },
   });
 
+  const vetustaMorla = await prisma.artist.findUniqueOrThrow({
+    where: { slug: 'vetusta-morla' },
+  });
+
+  const rosalia = await prisma.artist.findUniqueOrThrow({
+    where: { slug: 'rosalia' },
+  });
+
   const indieGenre = await prisma.genre.findUniqueOrThrow({
     where: { slug: 'indie' },
   });
@@ -273,13 +339,58 @@ async function main() {
     where: { slug: 'trap' },
   });
 
-  await prisma.event.deleteMany({
-    where: {
-      name: {
-        in: ['Granada Indie Night 2026', 'Granada Urban Sessions 2026'],
-      },
-    },
+  const popGenre = await prisma.genre.findUniqueOrThrow({
+    where: { slug: 'pop' },
   });
+
+  const electronicaGenre = await prisma.genre.findUniqueOrThrow({
+    where: { slug: 'electronica' },
+  });
+
+  const demoEventNames = [
+    'Granada Indie Night 2026',
+    'Granada Urban Sessions 2026',
+    'Madrid Pop Arena 2026',
+    'Barcelona Electronica Nights 2026',
+  ];
+
+  const existingDemoEvents = await prisma.event.findMany({
+    where: { name: { in: demoEventNames } },
+    select: { id: true },
+  });
+
+  const existingEventIds = existingDemoEvents.map((event) => event.id);
+
+  if (existingEventIds.length > 0) {
+    const existingOrders = await prisma.order.findMany({
+      where: { eventId: { in: existingEventIds } },
+      select: { id: true },
+    });
+
+    const existingOrderIds = existingOrders.map((order) => order.id);
+
+    if (existingOrderIds.length > 0) {
+      await prisma.payment.deleteMany({
+        where: { orderId: { in: existingOrderIds } },
+      });
+
+      await prisma.ticket.deleteMany({
+        where: { orderId: { in: existingOrderIds } },
+      });
+
+      await prisma.orderItem.deleteMany({
+        where: { orderId: { in: existingOrderIds } },
+      });
+
+      await prisma.order.deleteMany({
+        where: { id: { in: existingOrderIds } },
+      });
+    }
+
+    await prisma.event.deleteMany({
+      where: { id: { in: existingEventIds } },
+    });
+  }
 
   // Eventos en Granada con moneda EUR
   const indieNight = await prisma.event.create({
@@ -291,7 +402,7 @@ async function main() {
       startSale: new Date('2026-05-01T10:00:00.000+02:00'),
       endSale: new Date('2026-09-19T18:00:00.000+02:00'),
       maxCapacity: 2000,
-      status: 'PUBLISHED',
+      status: EventStatus.PUBLISHED,
       currency: 'EUR',
       creatorId: adminUser.id,
       venueId: palacioCongresos.id,
@@ -302,12 +413,12 @@ async function main() {
       artists: {
         create: [
           {
-            role: 'HEADLINER',
+            role: ArtistRole.HEADLINER,
             performanceOrder: 1,
             artistId: losPlanetas.id,
           },
           {
-            role: 'SPECIAL_GUEST',
+            role: ArtistRole.SPECIAL_GUEST,
             performanceOrder: 2,
             artistId: loriMeyers.id,
           },
@@ -352,7 +463,7 @@ async function main() {
       startSale: new Date('2026-06-10T10:00:00.000+02:00'),
       endSale: new Date('2026-10-03T20:30:00.000+02:00'),
       maxCapacity: 12000,
-      status: 'PUBLISHED',
+      status: EventStatus.PUBLISHED,
       currency: 'EUR',
       creatorId: adminUser.id,
       venueId: plazaToros.id,
@@ -363,7 +474,7 @@ async function main() {
       artists: {
         create: [
           {
-            role: 'HEADLINER',
+            role: ArtistRole.HEADLINER,
             performanceOrder: 1,
             artistId: dellafuente.id,
           },
@@ -399,8 +510,226 @@ async function main() {
     ],
   });
 
+  const madridPop = await prisma.event.create({
+    data: {
+      name: 'Madrid Pop Arena 2026',
+      description: 'Show pop con produccion audiovisual a gran escala.',
+      eventDate: new Date('2026-11-14T21:30:00.000+01:00'),
+      doorsOpenTime: new Date('2026-11-14T19:30:00.000+01:00'),
+      startSale: new Date('2026-06-20T10:00:00.000+02:00'),
+      endSale: new Date('2026-11-14T20:30:00.000+01:00'),
+      maxCapacity: 17000,
+      status: EventStatus.PUBLISHED,
+      currency: 'EUR',
+      creatorId: adminUser.id,
+      venueId: wizinkCenter.id,
+      formatId: indieFormat.id,
+      genres: {
+        connect: [{ id: popGenre.id }],
+      },
+      artists: {
+        create: [
+          {
+            role: ArtistRole.HEADLINER,
+            performanceOrder: 1,
+            artistId: rosalia.id,
+          },
+          {
+            role: ArtistRole.SPECIAL_GUEST,
+            performanceOrder: 2,
+            artistId: vetustaMorla.id,
+          },
+        ],
+      },
+    },
+  });
+
+  await prisma.ticketType.createMany({
+    data: [
+      {
+        name: 'General',
+        description: 'Acceso general grada',
+        price: '55.00',
+        totalQuantity: 9000,
+        availableQuantity: 9000,
+        maxPerUser: 6,
+        eventId: madridPop.id,
+        saleStartDate: new Date('2026-06-20T10:00:00.000+02:00'),
+        saleEndDate: new Date('2026-11-14T20:30:00.000+01:00'),
+      },
+      {
+        name: 'Premium',
+        description: 'Zona premium con visibilidad preferente',
+        price: '120.00',
+        totalQuantity: 2200,
+        availableQuantity: 2200,
+        maxPerUser: 4,
+        eventId: madridPop.id,
+        saleStartDate: new Date('2026-06-20T10:00:00.000+02:00'),
+        saleEndDate: new Date('2026-11-14T20:30:00.000+01:00'),
+      },
+    ],
+  });
+
+  const barcelonaElectronic = await prisma.event.create({
+    data: {
+      name: 'Barcelona Electronica Nights 2026',
+      description: 'Noche de musica electronica con visuales inmersivos.',
+      eventDate: new Date('2026-12-05T22:30:00.000+01:00'),
+      doorsOpenTime: new Date('2026-12-05T20:30:00.000+01:00'),
+      startSale: new Date('2026-07-01T10:00:00.000+02:00'),
+      endSale: new Date('2026-12-05T21:30:00.000+01:00'),
+      maxCapacity: 18000,
+      status: EventStatus.PUBLISHED,
+      currency: 'EUR',
+      creatorId: adminUser.id,
+      venueId: palauSantJordi.id,
+      formatId: indieFormat.id,
+      genres: {
+        connect: [{ id: electronicaGenre.id }],
+      },
+      artists: {
+        create: [
+          {
+            role: ArtistRole.HEADLINER,
+            performanceOrder: 1,
+            artistId: rosalia.id,
+          },
+          {
+            role: ArtistRole.OPENER,
+            performanceOrder: 2,
+            artistId: dellafuente.id,
+          },
+        ],
+      },
+    },
+  });
+
+  await prisma.ticketType.createMany({
+    data: [
+      {
+        name: 'Pista',
+        description: 'Pista general',
+        price: '60.00',
+        totalQuantity: 10000,
+        availableQuantity: 10000,
+        maxPerUser: 6,
+        eventId: barcelonaElectronic.id,
+        saleStartDate: new Date('2026-07-01T10:00:00.000+02:00'),
+        saleEndDate: new Date('2026-12-05T21:30:00.000+01:00'),
+      },
+      {
+        name: 'VIP Experience',
+        description: 'Acceso VIP con beneficios exclusivos',
+        price: '140.00',
+        totalQuantity: 1800,
+        availableQuantity: 1800,
+        maxPerUser: 4,
+        eventId: barcelonaElectronic.id,
+        saleStartDate: new Date('2026-07-01T10:00:00.000+02:00'),
+        saleEndDate: new Date('2026-12-05T21:30:00.000+01:00'),
+      },
+    ],
+  });
+
+  // Ordenes y pagos de ejemplo para validar el flujo Orders + Payments
+  const buyerUser = await prisma.user.findUniqueOrThrow({
+    where: { email: 'user@veritix.app' },
+  });
+
+  const indieGeneral = await prisma.ticketType.findFirstOrThrow({
+    where: { eventId: indieNight.id, name: 'General' },
+  });
+
+  const indiePreferente = await prisma.ticketType.findFirstOrThrow({
+    where: { eventId: indieNight.id, name: 'Preferente' },
+  });
+
+  const completedOrder = await prisma.order.create({
+    data: {
+      totalAmount: '206.00',
+      status: OrderStatus.COMPLETED,
+      buyerId: buyerUser.id,
+      eventId: indieNight.id,
+      items: {
+        create: [
+          {
+            quantity: 2,
+            unitPrice: indieGeneral.price,
+            subtotal: '76.00',
+            ticketTypeId: indieGeneral.id,
+          },
+          {
+            quantity: 2,
+            unitPrice: indiePreferente.price,
+            subtotal: '130.00',
+            ticketTypeId: indiePreferente.id,
+          },
+        ],
+      },
+    },
+  });
+
+  await prisma.payment.createMany({
+    data: [
+      {
+        amount: '206.00',
+        currency: 'EUR',
+        status: PaymentStatus.FAILED,
+        provider: 'stripe',
+        providerSessionId: `sess_fail_${completedOrder.id}`,
+        failureReason: 'authentication_required',
+        orderId: completedOrder.id,
+      },
+      {
+        amount: '206.00',
+        currency: 'EUR',
+        status: PaymentStatus.COMPLETED,
+        provider: 'stripe',
+        providerPaymentId: `pi_ok_${completedOrder.id}`,
+        providerSessionId: `sess_ok_${completedOrder.id}`,
+        paidAt: new Date(),
+        orderId: completedOrder.id,
+      },
+    ],
+  });
+
+  const urbanPista = await prisma.ticketType.findFirstOrThrow({
+    where: { eventId: urbanFest.id, name: 'Pista' },
+  });
+
+  const pendingOrder = await prisma.order.create({
+    data: {
+      totalAmount: '90.00',
+      status: OrderStatus.PENDING,
+      buyerId: buyerUser.id,
+      eventId: urbanFest.id,
+      items: {
+        create: [
+          {
+            quantity: 2,
+            unitPrice: urbanPista.price,
+            subtotal: '90.00',
+            ticketTypeId: urbanPista.id,
+          },
+        ],
+      },
+    },
+  });
+
+  await prisma.payment.create({
+    data: {
+      amount: '90.00',
+      currency: 'EUR',
+      status: PaymentStatus.PENDING,
+      provider: 'stripe',
+      providerSessionId: `sess_pending_${pendingOrder.id}`,
+      orderId: pendingOrder.id,
+    },
+  });
+
   console.log(
-    'Seed completado: usuarios, formatos, generos, venues, artistas, eventos y ticket types en EUR para Granada, Espana',
+    'Seed completado: catalogos de Espana, eventos, ticket types, ordenes y pagos en EUR.',
   );
 }
 
