@@ -59,13 +59,24 @@ async function onSubmit() {
       <div class="absolute right-[16%] top-[22%] hidden h-px w-36 bg-linear-to-r from-transparent via-electric-300/35 to-transparent lg:block" />
     </div>
 
-    <UContainer class="relative flex min-h-[88vh] items-center justify-center py-10 sm:py-14">
-      <div class="w-full max-w-xl px-4">
-        <AuthAuthCard
-          title="Bienvenido de nuevo"
-          subtitle="Inicia sesion para acceder a tu cuenta"
-        >
-          <div class="mb-6 flex items-center justify-center">
+    <UContainer class="relative flex min-h-[88vh] items-center justify-center py-12 sm:py-16">
+      <div class="w-full max-w-lg px-4 sm:px-0">
+        <section class="space-y-8">
+          <header class="text-center">
+            <p class="mb-3 text-xs font-semibold tracking-[0.28em] text-auric-300/90 uppercase">
+              VeriTix
+            </p>
+
+            <h1 class="font-display text-3xl text-highlighted md:text-4xl">
+              Bienvenido de nuevo
+            </h1>
+
+            <p class="mx-auto mt-3 max-w-md text-sm text-toned">
+              Inicia sesion para acceder a tu cuenta
+            </p>
+          </header>
+
+          <div class="mb-7 flex items-center justify-center">
             <span class="inline-flex items-center gap-2 rounded-full border border-auric-300/30 bg-auric-400/10 px-3 py-1 text-[0.7rem] font-semibold tracking-[0.22em] text-auric-200 uppercase">
               <UIcon name="i-lucide-shield-check" class="size-3.5" />
               Acceso seguro
@@ -77,7 +88,7 @@ async function onSubmit() {
             :state="state"
             :schema="schema"
             :validate-on="[]"
-            class="flex flex-col gap-4 px-1"
+            class="flex flex-col gap-4"
             @submit="onSubmit"
           >
             <!-- Error message -->
@@ -92,7 +103,6 @@ async function onSubmit() {
             <UFormField
               name="email"
               label="Email"
-              help="Usa el email con el que te registraste."
               required
               class="w-full"
             >
@@ -113,7 +123,6 @@ async function onSubmit() {
             <UFormField
               name="password"
               label="Contrasena"
-              help="Minimo 8 caracteres"
               required
               class="w-full"
             >
@@ -163,7 +172,7 @@ async function onSubmit() {
               size="lg"
               block
               :loading="pending"
-              class="mt-2 shadow-[0_0_32px_-16px_var(--color-auric-500)]"
+              class="mt-2"
             >
               Iniciar sesion
             </UButton>
@@ -173,7 +182,7 @@ async function onSubmit() {
             </p>
           </UForm>
 
-          <template #footer>
+          <footer class="pt-1">
             <p class="text-center text-sm text-muted">
               ¿No tienes cuenta?
               <NuxtLink
@@ -183,8 +192,8 @@ async function onSubmit() {
                 Registrate aqui
               </NuxtLink>
             </p>
-          </template>
-        </AuthAuthCard>
+          </footer>
+        </section>
       </div>
     </UContainer>
   </div>

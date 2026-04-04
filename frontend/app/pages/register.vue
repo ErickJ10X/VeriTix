@@ -73,13 +73,24 @@ async function onSubmit() {
       <div class="absolute left-[18%] top-[24%] hidden h-px w-32 bg-linear-to-r from-transparent via-auric-300/35 to-transparent lg:block" />
     </div>
 
-    <UContainer class="relative flex min-h-[88vh] items-center justify-center py-10 sm:py-14">
-      <div class="w-full max-w-xl px-4">
-        <AuthAuthCard
-          title="Crea tu cuenta"
-          subtitle="Unete a VeriTix y descubre tu proximo concierto"
-        >
-          <div class="mb-6 flex items-center justify-center">
+    <UContainer class="relative flex min-h-[88vh] items-center justify-center py-12 sm:py-16">
+      <div class="w-full max-w-lg px-4 sm:px-0">
+        <section class="space-y-8">
+          <header class="text-center">
+            <p class="mb-3 text-xs font-semibold tracking-[0.28em] text-auric-300/90 uppercase">
+              VeriTix
+            </p>
+
+            <h1 class="font-display text-3xl text-highlighted md:text-4xl">
+              Crea tu cuenta
+            </h1>
+
+            <p class="mx-auto mt-3 max-w-md text-sm text-toned">
+              Unete a VeriTix y descubre tu proximo concierto
+            </p>
+          </header>
+
+          <div class="mb-7 flex items-center justify-center">
             <span class="inline-flex items-center gap-2 rounded-full border border-secondary/30 bg-secondary/10 px-3 py-1 text-[0.7rem] font-semibold tracking-[0.22em] text-secondary uppercase">
               <UIcon name="i-lucide-sparkles" class="size-3.5" />
               Alta de cuenta
@@ -91,7 +102,7 @@ async function onSubmit() {
             :state="state"
             :schema="schema"
             :validate-on="[]"
-            class="flex flex-col gap-4 px-1"
+            class="flex flex-col gap-4"
             @submit="onSubmit"
           >
             <!-- Error message -->
@@ -261,7 +272,7 @@ async function onSubmit() {
               size="lg"
               block
               :loading="pending"
-              class="mt-2 shadow-[0_0_32px_-16px_var(--color-auric-500)]"
+              class="mt-2"
             >
               Crear cuenta
             </UButton>
@@ -271,7 +282,7 @@ async function onSubmit() {
             </p>
           </UForm>
 
-          <template #footer>
+          <footer class="pt-1">
             <p class="text-center text-sm text-muted">
               ¿Ya tienes cuenta?
               <NuxtLink
@@ -281,8 +292,8 @@ async function onSubmit() {
                 Inicia sesion
               </NuxtLink>
             </p>
-          </template>
-        </AuthAuthCard>
+          </footer>
+        </section>
       </div>
     </UContainer>
   </div>
