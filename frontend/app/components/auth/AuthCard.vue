@@ -6,7 +6,7 @@ defineProps<{
 </script>
 
 <template>
-  <div class="auth-card relative">
+  <div class="auth-card relative overflow-hidden">
     <!-- Psychedelic glow layers -->
     <div class="auth-glow-outer absolute -inset-2 rounded-3xl opacity-60" />
     <div class="auth-glow-inner absolute -inset-1 rounded-2xl opacity-40" />
@@ -18,7 +18,8 @@ defineProps<{
       <div class="auth-ring auth-ring--core" />
     </div>
 
-    <div class="auth-card-inner relative rounded-2xl border border-white/10 bg-white/5 backdrop-blur-xl p-8 md:p-10 shadow-[0_14px_26px_-24px_rgba(0,0,0,0.78)]">
+    <div class="auth-ambient absolute inset-0" />
+    <div class="auth-card-inner relative rounded-2xl border border-white/12 bg-white/7 backdrop-blur-xl p-8 md:p-10 shadow-[0_14px_32px_-22px_rgba(0,0,0,0.78)]">
       <!-- Header -->
       <div class="mb-8 text-center">
         <!-- Fractal brand mark -->
@@ -36,7 +37,7 @@ defineProps<{
 
         <p
           v-if="subtitle"
-          class="mt-3 text-sm text-[var(--ui-text-toned)]"
+          class="mt-3 text-sm text-toned"
         >
           {{ subtitle }}
         </p>
@@ -57,6 +58,27 @@ defineProps<{
 </template>
 
 <style scoped>
+.auth-card {
+  isolation: isolate;
+}
+
+.auth-ambient {
+  pointer-events: none;
+  background:
+    radial-gradient(
+      42rem 26rem at 10% 88%,
+      color-mix(in srgb, var(--color-electric-500) 20%, transparent),
+      transparent 72%
+    ),
+    radial-gradient(
+      34rem 24rem at 92% 18%,
+      color-mix(in srgb, var(--color-auric-400) 18%, transparent),
+      transparent 70%
+    ),
+    linear-gradient(145deg, rgba(255, 255, 255, 0.02), rgba(255, 255, 255, 0));
+  opacity: 0.85;
+}
+
 .auth-glow-outer {
   background: linear-gradient(
     135deg,

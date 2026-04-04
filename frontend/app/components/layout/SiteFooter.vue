@@ -36,7 +36,6 @@ function handleSubscribe() {
   >
     <UContainer class="py-12">
       <div class="flex flex-col items-start justify-between gap-10 lg:flex-row lg:items-center">
-        <!-- Left: Newsletter -->
         <div class="max-w-md space-y-5">
           <div class="space-y-2">
             <p class="text-[0.68rem] tracking-[0.34em] text-secondary uppercase">
@@ -95,27 +94,6 @@ function handleSubscribe() {
           >
             {{ subscriptionError }}
           </p>
-        </div>
-
-        <!-- Right: Social Links -->
-        <div class="text-sm">
-          <p class="mb-3 text-[0.65rem] tracking-[0.2em] text-dimmed uppercase">
-            Redes
-          </p>
-          <ul class="flex flex-wrap gap-x-6 gap-y-2 text-toned">
-            <li>
-              <a class="rounded-sm transition hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/45" href="https://instagram.com">Instagram</a>
-            </li>
-            <li>
-              <a class="rounded-sm transition hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/45" href="https://x.com">X</a>
-            </li>
-            <li>
-              <a class="rounded-sm transition hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/45" href="https://youtube.com">YouTube</a>
-            </li>
-            <li>
-              <a class="rounded-sm transition hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/45" href="https://spotify.com">Spotify</a>
-            </li>
-          </ul>
         </div>
       </div>
 
