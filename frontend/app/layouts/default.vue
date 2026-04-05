@@ -1,17 +1,17 @@
 <template>
   <div class="vtx-page min-h-screen text-default">
-    <BackgroundsBackgroundBase />
-    <BackgroundsBackgroundSpectrum />
-    <BackgroundsTexturedBackdrop />
+    <BackgroundBase />
+    <BackgroundSpectrum />
+    <BackgroundTexture />
 
     <div class="relative z-10">
-      <LayoutSiteHeader />
+      <LayoutHeader />
 
       <main class="pb-6">
         <slot />
       </main>
 
-      <LayoutSiteFooter />
+      <LayoutFooter />
     </div>
   </div>
 </template>

@@ -28,8 +28,8 @@ const steps = [
 </script>
 
 <template>
-  <SharedBaseSection id="como-funciona">
-    <SharedSectionHeading
+  <UiSectionContainer id="como-funciona">
+    <UiSectionHeading
       eyebrow="Flujo ritual"
       title="Del hallazgo al escenario"
       description="Un recorrido redisenado para mantener orientacion, contraste y velocidad en cada paso."
@@ -71,7 +71,7 @@ const steps = [
         </div>
       </article>
     </div>
-  </SharedBaseSection>
+  </UiSectionContainer>
 </template>
 
 <style scoped>

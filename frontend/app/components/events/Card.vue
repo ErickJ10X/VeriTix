@@ -75,9 +75,9 @@ const eventLocation = computed(() => {
         </div>
 
         <div class="mt-auto flex flex-wrap items-center justify-between gap-3 border-t border-white/10 pt-4 transition-colors duration-300 group-hover:border-white/15">
-          <SharedEventPriceChip :money="event.price" />
+          <EventsPriceChip :money="event.price" />
 
-          <SharedCTAButton
+          <BaseCtaButton
             href="#footer"
             label="Reservar"
             tone="primary"

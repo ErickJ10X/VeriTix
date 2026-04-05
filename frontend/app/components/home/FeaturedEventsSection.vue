@@ -7,8 +7,8 @@ const featuredEvents = computed(() => {
 </script>
 
 <template>
-  <SharedBaseSection id="eventos">
-    <SharedSectionHeading
+  <UiSectionContainer id="eventos">
+    <UiSectionHeading
       eyebrow="Cartel"
       title="Eventos destacados"
       description="Seleccion curada de conciertos con disponibilidad en tiempo real y jerarquia visual clara para decidir rapido."
@@ -27,11 +27,11 @@ const featuredEvents = computed(() => {
 
     <template v-else>
       <div class="mt-8 md:hidden">
-        <EventsEventCarousel :events="featuredEvents" />
+        <EventsCarousel :events="featuredEvents" />
       </div>
 
       <div class="mt-8 hidden grid-cols-2 gap-6 md:grid lg:grid-cols-3">
-        <EventsEventCard
+        <EventsCard
           v-for="event in featuredEvents"
           :key="event.id"
           :event="event"
@@ -45,5 +45,5 @@ const featuredEvents = computed(() => {
         No encontramos conciertos para tu busqueda actual.
       </p>
     </template>
-  </SharedBaseSection>
+  </UiSectionContainer>
 </template>

@@ -8,7 +8,7 @@ function onSearch() {
 </script>
 
 <template>
-  <SharedBaseSection id="hero">
+  <UiSectionContainer id="hero">
     <div class="relative grid items-center gap-10 lg:grid-cols-2 lg:gap-16">
       <div class="pointer-events-none absolute -left-6 top-6 hidden h-24 w-24 rotate-45 border border-secondary/35 lg:block" />
 
@@ -91,10 +91,10 @@ function onSearch() {
       </div>
 
       <div class="animate-hero-reveal">
-        <SharedPsychedelicOrb />
+        <HomePsychedelicOrb />
       </div>
     </div>
-  </SharedBaseSection>
+  </UiSectionContainer>
 </template>
 
 <style scoped>

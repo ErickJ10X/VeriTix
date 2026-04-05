@@ -18,7 +18,7 @@ defineProps<{
       }"
     >
       <template #default="{ item }">
-        <EventsEventCard :event="item" />
+        <EventsCard :event="item" />
       </template>
     </UCarousel>
   </div>
