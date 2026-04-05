@@ -197,7 +197,7 @@ async function clearFilters() {
             </div>
 
             <div v-if="status === 'pending'" class="grid gap-5 md:grid-cols-2 2xl:grid-cols-3">
-              <USkeleton v-for="index in 6" :key="index" class="h-[29rem] rounded-3xl" />
+              <USkeleton v-for="index in 6" :key="index" class="h-116 rounded-3xl" />
             </div>
 
             <div v-else-if="events.length === 0" class="rounded-3xl border border-default/65 bg-default/8 px-6 py-14 text-center">

@@ -638,7 +638,6 @@ onMounted(() => {
             </li>
           </ul>
         </section>
-
       </div>
     </template>
   </UsersSettingsShell>

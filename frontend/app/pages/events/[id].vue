@@ -46,7 +46,7 @@ const genreLabels = computed(() => {
     <UContainer>
       <div v-if="status === 'pending'" class="space-y-6">
         <USkeleton class="h-16 rounded-2xl" />
-        <USkeleton class="h-[30rem] rounded-3xl" />
+        <USkeleton class="h-120 rounded-3xl" />
       </div>
 
       <div v-else-if="!event" class="rounded-3xl border border-default/65 bg-default/8 px-6 py-16 text-center">
@@ -66,7 +66,7 @@ const genreLabels = computed(() => {
             <NuxtImg
               :src="event.imageUrl ?? undefined"
               :alt="`Imagen de ${event.name}`"
-              class="min-h-[22rem] w-full rounded-[1.05rem] object-cover lg:min-h-[34rem]"
+              class="min-h-88 w-full rounded-[1.05rem] object-cover lg:min-h-136"
               width="1200"
               height="1600"
               sizes="(max-width: 1023px) 100vw, 58vw"
