@@ -1,9 +1,12 @@
 type HttpMethod = 'GET' | 'POST' | 'PATCH' | 'PUT' | 'DELETE'
 
+type ApiQueryValue = string | number | boolean | undefined
+
 interface ApiRequestOptions<TBody = unknown> {
   method?: HttpMethod
   body?: TBody
   headers?: HeadersInit
+  query?: Record<string, ApiQueryValue>
 }
 
 export function useApiRequest() {
@@ -19,6 +22,7 @@ export function useApiRequest() {
       method: options.method,
       body: options.body,
       headers: options.headers,
+      query: options.query,
       credentials: 'include',
     })
 
