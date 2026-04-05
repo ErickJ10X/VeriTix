@@ -52,7 +52,7 @@ export function useEvents(params?: MaybeRef<Partial<SearchParams> | undefined>) 
         return toSafeDate(a.dateISO) - toSafeDate(b.dateISO)
       })
 
-      return Promise.resolve(filterEvents(ordered, normalizedParams.value))
+      return filterEvents(ordered, normalizedParams.value)
     },
     {
       default: () => [],

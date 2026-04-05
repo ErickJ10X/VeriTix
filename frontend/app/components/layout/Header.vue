@@ -53,7 +53,7 @@ const isEventsRoute = computed(() => {
                 to="/login"
                 class="vtx-auth-link vtx-auth-link--ghost"
               >
-                Iniciar sesion
+                Iniciar sesión
               </NuxtLink>
 
               <NuxtLink

@@ -9,7 +9,6 @@ const props = defineProps<{
 const eventDate = computed(() => {
   return formatEventDate(props.event.dateISO)
 })
-
 </script>
 
 <template>

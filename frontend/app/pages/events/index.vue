@@ -1,18 +1,22 @@
 <script setup lang="ts">
 const route = useRoute()
 
+function readQueryValue(value: unknown): string {
+  return typeof value === 'string' ? value : ''
+}
+
 useSeoMeta({
   title: 'Eventos | VeriTix',
-  description: 'Explora conciertos y experiencias en vivo con filtros por genero y ciudad.',
+  description: 'Explora conciertos y experiencias en vivo con filtros por género y ciudad.',
 })
 
-const searchDraft = ref(typeof route.query.search === 'string' ? route.query.search : '')
+const searchDraft = ref(readQueryValue(route.query.search))
 
 const filters = computed(() => {
   return {
-    search: typeof route.query.search === 'string' ? route.query.search : '',
-    genreId: typeof route.query.genreId === 'string' ? route.query.genreId : '',
-    city: typeof route.query.city === 'string' ? route.query.city : '',
+    search: readQueryValue(route.query.search),
+    genreId: readQueryValue(route.query.genreId),
+    city: readQueryValue(route.query.city),
   }
 })
 
@@ -90,7 +94,7 @@ async function clearFilters() {
                 Eventos en vivo
               </h1>
               <p class="mt-3 max-w-2xl text-sm leading-relaxed text-toned sm:text-base">
-                Filtra por ciudad, genero o busqueda directa.
+                Filtra por ciudad, género o búsqueda directa.
               </p>
             </div>
 
@@ -118,7 +122,7 @@ async function clearFilters() {
             <section class="space-y-4">
               <div class="flex items-center justify-between gap-3">
                 <h2 class="text-sm font-semibold tracking-[0.16em] text-highlighted uppercase">
-                  Generos
+                  Géneros
                 </h2>
 
                 <UButton
@@ -158,7 +162,7 @@ async function clearFilters() {
 
             <section class="space-y-4">
               <h2 class="text-sm font-semibold tracking-[0.16em] text-highlighted uppercase">
-                Ubicacion
+                Ubicación
               </h2>
 
               <div class="flex flex-wrap gap-2">

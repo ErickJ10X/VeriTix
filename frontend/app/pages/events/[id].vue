@@ -118,7 +118,7 @@ const genreLabels = computed(() => {
 
               <div class="space-y-2 sm:col-span-2">
                 <p class="text-[0.68rem] font-semibold tracking-[0.2em] text-dimmed uppercase">
-                  Ubicacion
+                  Ubicación
                 </p>
                 <p class="text-base font-semibold text-highlighted">
                   {{ eventLocation }}
