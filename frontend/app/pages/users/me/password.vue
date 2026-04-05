@@ -72,17 +72,18 @@ async function onSubmit() {
     description="Actualiza tu contrasena desde una zona protegida, revisa las reglas clave antes de enviar y manton el acceso de tu cuenta bajo control."
     action-to="/users/me"
     action-label="Volver al perfil"
+    tone="minimal"
   >
     <template #hero>
-      <div class="flex flex-wrap gap-3">
-        <span
+      <div class="flex flex-wrap gap-x-6 gap-y-3">
+        <p
           v-for="rule in passwordRules"
           :key="rule"
-          class="inline-flex items-center gap-2 rounded-full border border-default/70 bg-default/10 px-4 py-2 text-xs font-medium tracking-[0.04em] text-toned"
+          class="inline-flex items-center gap-2 text-xs font-medium tracking-[0.08em] text-toned"
         >
-          <UIcon name="i-lucide-check" class="size-3.5 text-primary" />
+          <span class="size-1.5 rounded-full bg-primary/70" />
           {{ rule }}
-        </span>
+        </p>
       </div>
     </template>
 
@@ -266,7 +267,7 @@ async function onSubmit() {
 
     <template #aside>
       <div class="space-y-8">
-        <section class="space-y-4 border-b border-default/55 pb-8">
+        <section class="space-y-4 border-b border-default/40 pb-8">
           <div>
             <p class="text-[0.68rem] font-semibold tracking-[0.24em] text-dimmed uppercase">
               Buenas practicas
@@ -300,7 +301,7 @@ async function onSubmit() {
             </p>
           </div>
 
-          <div class="border-l-2 border-default/65 pl-4">
+          <div class="border-l border-default/45 pl-4">
             <p class="text-sm font-semibold text-highlighted">
               Consejo rapido
             </p>

@@ -192,9 +192,10 @@ onMounted(() => {
     description="Consulta tu identidad de cuenta, actualiza datos de contacto y revisa de un vistazo el estado general de tu perfil dentro de VeriTix."
     action-to="/users/me/password"
     action-label="Ir a seguridad"
+    tone="vivid"
   >
     <template #hero>
-      <div v-if="!initialized" class="grid gap-3 md:grid-cols-3">
+      <div v-if="!initialized" class="grid gap-4 md:grid-cols-3">
         <USkeleton class="h-24 rounded-2xl" />
         <USkeleton class="h-24 rounded-2xl" />
         <USkeleton class="h-24 rounded-2xl" />
@@ -204,7 +205,7 @@ onMounted(() => {
         <article
           v-for="metric in profileMetrics"
           :key="metric.label"
-          class="border-l-2 border-default/65 pl-4"
+          class="vtx-profile-metric"
         >
           <p class="text-[0.68rem] font-semibold tracking-[0.22em] text-dimmed uppercase">
             {{ metric.label }}
@@ -216,7 +217,7 @@ onMounted(() => {
       </div>
     </template>
 
-    <section class="space-y-6">
+    <section class="space-y-8">
       <div class="grid gap-4 border-b border-default/55 pb-6 lg:grid-cols-[minmax(0,1fr)_auto] lg:items-end">
         <div>
           <p class="text-[0.68rem] font-semibold tracking-[0.26em] text-dimmed uppercase">
@@ -235,7 +236,7 @@ onMounted(() => {
         </p>
       </div>
 
-      <div v-if="!initialized" class="space-y-3">
+      <div v-if="!initialized" class="space-y-4">
         <USkeleton class="h-11 rounded-2xl" />
         <USkeleton class="h-11 rounded-2xl" />
         <USkeleton class="h-11 rounded-2xl" />
@@ -378,9 +379,9 @@ onMounted(() => {
 
     <template #aside>
       <div class="space-y-8">
-        <section class="space-y-5 border-b border-default/55 pb-8">
+        <section class="vtx-profile-presence space-y-5 border-b border-default/55 pb-8">
           <div class="flex items-center gap-4">
-            <div class="flex size-16 shrink-0 items-center justify-center rounded-2xl border border-auric-300/35 bg-auric-400/10 text-lg font-semibold text-auric-100 shadow-[0_16px_32px_-24px_rgba(239,170,71,0.8)]">
+            <div class="vtx-profile-avatar flex size-16 shrink-0 items-center justify-center rounded-2xl text-lg font-semibold text-auric-100">
               {{ profileInitials }}
             </div>
 
@@ -398,7 +399,7 @@ onMounted(() => {
           </div>
 
           <div class="grid gap-3 sm:grid-cols-2 xl:grid-cols-1">
-            <div class="border-l-2 border-default/65 pl-4">
+            <div class="vtx-profile-signal">
               <p class="text-[0.68rem] font-semibold tracking-[0.22em] text-dimmed uppercase">
                 Avatar
               </p>
@@ -407,7 +408,7 @@ onMounted(() => {
               </p>
             </div>
 
-            <div class="border-l-2 border-default/65 pl-4">
+            <div class="vtx-profile-signal">
               <p class="text-[0.68rem] font-semibold tracking-[0.22em] text-dimmed uppercase">
                 Contacto
               </p>
@@ -418,7 +419,7 @@ onMounted(() => {
           </div>
         </section>
 
-        <section v-if="roleView" class="space-y-4 border-b border-default/55 pb-8">
+        <section v-if="roleView" class="vtx-profile-role space-y-4 border-b border-default/55 pb-8">
           <div>
             <p class="text-[0.68rem] font-semibold tracking-[0.24em] text-primary uppercase">
               Perfil dinamico por rol
@@ -468,3 +469,67 @@ onMounted(() => {
     </template>
   </UsersSettingsShell>
 </template>
+
+<style scoped>
+@reference "tailwindcss";
+
+.vtx-profile-metric {
+  @apply relative overflow-hidden rounded-2xl px-4 py-4;
+  border: 1px solid rgb(145 161 190 / 0.18);
+  background:
+    linear-gradient(145deg, rgb(255 255 255 / 0.06), rgb(255 255 255 / 0.01)),
+    linear-gradient(120deg, rgb(11 17 31 / 0.46), rgb(16 23 40 / 0.26));
+}
+
+.vtx-profile-metric::before {
+  @apply absolute inset-x-4 top-0 h-px;
+  content: '';
+  background: linear-gradient(
+    90deg,
+    rgb(239 170 71 / 0),
+    rgb(239 170 71 / 0.65),
+    rgb(44 189 230 / 0.65),
+    rgb(239 170 71 / 0)
+  );
+}
+
+.vtx-profile-presence {
+  position: relative;
+}
+
+.vtx-profile-presence::before {
+  @apply absolute -left-2 top-0 hidden h-28 w-28 rounded-full blur-3xl lg:block;
+  content: '';
+  background: radial-gradient(circle at center, rgb(239 170 71 / 0.16), rgb(255 255 255 / 0));
+}
+
+.vtx-profile-avatar {
+  border: 1px solid rgb(239 170 71 / 0.45);
+  background:
+    radial-gradient(circle at 30% 30%, rgb(255 255 255 / 0.86), rgb(255 255 255 / 0) 38%),
+    linear-gradient(135deg, rgb(239 170 71 / 0.4), rgb(44 189 230 / 0.4), rgb(240 100 127 / 0.28));
+  box-shadow:
+    0 0 0 1px rgb(255 255 255 / 0.04),
+    0 18px 34px -24px rgb(239 170 71 / 0.8);
+}
+
+.vtx-profile-signal {
+  @apply relative pl-4;
+}
+
+.vtx-profile-signal::before {
+  @apply absolute bottom-0 left-0 top-0 w-0.5 rounded-full;
+  content: '';
+  background: linear-gradient(180deg, rgb(239 170 71 / 0.9), rgb(44 189 230 / 0.8));
+}
+
+.vtx-profile-role {
+  position: relative;
+}
+
+.vtx-profile-role::after {
+  @apply absolute right-0 top-0 hidden h-20 w-20 rounded-full blur-2xl lg:block;
+  content: '';
+  background: radial-gradient(circle at center, rgb(44 189 230 / 0.14), rgb(255 255 255 / 0));
+}
+</style>
