@@ -131,6 +131,7 @@ export function useAuth() {
     accessToken,
     user,
     pending,
+    hydrated,
     isAuthenticated,
     register,
     login,

@@ -1,5 +1,13 @@
 <script setup lang="ts">
-const { isAuthenticated } = useAuth()
+const { isAuthenticated, hydrated } = useAuth()
+
+const showGuestActions = computed(() => {
+  return hydrated.value && !isAuthenticated.value
+})
+
+const showAccountAction = computed(() => {
+  return hydrated.value && isAuthenticated.value
+})
 </script>
 
 <template>
@@ -24,7 +32,7 @@ const { isAuthenticated } = useAuth()
 
         <!-- Auth buttons -->
         <div class="vtx-auth-buttons flex shrink-0 items-center gap-3">
-          <template v-if="!isAuthenticated">
+          <template v-if="showGuestActions">
             <NuxtLink
               to="/login"
               class="vtx-auth-link vtx-auth-link--ghost"
@@ -40,13 +48,20 @@ const { isAuthenticated } = useAuth()
             </NuxtLink>
           </template>
 
-          <template v-else>
+          <template v-else-if="showAccountAction">
             <NuxtLink
               to="/users/me"
               class="vtx-auth-link vtx-auth-link--primary"
             >
               Mi cuenta
             </NuxtLink>
+          </template>
+
+          <template v-else>
+            <div class="vtx-auth-skeleton" aria-hidden="true">
+              <span class="vtx-auth-skeleton-pill vtx-auth-skeleton-pill--ghost" />
+              <span class="vtx-auth-skeleton-pill vtx-auth-skeleton-pill--primary" />
+            </div>
           </template>
         </div>
       </div>
@@ -102,6 +117,28 @@ const { isAuthenticated } = useAuth()
 /* Auth buttons */
 .vtx-auth-buttons {
   gap: 0.5rem;
+}
+
+.vtx-auth-skeleton {
+  @apply inline-flex items-center gap-2;
+}
+
+.vtx-auth-skeleton-pill {
+  @apply inline-flex rounded-full;
+  height: 2rem;
+  border: 1px solid transparent;
+  background: rgb(255 255 255 / 0.05);
+}
+
+.vtx-auth-skeleton-pill--ghost {
+  width: 6.35rem;
+  border-color: rgb(170 180 205 / 0.18);
+}
+
+.vtx-auth-skeleton-pill--primary {
+  width: 6.9rem;
+  border-color: rgb(239 170 71 / 0.24);
+  background: rgb(239 170 71 / 0.12);
 }
 
 .vtx-auth-link {

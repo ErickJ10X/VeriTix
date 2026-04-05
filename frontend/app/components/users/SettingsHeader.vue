@@ -14,13 +14,17 @@ const navigationItems = [
   },
   {
     label: 'Seguridad',
-    to: '/users/me/password',
+    to: '/users/me#seguridad',
     icon: 'i-lucide-shield-check',
   },
 ] as const
 
 function isActive(path: string) {
-  return route.path === path
+  if (path === '/users/me#seguridad') {
+    return route.path === '/users/me' && route.hash === '#seguridad'
+  }
+
+  return route.path === path && !route.hash
 }
 </script>
 

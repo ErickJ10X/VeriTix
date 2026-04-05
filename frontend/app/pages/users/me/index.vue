@@ -7,29 +7,56 @@ definePageMeta({
 })
 
 useSeoMeta({
-  title: 'Mi perfil | VeriTix',
-  description: 'Gestiona la informacion principal de tu cuenta de VeriTix.',
+  title: 'Ajustes de cuenta | VeriTix',
+  description: 'Perfil, contacto y seguridad en una sola vista dentro de VeriTix.',
 })
 
-const schema = z.object({
+const profileSchema = z.object({
   name: z.string().min(1, 'El nombre es obligatorio'),
   lastName: z.string().min(1, 'El apellido es obligatorio'),
   phone: z.string().regex(/^\+[1-9]\d{7,14}$/, 'El telefono debe estar en formato E.164 (ej: +34958123456)').or(z.literal('')),
   avatarUrl: z.string().url('Introduce una URL valida').or(z.literal('')),
 })
 
-const state = reactive({
+const passwordSchema = z.object({
+  currentPassword: z.string().min(1, 'La contrasena actual es obligatoria'),
+  newPassword: z.string().min(8, 'La nueva contrasena debe tener al menos 8 caracteres').regex(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).+$/, 'Debe incluir mayuscula, minuscula y numero'),
+  confirmPassword: z.string().min(1, 'Confirma la nueva contrasena'),
+}).refine(data => data.newPassword === data.confirmPassword, {
+  message: 'Las contrasenas no coinciden',
+  path: ['confirmPassword'],
+}).refine(data => data.currentPassword !== data.newPassword, {
+  message: 'La nueva contrasena debe ser distinta a la actual',
+  path: ['newPassword'],
+})
+
+const profileState = reactive({
   name: '',
   lastName: '',
   phone: '',
   avatarUrl: '',
 })
 
-const errorMessage = ref('')
-const successMessage = ref('')
-const initialized = ref(false)
+const passwordState = reactive({
+  currentPassword: '',
+  newPassword: '',
+  confirmPassword: '',
+})
 
-const { user, pending, fetchProfile, updateProfile } = useProfile()
+const profileErrorMessage = ref('')
+const profileSuccessMessage = ref('')
+const securityErrorMessage = ref('')
+const securitySuccessMessage = ref('')
+const initialized = ref(false)
+const profileSubmitting = ref(false)
+const passwordSubmitting = ref(false)
+const showCurrentPassword = ref(false)
+const showNewPassword = ref(false)
+const showConfirmPassword = ref(false)
+
+const passwordRules = ['8+ caracteres', '1 mayuscula', '1 numero', 'Clave nueva'] as const
+
+const { user, fetchProfile, updateProfile, changePassword } = useProfile()
 const { getApiErrorMessage } = useApiErrorMessage()
 
 const roleLabels: Record<UserRole, string> = {
@@ -39,41 +66,37 @@ const roleLabels: Record<UserRole, string> = {
   ADMIN: 'Administrador',
 }
 
-const roleViews: Record<UserRole, { title: string, summary: string, capabilities: string[] }> = {
+const roleViews: Record<UserRole, { title: string, capabilities: string[] }> = {
   BUYER: {
-    title: 'Vista de comprador',
-    summary: 'Tu perfil se centra en compras, historial de entradas y datos de contacto para notificaciones.',
+    title: 'Acceso de comprador',
     capabilities: [
-      'Gestion de datos personales para compras y facturacion.',
-      'Acceso a tus entradas compradas y estados de uso.',
-      'Preferencias de contacto para avisos de eventos.',
+      'Datos para compras y facturacion',
+      'Historial y uso de entradas',
+      'Avisos relacionados con eventos',
     ],
   },
   CREATOR: {
-    title: 'Vista de creador',
-    summary: 'Tu perfil muestra configuracion orientada a publicacion y operacion de eventos.',
+    title: 'Acceso de creador',
     capabilities: [
-      'Datos de identidad y contacto comercial del creador.',
-      'Accesos a herramientas de gestion de eventos publicados.',
-      'Contexto para soporte operativo y configuracion avanzada.',
+      'Identidad comercial visible',
+      'Gestion de eventos publicados',
+      'Soporte operativo del perfil',
     ],
   },
   VALIDATOR: {
-    title: 'Vista de validador',
-    summary: 'Tu perfil prioriza accesos operativos para validacion y control de entradas.',
+    title: 'Acceso de validador',
     capabilities: [
-      'Datos personales para asignacion interna de operaciones.',
-      'Acceso a herramientas de escaneo y validacion de tickets.',
-      'Visibilidad de permisos de control segun asignaciones.',
+      'Asignacion operativa del perfil',
+      'Herramientas de validacion',
+      'Permisos segun operacion',
     ],
   },
   ADMIN: {
-    title: 'Vista de administrador',
-    summary: 'Tu perfil incluye controles de cuenta y visibilidad ampliada para administracion.',
+    title: 'Acceso de administrador',
     capabilities: [
-      'Gestion integral de datos personales y seguridad de la cuenta.',
-      'Acceso a paneles de administracion de usuarios y plataforma.',
-      'Visibilidad de funciones criticas de control y soporte.',
+      'Control de cuenta y seguridad',
+      'Paneles internos de gestion',
+      'Permisos ampliados de soporte',
     ],
   },
 }
@@ -95,7 +118,7 @@ const roleView = computed(() => {
 })
 
 const profileInitials = computed(() => {
-  const initials = [state.name || user.value?.name, state.lastName || user.value?.lastName]
+  const initials = [profileState.name || user.value?.name, profileState.lastName || user.value?.lastName]
     .map(value => value?.trim()?.charAt(0)?.toUpperCase() ?? '')
     .join('')
 
@@ -104,10 +127,10 @@ const profileInitials = computed(() => {
 
 const profileCompletion = computed(() => {
   const entries = [
-    state.name.trim(),
-    state.lastName.trim(),
-    state.phone.trim(),
-    state.avatarUrl.trim(),
+    profileState.name.trim(),
+    profileState.lastName.trim(),
+    profileState.phone.trim(),
+    profileState.avatarUrl.trim(),
   ]
 
   return Math.round((entries.filter(Boolean).length / entries.length) * 100)
@@ -116,17 +139,17 @@ const profileCompletion = computed(() => {
 const profileMetrics = computed(() => {
   return [
     {
-      label: 'Email principal',
+      label: 'Email',
       value: user.value?.email ?? 'Pendiente',
       tone: 'text-highlighted',
     },
     {
-      label: 'Rol activo',
+      label: 'Rol',
       value: roleLabel.value,
       tone: 'text-secondary',
     },
     {
-      label: 'Perfil completo',
+      label: 'Perfil',
       value: `${profileCompletion.value}%`,
       tone: 'text-auric-200',
     },
@@ -138,44 +161,72 @@ function applyProfileState() {
     return
   }
 
-  state.name = user.value.name
-  state.lastName = user.value.lastName
-  state.phone = user.value.phone ?? ''
-  state.avatarUrl = user.value.avatarUrl ?? ''
+  profileState.name = user.value.name
+  profileState.lastName = user.value.lastName
+  profileState.phone = user.value.phone ?? ''
+  profileState.avatarUrl = user.value.avatarUrl ?? ''
 }
 
 async function loadProfile() {
-  errorMessage.value = ''
+  profileErrorMessage.value = ''
 
   try {
     await fetchProfile()
     applyProfileState()
   }
   catch (error) {
-    errorMessage.value = getApiErrorMessage(error, 'No pudimos cargar tu perfil. Intenta de nuevo en unos instantes.')
+    profileErrorMessage.value = getApiErrorMessage(error, 'No pudimos cargar la cuenta.')
   }
   finally {
     initialized.value = true
   }
 }
 
-async function onSubmit() {
-  errorMessage.value = ''
-  successMessage.value = ''
+async function submitProfile() {
+  profileErrorMessage.value = ''
+  profileSuccessMessage.value = ''
+  profileSubmitting.value = true
 
   try {
     await updateProfile({
-      name: state.name.trim(),
-      lastName: state.lastName.trim(),
-      phone: state.phone.trim(),
-      avatarUrl: state.avatarUrl.trim() || undefined,
+      name: profileState.name.trim(),
+      lastName: profileState.lastName.trim(),
+      phone: profileState.phone.trim(),
+      avatarUrl: profileState.avatarUrl.trim() || undefined,
     })
 
     applyProfileState()
-    successMessage.value = 'Perfil actualizado correctamente.'
+    profileSuccessMessage.value = 'Perfil actualizado.'
   }
   catch (error) {
-    errorMessage.value = getApiErrorMessage(error, 'No pudimos guardar los cambios del perfil.')
+    profileErrorMessage.value = getApiErrorMessage(error, 'No pudimos guardar el perfil.')
+  }
+  finally {
+    profileSubmitting.value = false
+  }
+}
+
+async function submitPassword() {
+  securityErrorMessage.value = ''
+  securitySuccessMessage.value = ''
+  passwordSubmitting.value = true
+
+  try {
+    await changePassword({
+      currentPassword: passwordState.currentPassword,
+      newPassword: passwordState.newPassword,
+    })
+
+    passwordState.currentPassword = ''
+    passwordState.newPassword = ''
+    passwordState.confirmPassword = ''
+    securitySuccessMessage.value = 'Contrasena actualizada.'
+  }
+  catch (error) {
+    securityErrorMessage.value = getApiErrorMessage(error, 'No pudimos actualizar la contrasena.')
+  }
+  finally {
+    passwordSubmitting.value = false
   }
 }
 
@@ -188,10 +239,8 @@ onMounted(() => {
   <UsersSettingsShell
     eyebrow="Mi cuenta"
     badge="Perfil activo"
-    title="Ajusta tu identidad dentro de VeriTix"
-    description="Consulta tu identidad de cuenta, actualiza datos de contacto y revisa de un vistazo el estado general de tu perfil dentro de VeriTix."
-    action-to="/users/me/password"
-    action-label="Ir a seguridad"
+    title="Ajustes de cuenta"
+    description="Perfil, contacto y seguridad en una sola vista."
     tone="vivid"
   >
     <template #hero>
@@ -217,23 +266,20 @@ onMounted(() => {
       </div>
     </template>
 
-    <section class="space-y-8">
-      <div class="grid gap-4 border-b border-default/55 pb-6 lg:grid-cols-[minmax(0,1fr)_auto] lg:items-end">
+    <section class="space-y-10">
+      <div class="flex items-end justify-between gap-4 border-b border-default/55 pb-6">
         <div>
           <p class="text-[0.68rem] font-semibold tracking-[0.26em] text-dimmed uppercase">
-            Datos de cuenta
+            Ajustes
           </p>
           <h2 class="mt-3 text-2xl font-semibold text-highlighted sm:text-[1.9rem]">
-            Informacion principal
+            Perfil
           </h2>
-          <p class="mt-3 max-w-2xl text-sm leading-relaxed text-toned">
-            Gestiona tu informacion principal, manton tus datos al dia y deja tu cuenta lista para compras, soporte y notificaciones.
-          </p>
         </div>
 
-        <p class="text-sm text-toned lg:max-w-xs lg:text-right">
-          Revisa el estado general de tu cuenta y actualiza tus datos sin perder de vista la seguridad y el contexto de uso.
-        </p>
+        <span class="hidden text-[0.72rem] font-medium tracking-[0.14em] text-toned uppercase sm:inline-flex">
+          Cuenta · Contacto · Seguridad
+        </span>
       </div>
 
       <div v-if="!initialized" class="space-y-4">
@@ -241,48 +287,49 @@ onMounted(() => {
         <USkeleton class="h-11 rounded-2xl" />
         <USkeleton class="h-11 rounded-2xl" />
         <USkeleton class="h-11 rounded-2xl" />
+        <USkeleton class="h-11 rounded-2xl" />
       </div>
 
-      <div v-else class="space-y-6">
-        <p
-          v-if="errorMessage"
-          role="alert"
-          aria-live="polite"
-          class="rounded-2xl border border-error/40 bg-error/10 px-4 py-3 text-sm text-error"
-        >
-          {{ errorMessage }}
-        </p>
-
-        <p
-          v-if="successMessage"
-          role="status"
-          aria-live="polite"
-          class="rounded-2xl border border-success/35 bg-success/10 px-4 py-3 text-sm text-success"
-        >
-          {{ successMessage }}
-        </p>
-
+      <div v-else class="space-y-10">
         <UForm
-          :state="state"
-          :schema="schema"
+          :state="profileState"
+          :schema="profileSchema"
           :validate-on="[]"
           class="space-y-8"
-          @submit="onSubmit"
+          @submit="submitProfile"
         >
+          <p
+            v-if="profileErrorMessage"
+            role="alert"
+            aria-live="polite"
+            class="rounded-2xl border border-error/40 bg-error/10 px-4 py-3 text-sm text-error"
+          >
+            {{ profileErrorMessage }}
+          </p>
+
+          <p
+            v-if="profileSuccessMessage"
+            role="status"
+            aria-live="polite"
+            class="rounded-2xl border border-success/35 bg-success/10 px-4 py-3 text-sm text-success"
+          >
+            {{ profileSuccessMessage }}
+          </p>
+
           <section class="space-y-5 border-b border-default/55 pb-8">
-            <div>
-              <p class="text-[0.68rem] font-semibold tracking-[0.22em] text-dimmed uppercase">
+            <div class="flex items-center justify-between gap-3">
+              <h3 class="text-lg font-semibold text-highlighted">
                 Identidad
-              </p>
-              <p class="mt-2 text-sm text-toned">
-                Actualiza el nombre que acompana tu cuenta en compras, validaciones y comunicaciones.
-              </p>
+              </h3>
+              <UBadge color="neutral" variant="soft">
+                {{ roleLabel }}
+              </UBadge>
             </div>
 
             <div class="grid gap-5 sm:grid-cols-2">
               <UFormField name="name" label="Nombre" required>
                 <UInput
-                  v-model="state.name"
+                  v-model="profileState.name"
                   placeholder="Nombre"
                   icon="i-lucide-user"
                   color="neutral"
@@ -295,7 +342,7 @@ onMounted(() => {
 
               <UFormField name="lastName" label="Apellido" required>
                 <UInput
-                  v-model="state.lastName"
+                  v-model="profileState.lastName"
                   placeholder="Apellido"
                   icon="i-lucide-user-round"
                   color="neutral"
@@ -309,23 +356,18 @@ onMounted(() => {
           </section>
 
           <section class="space-y-5 border-b border-default/55 pb-8">
-            <div>
-              <p class="text-[0.68rem] font-semibold tracking-[0.22em] text-dimmed uppercase">
-                Contacto y presencia
-              </p>
-              <p class="mt-2 text-sm text-toned">
-                Estos datos te ayudan a mantener avisos, soporte y visibilidad de perfil bajo control. El telefono puede dejarse vacio si aun no quieres configurarlo.
-              </p>
-            </div>
+            <h3 class="text-lg font-semibold text-highlighted">
+              Contacto
+            </h3>
 
             <div class="grid gap-5">
               <UFormField
                 name="phone"
                 label="Telefono"
-                help="Opcional. Si lo completas, usa formato internacional E.164. Ejemplo: +34958123456"
+                help="Opcional · formato E.164"
               >
                 <UInput
-                  v-model="state.phone"
+                  v-model="profileState.phone"
                   type="tel"
                   placeholder="+34958123456"
                   icon="i-lucide-phone"
@@ -340,10 +382,10 @@ onMounted(() => {
               <UFormField
                 name="avatarUrl"
                 label="Avatar URL"
-                help="Opcional. Puedes dejarlo vacio si no quieres avatar."
+                help="Opcional"
               >
                 <UInput
-                  v-model="state.avatarUrl"
+                  v-model="profileState.avatarUrl"
                   type="url"
                   placeholder="https://..."
                   icon="i-lucide-image"
@@ -358,9 +400,9 @@ onMounted(() => {
           </section>
 
           <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-            <p class="text-sm text-toned">
-              Mantener estos datos al dia mejora notificaciones, compras y soporte operativo.
-            </p>
+            <span class="text-sm text-toned">
+              Datos visibles y de contacto.
+            </span>
 
             <UButton
               type="submit"
@@ -368,12 +410,169 @@ onMounted(() => {
               variant="solid"
               size="lg"
               class="rounded-full px-6"
-              :loading="pending"
+              :loading="profileSubmitting"
             >
-              Guardar cambios
+              Guardar perfil
             </UButton>
           </div>
         </UForm>
+
+        <section id="seguridad" class="scroll-mt-28 space-y-6 border-t border-default/55 pt-8">
+          <div class="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+            <div>
+              <p class="text-[0.68rem] font-semibold tracking-[0.24em] text-dimmed uppercase">
+                Seguridad
+              </p>
+              <h3 class="mt-3 text-2xl font-semibold text-highlighted">
+                Cambiar contrasena
+              </h3>
+            </div>
+
+            <div class="flex flex-wrap gap-2">
+              <span
+                v-for="rule in passwordRules"
+                :key="rule"
+                class="inline-flex items-center rounded-full border border-default/60 bg-default/8 px-3 py-1.5 text-[0.68rem] font-semibold tracking-[0.12em] text-toned uppercase"
+              >
+                {{ rule }}
+              </span>
+            </div>
+          </div>
+
+          <UForm
+            :state="passwordState"
+            :schema="passwordSchema"
+            :validate-on="[]"
+            class="space-y-6"
+            @submit="submitPassword"
+          >
+            <p
+              v-if="securityErrorMessage"
+              role="alert"
+              aria-live="polite"
+              class="rounded-2xl border border-error/40 bg-error/10 px-4 py-3 text-sm text-error"
+            >
+              {{ securityErrorMessage }}
+            </p>
+
+            <p
+              v-if="securitySuccessMessage"
+              role="status"
+              aria-live="polite"
+              class="rounded-2xl border border-success/35 bg-success/10 px-4 py-3 text-sm text-success"
+            >
+              {{ securitySuccessMessage }}
+            </p>
+
+            <UFormField name="currentPassword" label="Contrasena actual" required>
+              <UInput
+                v-model="passwordState.currentPassword"
+                :type="showCurrentPassword ? 'text' : 'password'"
+                placeholder="Contrasena actual"
+                icon="i-lucide-lock"
+                color="neutral"
+                variant="subtle"
+                size="lg"
+                class="w-full"
+                :ui="{ base: 'h-12' }"
+              >
+                <template #trailing>
+                  <button
+                    type="button"
+                    :aria-label="showCurrentPassword ? 'Ocultar contrasena actual' : 'Mostrar contrasena actual'"
+                    class="rounded-md p-0.5 text-muted transition-colors duration-200 hover:text-auric-300"
+                    @click="showCurrentPassword = !showCurrentPassword"
+                  >
+                    <UIcon
+                      :name="showCurrentPassword ? 'i-lucide-eye-off' : 'i-lucide-eye'"
+                      class="size-5"
+                    />
+                  </button>
+                </template>
+              </UInput>
+            </UFormField>
+
+            <div class="grid gap-5 lg:grid-cols-2">
+              <UFormField
+                name="newPassword"
+                label="Nueva contrasena"
+                help="8+ caracteres · mayuscula · minuscula · numero"
+                required
+              >
+                <UInput
+                  v-model="passwordState.newPassword"
+                  :type="showNewPassword ? 'text' : 'password'"
+                  placeholder="Nueva contrasena"
+                  icon="i-lucide-shield"
+                  color="neutral"
+                  variant="subtle"
+                  size="lg"
+                  class="w-full"
+                  :ui="{ base: 'h-12' }"
+                >
+                  <template #trailing>
+                    <button
+                      type="button"
+                      :aria-label="showNewPassword ? 'Ocultar nueva contrasena' : 'Mostrar nueva contrasena'"
+                      class="rounded-md p-0.5 text-muted transition-colors duration-200 hover:text-auric-300"
+                      @click="showNewPassword = !showNewPassword"
+                    >
+                      <UIcon
+                        :name="showNewPassword ? 'i-lucide-eye-off' : 'i-lucide-eye'"
+                        class="size-5"
+                      />
+                    </button>
+                  </template>
+                </UInput>
+              </UFormField>
+
+              <UFormField name="confirmPassword" label="Confirmar contrasena" required>
+                <UInput
+                  v-model="passwordState.confirmPassword"
+                  :type="showConfirmPassword ? 'text' : 'password'"
+                  placeholder="Confirmar contrasena"
+                  icon="i-lucide-check-check"
+                  color="neutral"
+                  variant="subtle"
+                  size="lg"
+                  class="w-full"
+                  :ui="{ base: 'h-12' }"
+                >
+                  <template #trailing>
+                    <button
+                      type="button"
+                      :aria-label="showConfirmPassword ? 'Ocultar confirmacion de contrasena' : 'Mostrar confirmacion de contrasena'"
+                      class="rounded-md p-0.5 text-muted transition-colors duration-200 hover:text-auric-300"
+                      @click="showConfirmPassword = !showConfirmPassword"
+                    >
+                      <UIcon
+                        :name="showConfirmPassword ? 'i-lucide-eye-off' : 'i-lucide-eye'"
+                        class="size-5"
+                      />
+                    </button>
+                  </template>
+                </UInput>
+              </UFormField>
+            </div>
+
+            <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+              <span class="text-sm text-toned">
+                Acceso y proteccion de la cuenta.
+              </span>
+
+              <UButton
+                type="submit"
+                color="primary"
+                variant="solid"
+                size="lg"
+                class="rounded-full px-6"
+                :loading="passwordSubmitting"
+              >
+                Actualizar contrasena
+              </UButton>
+            </div>
+          </UForm>
+        </section>
       </div>
     </section>
 
@@ -390,7 +589,7 @@ onMounted(() => {
                 Identidad visible
               </p>
               <p class="mt-2 text-lg font-semibold text-highlighted">
-                {{ state.name || user?.name }} {{ state.lastName || user?.lastName }}
+                {{ profileState.name || user?.name }} {{ profileState.lastName || user?.lastName }}
               </p>
               <p class="mt-1 text-sm text-toned">
                 {{ user?.email }}
@@ -404,16 +603,16 @@ onMounted(() => {
                 Avatar
               </p>
               <p class="mt-2 text-sm font-semibold text-highlighted">
-                {{ state.avatarUrl.trim() ? 'Configurado' : 'Sin personalizar' }}
+                {{ profileState.avatarUrl.trim() ? 'Configurado' : 'Sin personalizar' }}
               </p>
             </div>
 
             <div class="vtx-profile-signal">
               <p class="text-[0.68rem] font-semibold tracking-[0.22em] text-dimmed uppercase">
-                Contacto
+                Telefono
               </p>
               <p class="mt-2 text-sm font-semibold text-highlighted">
-                {{ state.phone || 'Pendiente de completar' }}
+                {{ profileState.phone || 'Pendiente' }}
               </p>
             </div>
           </div>
@@ -422,13 +621,7 @@ onMounted(() => {
         <section v-if="roleView" class="vtx-profile-role space-y-4 border-b border-default/55 pb-8">
           <div>
             <p class="text-[0.68rem] font-semibold tracking-[0.24em] text-primary uppercase">
-              Perfil dinamico por rol
-            </p>
-            <h2 class="mt-2 text-xl font-semibold text-highlighted">
               {{ roleView.title }}
-            </h2>
-            <p class="mt-2 text-sm leading-relaxed text-toned">
-              {{ roleView.summary }}
             </p>
           </div>
 
@@ -446,25 +639,6 @@ onMounted(() => {
           </ul>
         </section>
 
-        <section class="space-y-4">
-          <div>
-            <p class="text-[0.68rem] font-semibold tracking-[0.24em] text-dimmed uppercase">
-              Acciones rapidas
-            </p>
-            <p class="mt-2 text-sm leading-relaxed text-toned">
-              Accede rapido a los movimientos mas comunes de tu cuenta sin perder tiempo navegando entre pantallas.
-            </p>
-          </div>
-
-          <div class="flex flex-col gap-3">
-            <UButton to="/users/me/password" color="primary" variant="outline" size="lg" class="justify-center rounded-full">
-              Revisar seguridad
-            </UButton>
-            <UButton to="/" color="neutral" variant="ghost" size="lg" class="justify-center rounded-full">
-              Volver al inicio
-            </UButton>
-          </div>
-        </section>
       </div>
     </template>
   </UsersSettingsShell>
