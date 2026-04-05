@@ -1,0 +1,93 @@
+<script setup lang="ts">
+withDefaults(
+  defineProps<{
+    eyebrow?: string
+    title: string
+    description: string
+    badge?: string
+    actionTo?: string
+    actionLabel?: string
+  }>(),
+  {
+    eyebrow: '',
+    badge: '',
+    actionTo: '',
+    actionLabel: '',
+  },
+)
+</script>
+
+<template>
+  <section class="relative py-10 sm:py-14 lg:py-16">
+    <div class="pointer-events-none absolute inset-0 overflow-hidden">
+      <div class="absolute inset-x-0 top-0 h-56 bg-linear-to-b from-primary/12 via-transparent to-transparent" />
+      <div class="absolute -left-16 top-28 h-56 w-56 rounded-full bg-secondary/12 blur-3xl" />
+      <div class="absolute -right-20 top-10 h-72 w-72 rounded-full bg-auric-500/14 blur-3xl" />
+      <div class="absolute bottom-0 left-1/4 h-48 w-48 rounded-full bg-primary/10 blur-3xl" />
+      <div class="absolute right-[14%] top-28 hidden h-px w-36 bg-linear-to-r from-transparent via-secondary/35 to-transparent lg:block" />
+      <div class="absolute bottom-24 left-[12%] hidden h-px w-40 bg-linear-to-r from-transparent via-auric-300/35 to-transparent xl:block" />
+    </div>
+
+    <UContainer class="relative">
+      <div class="mx-auto max-w-6xl space-y-8 lg:space-y-10">
+        <header class="grid gap-8 border-b border-default/65 pb-8 lg:grid-cols-[minmax(0,1.15fr)_auto] lg:items-end">
+          <div class="space-y-5">
+            <div class="flex flex-wrap items-center gap-3">
+              <p
+                v-if="eyebrow"
+                class="text-[0.68rem] font-semibold tracking-[0.32em] text-secondary uppercase"
+              >
+                {{ eyebrow }}
+              </p>
+
+              <span
+                v-if="badge"
+                class="inline-flex items-center gap-2 rounded-full border border-auric-300/25 bg-auric-400/8 px-3 py-1 text-[0.68rem] font-semibold tracking-[0.2em] text-auric-200 uppercase"
+              >
+                <UIcon name="i-lucide-sparkles" class="size-3.5" />
+                {{ badge }}
+              </span>
+            </div>
+
+            <div class="space-y-3">
+              <h1 class="max-w-4xl font-display text-3xl leading-tight text-highlighted sm:text-4xl lg:text-[3.1rem]">
+                {{ title }}
+              </h1>
+
+              <p class="max-w-3xl text-sm leading-relaxed text-toned sm:text-base">
+                {{ description }}
+              </p>
+            </div>
+          </div>
+
+          <div class="flex items-end lg:justify-end">
+            <UButton
+              v-if="actionTo && actionLabel"
+              :to="actionTo"
+              color="neutral"
+              variant="outline"
+              size="lg"
+              class="rounded-full border-default/70 bg-default/10 px-5"
+            >
+              {{ actionLabel }}
+            </UButton>
+          </div>
+        </header>
+
+        <section v-if="$slots.hero" class="border-b border-default/55 pb-8">
+          <slot name="hero" />
+        </section>
+
+        <div class="grid gap-8 xl:grid-cols-[minmax(0,1.45fr)_minmax(280px,0.55fr)] xl:gap-10">
+          <div class="min-w-0">
+            <slot />
+          </div>
+
+          <aside v-if="$slots.aside" class="border-t border-default/55 pt-8 xl:border-t-0 xl:border-l xl:border-default/55 xl:pl-8 xl:pt-0">
+            <slot name="aside" />
+          </aside>
+        </div>
+      </div>
+    </UContainer>
+  </section>
+</template>

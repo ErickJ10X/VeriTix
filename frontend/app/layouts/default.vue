@@ -4,12 +4,12 @@
     <BackgroundSpectrum />
     <BackgroundTexture />
 
-    <div class="relative z-10">
+    <div class="relative z-10 flex min-h-screen flex-col">
       <LayoutHeader />
 
-      <main class="pb-6">
+      <UMain class="flex flex-1 flex-col pb-6">
         <slot />
-      </main>
+      </UMain>
 
       <LayoutFooter />
     </div>
