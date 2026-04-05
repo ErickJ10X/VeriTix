@@ -29,15 +29,18 @@ const eventLocation = computed(() => {
 <template>
   <article class="group relative h-full">
     <!-- Subtle glow behind the card on hover -->
-    <div class="absolute -inset-px rounded-[calc(var(--ui-radius)*1.5)] bg-nebula-400 opacity-0 blur-xl transition duration-300 group-hover:opacity-8" />
+    <div class="absolute -inset-px rounded-[1.45rem] bg-nebula-400 opacity-0 blur-xl transition duration-300 group-hover:opacity-8" />
 
-    <UCard class="relative h-full overflow-hidden bg-white/5! border-white/10! backdrop-blur-xl transition-all duration-300 group-hover:bg-white/8! group-hover:border-white/15!" :ui="{ body: 'h-full' }">
-      <div class="flex h-full flex-col space-y-4">
-        <div class="relative overflow-hidden rounded-xl border border-white/10">
+    <UCard
+      class="relative h-full overflow-hidden rounded-[1.4rem] border-white/10! bg-white/5! backdrop-blur-xl transition-all duration-300 group-hover:border-white/15! group-hover:bg-white/8!"
+      :ui="{ body: 'h-full p-3 sm:p-3.5' }"
+    >
+      <div class="flex h-full flex-col gap-4">
+        <div class="relative overflow-hidden rounded-[1rem] border border-white/10">
           <NuxtImg
             :src="event.cover"
             :alt="`Portada de ${event.artist}`"
-            class="h-56 w-full object-cover transition duration-300 group-hover:scale-105"
+            class="h-44 w-full object-cover transition duration-300 group-hover:scale-[1.02]"
             loading="lazy"
             width="600"
             height="336"
@@ -56,25 +59,25 @@ const eventLocation = computed(() => {
           </UBadge>
         </div>
 
-        <div class="flex-1 space-y-2">
-          <p class="vtx-prismatic-text text-[0.68rem] tracking-[0.24em] uppercase font-semibold">
+        <div class="flex-1 space-y-2.5 px-1 pb-1">
+          <p class="vtx-prismatic-text text-[0.68rem] font-semibold tracking-[0.24em] uppercase">
             {{ event.genre }}
           </p>
 
-          <h3 class="font-display text-2xl leading-tight text-white transition-colors duration-300 group-hover:text-auric-200 md:text-[1.7rem]">
+          <h3 class="font-display text-[1.2rem] leading-snug text-white transition-colors duration-300 group-hover:text-auric-200 md:text-[1.35rem]">
             {{ event.artist }}
           </h3>
 
-          <p class="text-sm text-toned/90">
+          <p class="text-[0.92rem] text-toned/90">
             {{ eventLocation }}
           </p>
 
-          <p class="text-sm text-default/80">
+          <p class="text-[0.92rem] text-default/80">
             {{ eventDate }}
           </p>
         </div>
 
-        <div class="mt-auto flex flex-wrap items-center justify-between gap-3 border-t border-white/10 pt-4 transition-colors duration-300 group-hover:border-white/15">
+        <div class="mt-auto flex flex-wrap items-center justify-between gap-3 border-t border-white/10 px-1 pb-1 pt-3 transition-colors duration-300 group-hover:border-white/15">
           <EventsPriceChip :money="event.price" />
 
           <BaseCtaButton

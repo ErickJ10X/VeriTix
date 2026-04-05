@@ -1,5 +1,6 @@
 <script setup lang="ts">
 const { isAuthenticated, hydrated } = useAuth()
+const route = useRoute()
 
 const showGuestActions = computed(() => {
   return hydrated.value && !isAuthenticated.value
@@ -8,12 +9,16 @@ const showGuestActions = computed(() => {
 const showAccountAction = computed(() => {
   return hydrated.value && isAuthenticated.value
 })
+
+const isEventsRoute = computed(() => {
+  return route.path.startsWith('/events')
+})
 </script>
 
 <template>
   <header class="sticky top-0 z-40 border-b border-default/45 bg-default/82 backdrop-blur-sm">
     <UContainer class="py-2.5 sm:py-3">
-      <div class="vtx-header-minimal flex items-center justify-between gap-3 px-3 py-2.5 sm:px-4">
+      <div class="vtx-header-minimal grid grid-cols-[auto_1fr_auto] items-center gap-3 px-3 py-2.5 sm:px-4">
         <NuxtLink
           to="/"
           class="flex min-w-0 items-center gap-2.5 rounded-lg pr-1.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/45"
@@ -30,39 +35,51 @@ const showAccountAction = computed(() => {
           </div>
         </NuxtLink>
 
-        <!-- Auth buttons -->
-        <div class="vtx-auth-buttons flex shrink-0 items-center gap-3">
-          <template v-if="showGuestActions">
-            <NuxtLink
-              to="/login"
-              class="vtx-auth-link vtx-auth-link--ghost"
-            >
-              Iniciar sesion
-            </NuxtLink>
+        <nav class="flex items-center justify-center px-3" aria-label="Navegacion principal">
+          <NuxtLink
+            to="/events"
+            class="vtx-nav-link"
+            :class="isEventsRoute && 'vtx-nav-link--active'"
+          >
+            Eventos
+          </NuxtLink>
+        </nav>
 
-            <NuxtLink
-              to="/register"
-              class="vtx-auth-link vtx-auth-link--primary"
-            >
-              Registrarse
-            </NuxtLink>
-          </template>
+        <div class="vtx-header-actions flex shrink-0 items-center gap-3">
+          <!-- Auth buttons -->
+          <div class="vtx-auth-buttons flex shrink-0 items-center gap-3">
+            <template v-if="showGuestActions">
+              <NuxtLink
+                to="/login"
+                class="vtx-auth-link vtx-auth-link--ghost"
+              >
+                Iniciar sesion
+              </NuxtLink>
 
-          <template v-else-if="showAccountAction">
-            <NuxtLink
-              to="/users/me"
-              class="vtx-auth-link vtx-auth-link--primary"
-            >
-              Mi cuenta
-            </NuxtLink>
-          </template>
+              <NuxtLink
+                to="/register"
+                class="vtx-auth-link vtx-auth-link--primary"
+              >
+                Registrarse
+              </NuxtLink>
+            </template>
 
-          <template v-else>
-            <div class="vtx-auth-skeleton" aria-hidden="true">
-              <span class="vtx-auth-skeleton-pill vtx-auth-skeleton-pill--ghost" />
-              <span class="vtx-auth-skeleton-pill vtx-auth-skeleton-pill--primary" />
-            </div>
-          </template>
+            <template v-else-if="showAccountAction">
+              <NuxtLink
+                to="/users/me"
+                class="vtx-auth-link vtx-auth-link--primary"
+              >
+                Mi cuenta
+              </NuxtLink>
+            </template>
+
+            <template v-else>
+              <div class="vtx-auth-skeleton" aria-hidden="true">
+                <span class="vtx-auth-skeleton-pill vtx-auth-skeleton-pill--ghost" />
+                <span class="vtx-auth-skeleton-pill vtx-auth-skeleton-pill--primary" />
+              </div>
+            </template>
+          </div>
         </div>
       </div>
     </UContainer>
@@ -117,6 +134,51 @@ const showAccountAction = computed(() => {
 /* Auth buttons */
 .vtx-auth-buttons {
   gap: 0.5rem;
+}
+
+.vtx-header-actions {
+  gap: 0.5rem;
+}
+
+.vtx-nav-link {
+  @apply inline-flex items-center justify-center no-underline focus-visible:outline-none focus-visible:ring-2;
+  min-height: 2.25rem;
+  padding: 0.25rem 0.5rem;
+  border-bottom: 1px solid transparent;
+  background: transparent;
+  color: rgb(170 180 205);
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  transition:
+    color 0.2s ease,
+    border-color 0.2s ease,
+    background-color 0.2s ease,
+    transform 0.2s ease;
+}
+
+.vtx-nav-link:hover {
+  border-bottom-color: rgb(239 170 71 / 0.28);
+  color: rgb(246 248 255);
+}
+
+.vtx-nav-link--active {
+  border-bottom-color: rgb(239 170 71 / 0.42);
+  color: rgb(248 194 103);
+}
+
+@media (max-width: 639px) {
+  .vtx-header-minimal {
+    grid-template-columns: auto auto;
+  }
+
+  .vtx-header-minimal nav {
+    order: 3;
+    grid-column: 1 / -1;
+    justify-content: center;
+    padding-top: 0.25rem;
+  }
 }
 
 .vtx-auth-skeleton {
