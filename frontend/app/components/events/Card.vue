@@ -32,7 +32,7 @@ const eventLocation = computed(() => {
     <div class="absolute -inset-px rounded-[1.45rem] bg-nebula-400 opacity-0 blur-xl transition duration-300 group-hover:opacity-8" />
 
     <UCard
-      class="relative h-full overflow-hidden rounded-[1.4rem] border-white/10! bg-white/5! backdrop-blur-xl transition-all duration-300 group-hover:border-white/15! group-hover:bg-white/8!"
+      class="relative h-full overflow-hidden rounded-[1.4rem] border-white/10! bg-white/5! backdrop-blur-xl transition-all duration-200 group-hover:border-white/15! group-hover:bg-white/8! group-hover:shadow-[0_18px_44px_-36px_rgba(239,170,71,0.22)]"
       :ui="{ body: 'h-full p-3 sm:p-3.5' }"
     >
       <div class="flex h-full flex-col gap-4">
@@ -86,6 +86,7 @@ const eventLocation = computed(() => {
             tone="primary"
             variant="outline"
             size="sm"
+            class="hover:-translate-y-0.5"
           />
         </div>
       </div>

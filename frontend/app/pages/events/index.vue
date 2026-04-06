@@ -228,15 +228,21 @@ async function clearFilters() {
 @reference "tailwindcss";
 
 .vtx-filter-chip {
-  @apply inline-flex items-center rounded-full border px-3 py-2 text-[0.72rem] font-semibold tracking-[0.08em] transition-colors duration-200;
+  @apply inline-flex cursor-pointer items-center rounded-full border px-3 py-2 text-[0.72rem] font-semibold tracking-[0.08em] transition-colors duration-150;
   border-color: rgb(145 161 190 / 0.22);
   background: rgb(255 255 255 / 0.04);
   color: var(--ui-text-toned);
+  box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.02);
 }
 
 .vtx-filter-chip:hover {
   border-color: rgb(239 170 71 / 0.35);
+  background: rgb(255 255 255 / 0.06);
   color: rgb(246 248 255);
+}
+
+.vtx-filter-chip:active {
+  transform: translateY(1px);
 }
 
 .vtx-filter-chip--active {

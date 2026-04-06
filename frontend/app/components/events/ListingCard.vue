@@ -12,7 +12,7 @@ const eventDate = computed(() => {
 </script>
 
 <template>
-  <article class="group flex h-full flex-col rounded-[1.4rem] border border-default/60 bg-[linear-gradient(180deg,rgba(255,255,255,0.05),rgba(255,255,255,0.02)),linear-gradient(145deg,rgba(11,17,31,0.78),rgba(16,23,40,0.74))] p-3 shadow-[0_18px_44px_-40px_rgba(0,0,0,0.82)] backdrop-blur-xl transition-all duration-300 hover:border-primary/22 hover:shadow-[0_20px_54px_-44px_rgba(239,170,71,0.34)] sm:p-3.5">
+  <article class="group flex h-full flex-col rounded-[1.4rem] border border-default/60 bg-[linear-gradient(180deg,rgba(255,255,255,0.05),rgba(255,255,255,0.02)),linear-gradient(145deg,rgba(11,17,31,0.78),rgba(16,23,40,0.74))] p-3 shadow-[0_18px_44px_-40px_rgba(0,0,0,0.82)] backdrop-blur-xl transition-all duration-200 hover:border-primary/22 hover:shadow-[0_20px_54px_-44px_rgba(239,170,71,0.34)] sm:p-3.5">
     <div class="relative overflow-hidden rounded-[1rem] border border-white/8">
       <NuxtImg
         :src="event.imageUrl ?? undefined"
@@ -65,7 +65,7 @@ const eventDate = computed(() => {
           color="primary"
           variant="outline"
           size="sm"
-          class="rounded-full px-3.5"
+          class="cursor-pointer rounded-full px-3.5 transition-transform duration-150 hover:-translate-y-0.5 active:translate-y-px"
         >
           Reservar
         </UButton>

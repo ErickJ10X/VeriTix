@@ -142,7 +142,7 @@ async function onSubmit() {
                     type="button"
                     :aria-label="showPassword ? 'Ocultar contrasena' : 'Mostrar contrasena'"
                     :aria-pressed="showPassword"
-                    class="rounded-md p-0.5 text-muted transition-colors duration-200 hover:text-auric-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/45"
+                    class="cursor-pointer rounded-md p-0.5 text-muted transition-colors duration-150 hover:bg-white/6 hover:text-auric-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/45"
                     @click="showPassword = !showPassword"
                   >
                     <UIcon
@@ -158,7 +158,7 @@ async function onSubmit() {
             <div class="flex justify-end -mt-2">
               <NuxtLink
                 to="/forgot-password"
-                class="rounded-sm text-sm text-auric-300 transition-colors duration-200 hover:text-auric-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/45"
+                class="cursor-pointer rounded-sm text-sm text-auric-300 transition-colors duration-150 hover:text-auric-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/45"
               >
                 ¿Olvidaste tu contrasena?
               </NuxtLink>

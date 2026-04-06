@@ -60,7 +60,7 @@ function onSearch() {
               color="primary"
               variant="outline"
               size="md"
-              class="shrink-0 rounded-full border-primary/60 px-6 text-primary transition-all duration-300 hover:-translate-y-0.5 hover:bg-primary/10 hover:text-primary"
+              class="shrink-0 cursor-pointer rounded-full border-primary/60 px-6 text-primary transition-all duration-150 hover:-translate-y-0.5 hover:bg-primary/10 hover:text-primary active:translate-y-px"
             >
               Buscar
             </UButton>
@@ -83,7 +83,7 @@ function onSearch() {
             color="secondary"
             variant="outline"
             size="sm"
-            class="rounded-full"
+            class="cursor-pointer rounded-full transition-transform duration-150 hover:-translate-y-0.5 active:translate-y-px"
           >
             Explorar géneros
           </UButton>

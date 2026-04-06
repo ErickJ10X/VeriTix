@@ -42,6 +42,7 @@ const color = computed(() => {
     :variant="variant"
     :color="color"
     :block="block"
+    class="cursor-pointer transition-transform duration-150 active:translate-y-px"
   >
     <slot>
       {{ label }}

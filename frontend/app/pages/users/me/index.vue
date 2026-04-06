@@ -480,7 +480,7 @@ onMounted(() => {
                   <button
                     type="button"
                     :aria-label="showCurrentPassword ? 'Ocultar contrasena actual' : 'Mostrar contrasena actual'"
-                    class="rounded-md p-0.5 text-muted transition-colors duration-200 hover:text-auric-300"
+                    class="cursor-pointer rounded-md p-0.5 text-muted transition-colors duration-150 hover:bg-white/6 hover:text-auric-300"
                     @click="showCurrentPassword = !showCurrentPassword"
                   >
                     <UIcon
@@ -514,7 +514,7 @@ onMounted(() => {
                     <button
                       type="button"
                       :aria-label="showNewPassword ? 'Ocultar nueva contrasena' : 'Mostrar nueva contrasena'"
-                      class="rounded-md p-0.5 text-muted transition-colors duration-200 hover:text-auric-300"
+                      class="cursor-pointer rounded-md p-0.5 text-muted transition-colors duration-150 hover:bg-white/6 hover:text-auric-300"
                       @click="showNewPassword = !showNewPassword"
                     >
                       <UIcon
@@ -542,7 +542,7 @@ onMounted(() => {
                     <button
                       type="button"
                       :aria-label="showConfirmPassword ? 'Ocultar confirmacion de contrasena' : 'Mostrar confirmacion de contrasena'"
-                      class="rounded-md p-0.5 text-muted transition-colors duration-200 hover:text-auric-300"
+                      class="cursor-pointer rounded-md p-0.5 text-muted transition-colors duration-150 hover:bg-white/6 hover:text-auric-300"
                       @click="showConfirmPassword = !showConfirmPassword"
                     >
                       <UIcon

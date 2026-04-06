@@ -18,10 +18,10 @@ const isEventsRoute = computed(() => {
 <template>
   <header class="sticky top-0 z-40 border-b border-default/45 bg-default/88">
     <UContainer class="py-2.5 sm:py-3">
-        <div class="vtx-header-minimal grid grid-cols-[auto_1fr_auto] items-center gap-3 px-3 py-2.5 sm:px-4">
+      <div class="vtx-header-minimal grid grid-cols-[auto_1fr_auto] items-center gap-3 px-3 py-2.5 sm:px-4">
         <NuxtLink
           to="/"
-          class="flex min-w-0 items-center gap-2.5 rounded-lg pr-1.5 outline-none focus-visible:shadow-[0_0_0_2px_rgb(239_170_71_/_0.45)]"
+          class="flex min-w-0 cursor-pointer items-center gap-2.5 rounded-lg pr-1.5 outline-none focus-visible:shadow-[0_0_0_2px_rgb(239_170_71/0.45)]"
         >
           <span class="vtx-header-brand-mark" aria-hidden="true" />
 
@@ -122,7 +122,7 @@ const isEventsRoute = computed(() => {
 }
 
 .vtx-nav-link {
-  @apply inline-flex items-center justify-center no-underline focus-visible:outline-none focus-visible:ring-2;
+  @apply inline-flex cursor-pointer items-center justify-center no-underline focus-visible:outline-none focus-visible:ring-2;
   min-height: 2.25rem;
   padding: 0.25rem 0.5rem;
   border-bottom: 1px solid transparent;
@@ -167,7 +167,7 @@ const isEventsRoute = computed(() => {
 }
 
 .vtx-auth-link {
-  @apply inline-flex items-center justify-center no-underline focus-visible:outline-none focus-visible:ring-2;
+  @apply inline-flex cursor-pointer items-center justify-center no-underline focus-visible:outline-none focus-visible:ring-2;
   position: relative;
   padding: 0.375rem 0.875rem;
   font-size: 0.72rem;

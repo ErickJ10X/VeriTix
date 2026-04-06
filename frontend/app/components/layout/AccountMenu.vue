@@ -98,7 +98,7 @@ const accountSubtitle = computed(() => {
 @reference "tailwindcss";
 
 .vtx-account-trigger {
-  @apply inline-flex items-center justify-center rounded-full;
+  @apply inline-flex cursor-pointer items-center justify-center rounded-full;
   padding: 0.14rem;
   border: 0;
   background: rgb(255 255 255 / 0.02);
@@ -177,7 +177,7 @@ const accountSubtitle = computed(() => {
 }
 
 .vtx-account-panel-link {
-  @apply flex items-center no-underline;
+  @apply flex cursor-pointer items-center no-underline;
   gap: 0.8rem;
   width: 100%;
   padding: 0.85rem 0.9rem;
