@@ -16,24 +16,28 @@ export function useApiRequest() {
     path: string,
     options: ApiRequestOptions<TBody> = {},
   ): Promise<TResponse> {
+    const headers = new Headers(options.headers)
+
     if (import.meta.server) {
-      return await useRequestFetch()(path, {
-        baseURL: config.public.apiBase,
-        method: options.method,
-        body: options.body,
-        headers: options.headers,
-        query: options.query,
-        credentials: 'include',
-      })
+      const requestHeaders = useRequestHeaders(['authorization', 'cookie'])
+
+      if (requestHeaders.authorization && !headers.has('authorization')) {
+        headers.set('authorization', requestHeaders.authorization)
+      }
+
+      if (requestHeaders.cookie && !headers.has('cookie')) {
+        headers.set('cookie', requestHeaders.cookie)
+      }
     }
 
-    return await $fetch<TResponse>(path, {
-      baseURL: config.public.apiBase,
+    const apiUrl = `${import.meta.server ? useRequestURL().origin : window.location.origin}${config.public.apiBase}${path}`
+
+    return await $fetch<TResponse>(apiUrl, {
       method: options.method,
       body: options.body,
-      headers: options.headers,
+      headers,
       query: options.query,
-      credentials: 'include',
+      credentials: 'include' as const,
     })
   }
 }

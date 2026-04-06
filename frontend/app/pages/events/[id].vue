@@ -73,10 +73,10 @@ const eventErrorMessage = computed(() => {
       </div>
     </div>
 
-      <div v-else-if="event" class="relative mx-auto max-w-6xl space-y-8">
-        <NuxtLink to="/events" class="inline-flex items-center gap-2 text-sm text-toned transition-colors hover:text-highlighted">
-          <UIcon name="i-lucide-arrow-left" class="size-4" />
-          Volver a eventos
+    <div v-else-if="event" class="relative mx-auto max-w-6xl space-y-8">
+      <NuxtLink to="/events" class="inline-flex items-center gap-2 text-sm text-toned transition-colors hover:text-highlighted">
+        <UIcon name="i-lucide-arrow-left" class="size-4" />
+        Volver a eventos
       </NuxtLink>
 
       <div class="grid gap-8 lg:grid-cols-[minmax(0,1.1fr)_minmax(320px,0.9fr)] lg:items-start">
@@ -172,6 +172,20 @@ const eventErrorMessage = computed(() => {
               {{ event.description }}
             </p>
           </div>
+        </div>
+      </div>
+    </div>
+
+    <div v-else class="rounded-3xl border border-error/30 bg-error/8 px-6 py-16 text-center">
+      <div class="mx-auto flex max-w-md flex-col items-center gap-4">
+        <UIcon name="i-lucide-cloud-off" class="size-8 text-error" />
+        <div class="space-y-2">
+          <p class="text-lg font-semibold text-highlighted">
+            No pudimos preparar esta vista.
+          </p>
+          <p class="text-sm leading-relaxed text-toned">
+            Intenta recargar la página en unos segundos.
+          </p>
         </div>
       </div>
     </div>
