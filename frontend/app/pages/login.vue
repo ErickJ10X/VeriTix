@@ -59,7 +59,7 @@ async function onSubmit() {
       <div class="absolute right-[16%] top-[22%] hidden h-px w-36 bg-linear-to-r from-transparent via-electric-300/35 to-transparent lg:block" />
     </div>
 
-    <UContainer class="relative flex min-h-[88vh] items-center justify-center py-12 sm:py-16">
+    <UiAuthContainer>
       <div class="w-full max-w-lg px-4 sm:px-0">
         <section class="space-y-8">
           <header class="text-center">
@@ -106,15 +106,11 @@ async function onSubmit() {
               required
               class="w-full"
             >
-              <UInput
+              <BaseFormInput
                 v-model="state.email"
                 type="email"
                 placeholder="tu@email.com"
                 icon="i-lucide-mail"
-                color="neutral"
-                variant="subtle"
-                size="lg"
-                class="w-full"
               />
             </UFormField>
 
@@ -125,15 +121,11 @@ async function onSubmit() {
               required
               class="w-full"
             >
-              <UInput
+              <BaseFormInput
                 v-model="state.password"
                 :type="showPassword ? 'text' : 'password'"
                 placeholder="Tu contrasena"
                 icon="i-lucide-lock"
-                color="neutral"
-                variant="subtle"
-                size="lg"
-                class="w-full"
               >
                 <template #trailing>
                   <button
@@ -149,7 +141,7 @@ async function onSubmit() {
                     />
                   </button>
                 </template>
-              </UInput>
+              </BaseFormInput>
             </UFormField>
 
             <!-- Forgot password link -->
@@ -191,6 +183,6 @@ async function onSubmit() {
           </footer>
         </section>
       </div>
-    </UContainer>
+    </UiAuthContainer>
   </div>
 </template>

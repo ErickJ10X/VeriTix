@@ -99,13 +99,10 @@ async function clearFilters() {
             </div>
 
             <form class="flex flex-col gap-3 sm:flex-row" @submit.prevent="submitSearch">
-              <UInput
+              <BaseFormInput
                 v-model="searchDraft"
                 placeholder="Buscar por evento"
                 icon="i-lucide-search"
-                color="neutral"
-                variant="subtle"
-                size="lg"
                 class="min-w-0 sm:w-72"
               />
 

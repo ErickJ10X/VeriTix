@@ -328,26 +328,18 @@ onMounted(() => {
 
             <div class="grid gap-5 sm:grid-cols-2">
               <UFormField name="name" label="Nombre" required>
-                <UInput
+                <BaseFormInput
                   v-model="profileState.name"
                   placeholder="Nombre"
                   icon="i-lucide-user"
-                  color="neutral"
-                  variant="subtle"
-                  size="lg"
-                  class="w-full"
                 />
               </UFormField>
 
               <UFormField name="lastName" label="Apellido" required>
-                <UInput
+                <BaseFormInput
                   v-model="profileState.lastName"
                   placeholder="Apellido"
                   icon="i-lucide-user-round"
-                  color="neutral"
-                  variant="subtle"
-                  size="lg"
-                  class="w-full"
                 />
               </UFormField>
             </div>
@@ -364,15 +356,11 @@ onMounted(() => {
                 label="Telefono"
                 help="Opcional · formato E.164"
               >
-                <UInput
+                <BaseFormInput
                   v-model="profileState.phone"
                   type="tel"
                   placeholder="+34958123456"
                   icon="i-lucide-phone"
-                  color="neutral"
-                  variant="subtle"
-                  size="lg"
-                  class="w-full"
                 />
               </UFormField>
 
@@ -381,15 +369,11 @@ onMounted(() => {
                 label="Avatar URL"
                 help="Opcional"
               >
-                <UInput
+                <BaseFormInput
                   v-model="profileState.avatarUrl"
                   type="url"
                   placeholder="https://..."
                   icon="i-lucide-image"
-                  color="neutral"
-                  variant="subtle"
-                  size="lg"
-                  class="w-full"
                 />
               </UFormField>
             </div>
@@ -459,15 +443,11 @@ onMounted(() => {
             </p>
 
             <UFormField name="currentPassword" label="Contrasena actual" required>
-              <UInput
+              <BaseFormInput
                 v-model="passwordState.currentPassword"
                 :type="showCurrentPassword ? 'text' : 'password'"
                 placeholder="Contrasena actual"
                 icon="i-lucide-lock"
-                color="neutral"
-                variant="subtle"
-                size="lg"
-                class="w-full"
               >
                 <template #trailing>
                   <button
@@ -482,7 +462,7 @@ onMounted(() => {
                     />
                   </button>
                 </template>
-              </UInput>
+              </BaseFormInput>
             </UFormField>
 
             <div class="grid gap-5 lg:grid-cols-2">
@@ -492,15 +472,11 @@ onMounted(() => {
                 help="8+ caracteres · mayuscula · minuscula · numero"
                 required
               >
-                <UInput
+                <BaseFormInput
                   v-model="passwordState.newPassword"
                   :type="showNewPassword ? 'text' : 'password'"
                   placeholder="Nueva contrasena"
                   icon="i-lucide-shield"
-                  color="neutral"
-                  variant="subtle"
-                  size="lg"
-                  class="w-full"
                 >
                   <template #trailing>
                     <button
@@ -515,19 +491,15 @@ onMounted(() => {
                       />
                     </button>
                   </template>
-                </UInput>
+                </BaseFormInput>
               </UFormField>
 
               <UFormField name="confirmPassword" label="Confirmar contrasena" required>
-                <UInput
+                <BaseFormInput
                   v-model="passwordState.confirmPassword"
                   :type="showConfirmPassword ? 'text' : 'password'"
                   placeholder="Confirmar contrasena"
                   icon="i-lucide-check-check"
-                  color="neutral"
-                  variant="subtle"
-                  size="lg"
-                  class="w-full"
                 >
                   <template #trailing>
                     <button
@@ -542,7 +514,7 @@ onMounted(() => {
                       />
                     </button>
                   </template>
-                </UInput>
+                </BaseFormInput>
               </UFormField>
             </div>
 

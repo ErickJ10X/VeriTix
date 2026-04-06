@@ -73,7 +73,7 @@ async function onSubmit() {
       <div class="absolute left-[18%] top-[24%] hidden h-px w-32 bg-linear-to-r from-transparent via-auric-300/35 to-transparent lg:block" />
     </div>
 
-    <UContainer class="relative flex min-h-[88vh] items-center justify-center py-12 sm:py-16">
+    <UiAuthContainer>
       <div class="w-full max-w-lg px-4 sm:px-0">
         <section class="space-y-8">
           <header class="text-center">
@@ -121,15 +121,11 @@ async function onSubmit() {
               required
               class="w-full"
             >
-              <UInput
+              <BaseFormInput
                 v-model="state.email"
                 type="email"
                 placeholder="tu@email.com"
                 icon="i-lucide-mail"
-                color="neutral"
-                variant="subtle"
-                size="lg"
-                class="w-full"
               />
             </UFormField>
 
@@ -140,14 +136,10 @@ async function onSubmit() {
                 required
                 class="w-full"
               >
-                <UInput
+                <BaseFormInput
                   v-model="state.name"
                   placeholder="Juan"
                   icon="i-lucide-user"
-                  color="neutral"
-                  variant="subtle"
-                  size="lg"
-                  class="w-full"
                 />
               </UFormField>
 
@@ -157,14 +149,10 @@ async function onSubmit() {
                 required
                 class="w-full"
               >
-                <UInput
+                <BaseFormInput
                   v-model="state.lastName"
                   placeholder="Garcia"
                   icon="i-lucide-user-round"
-                  color="neutral"
-                  variant="subtle"
-                  size="lg"
-                  class="w-full"
                 />
               </UFormField>
             </div>
@@ -176,15 +164,11 @@ async function onSubmit() {
               required
               class="w-full"
             >
-              <UInput
+              <BaseFormInput
                 v-model="state.phone"
                 type="tel"
                 placeholder="+34958123456"
                 icon="i-lucide-phone"
-                color="neutral"
-                variant="subtle"
-                size="lg"
-                class="w-full"
               />
             </UFormField>
 
@@ -195,15 +179,11 @@ async function onSubmit() {
               required
               class="w-full"
             >
-              <UInput
+              <BaseFormInput
                 v-model="state.password"
                 :type="showPassword ? 'text' : 'password'"
                 placeholder="Minimo 8 caracteres"
                 icon="i-lucide-lock"
-                color="neutral"
-                variant="subtle"
-                size="lg"
-                class="w-full"
               >
                 <template #trailing>
                   <button
@@ -219,7 +199,7 @@ async function onSubmit() {
                     />
                   </button>
                 </template>
-              </UInput>
+              </BaseFormInput>
             </UFormField>
 
             <UFormField
@@ -228,15 +208,11 @@ async function onSubmit() {
               required
               class="w-full"
             >
-              <UInput
+              <BaseFormInput
                 v-model="state.confirmPassword"
                 :type="showPassword ? 'text' : 'password'"
                 placeholder="Repite tu contrasena"
                 icon="i-lucide-lock"
-                color="neutral"
-                variant="subtle"
-                size="lg"
-                class="w-full"
               />
             </UFormField>
 
@@ -287,6 +263,6 @@ async function onSubmit() {
           </footer>
         </section>
       </div>
-    </UContainer>
+    </UiAuthContainer>
   </div>
 </template>
