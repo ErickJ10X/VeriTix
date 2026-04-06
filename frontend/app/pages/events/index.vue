@@ -110,9 +110,9 @@ async function clearFilters() {
                 :ui="{ base: 'h-12' }"
               />
 
-              <UButton type="submit" color="primary" variant="solid" size="lg" class="rounded-full px-5">
+              <BasePrimaryButton type="submit" size="lg" class="px-5">
                 Buscar
-              </UButton>
+              </BasePrimaryButton>
             </form>
           </div>
         </header>
@@ -125,16 +125,14 @@ async function clearFilters() {
                   Géneros
                 </h2>
 
-                <UButton
+                <BaseTertiaryButton
                   v-if="hasActiveFilters"
-                  color="neutral"
-                  variant="ghost"
                   size="xs"
-                  class="rounded-full"
+                  class="px-3"
                   @click="clearFilters"
                 >
                   Limpiar
-                </UButton>
+                </BaseTertiaryButton>
               </div>
 
               <div class="flex flex-wrap gap-2">

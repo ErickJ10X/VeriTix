@@ -127,25 +127,21 @@
 
           <template #footer>
             <div class="flex flex-col gap-3 sm:flex-row">
-              <UButton
+              <BasePrimaryButton
                 to="/login"
-                color="primary"
-                variant="solid"
                 size="lg"
-                class="justify-center rounded-full px-6"
+                class="justify-center px-6"
               >
                 Volver a iniciar sesion
-              </UButton>
+              </BasePrimaryButton>
 
-              <UButton
+              <BaseSecondaryButton
                 to="/"
-                color="neutral"
-                variant="outline"
                 size="lg"
-                class="justify-center rounded-full px-6"
+                class="justify-center px-6"
               >
                 Volver al inicio
-              </UButton>
+              </BaseSecondaryButton>
             </div>
           </template>
         </UCard>

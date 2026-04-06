@@ -140,9 +140,9 @@ const genreLabels = computed(() => {
                   </p>
                 </div>
 
-                <UButton color="primary" variant="solid" size="lg" class="rounded-full px-6">
+                <BasePrimaryButton size="lg" class="px-6">
                   Reservar
-                </UButton>
+                </BasePrimaryButton>
               </div>
             </div>
 

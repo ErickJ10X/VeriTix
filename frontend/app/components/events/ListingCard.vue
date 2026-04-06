@@ -50,8 +50,9 @@ const eventDate = computed(() => {
           {{ event.venue.name }}
         </p>
 
-        <p class="text-[0.92rem] text-default/80">
-          {{ eventDate }}
+        <p class="inline-flex items-center gap-1.5 text-[0.76rem] font-medium tracking-[0.08em] text-dimmed uppercase">
+          <UIcon name="i-lucide-calendar-days" class="size-3.5 text-secondary/80" />
+          <span>{{ eventDate }}</span>
         </p>
       </div>
 
@@ -60,15 +61,13 @@ const eventDate = computed(() => {
           {{ event.currency }}
         </span>
 
-        <UButton
+        <BasePrimaryButton
           :to="`/events/${event.id}`"
-          color="primary"
-          variant="outline"
           size="sm"
-          class="cursor-pointer rounded-full px-3.5 transition-transform duration-150 hover:-translate-y-0.5 active:translate-y-px"
+          class="px-3.5"
         >
           Reservar
-        </UButton>
+        </BasePrimaryButton>
       </div>
     </div>
   </article>

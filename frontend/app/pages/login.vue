@@ -165,17 +165,15 @@ async function onSubmit() {
             </div>
 
             <!-- Submit button -->
-            <UButton
+            <BasePrimaryButton
               type="submit"
-              color="primary"
-              variant="solid"
               size="lg"
               block
               :loading="pending"
               class="mt-2"
             >
               Iniciar sesion
-            </UButton>
+            </BasePrimaryButton>
 
             <p class="text-center text-xs text-toned">
               Protegido con sesion segura y renovacion automatica de credenciales.

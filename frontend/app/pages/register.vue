@@ -265,17 +265,15 @@ async function onSubmit() {
             </p>
 
             <!-- Submit button -->
-            <UButton
+            <BasePrimaryButton
               type="submit"
-              color="primary"
-              variant="solid"
               size="lg"
               block
               :loading="pending"
               class="mt-2"
             >
               Crear cuenta
-            </UButton>
+            </BasePrimaryButton>
 
             <p class="text-center text-xs text-toned">
               Tu cuenta se crea en segundos y podras gestionar eventos de inmediato.

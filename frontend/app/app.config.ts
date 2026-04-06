@@ -11,31 +11,14 @@ export default defineAppConfig({
     },
     button: {
       defaultVariants: {
-        color: 'primary',
+        color: 'neutral',
         variant: 'solid',
-        size: 'lg',
+        size: 'md',
       },
       slots: {
-        base: 'rounded-full border font-semibold tracking-[0.08em] uppercase transition duration-300 hover:-translate-y-0.5 disabled:hover:translate-y-0',
-        label: 'text-highlighted',
+        base: 'cursor-pointer rounded-full border font-semibold transition-all duration-150 active:translate-y-px disabled:cursor-not-allowed disabled:opacity-60 disabled:active:translate-y-0',
+        label: 'text-current',
       },
-      compoundVariants: [
-        {
-          color: 'primary',
-          variant: 'solid',
-          class: 'bg-primary border-primary/80 text-white hover:bg-primary/90',
-        },
-        {
-          color: 'secondary',
-          variant: 'solid',
-          class: 'bg-secondary border-secondary/80 text-white hover:bg-secondary/90',
-        },
-        {
-          color: 'primary',
-          variant: 'outline',
-          class: 'border-primary/60 text-primary hover:bg-primary/10 hover:text-primary',
-        },
-      ],
     },
     input: {
       defaultVariants: {

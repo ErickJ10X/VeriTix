@@ -69,15 +69,13 @@ function handleSubscribe() {
               class="w-full sm:w-64"
             />
 
-            <UButton
+            <BaseSecondaryButton
               type="submit"
-              color="primary"
-              variant="outline"
               size="md"
-              class="shrink-0 rounded-full border-primary/60 px-6 text-primary transition-all duration-300 hover:-translate-y-0.5 hover:bg-primary/10 hover:text-primary"
+              class="shrink-0 px-6"
             >
               Suscribirme
-            </UButton>
+            </BaseSecondaryButton>
           </form>
 
           <p

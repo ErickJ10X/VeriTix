@@ -1,14 +1,15 @@
 <script setup lang="ts">
+import type { RouteLocationRaw } from 'vue-router'
+
 const props = withDefaults(
   defineProps<{
     label?: string
     tone?: 'primary' | 'secondary' | 'urgent'
-    to?: string
+    to?: RouteLocationRaw
     href?: string
     type?: 'button' | 'submit' | 'reset'
     size?: 'xs' | 'sm' | 'md' | 'lg' | 'xl'
     block?: boolean
-    variant?: 'solid' | 'outline' | 'soft' | 'subtle' | 'ghost' | 'link'
   }>(),
   {
     label: 'Accion',
@@ -16,36 +17,37 @@ const props = withDefaults(
     type: 'button',
     size: 'lg',
     block: false,
-    variant: 'solid',
+    to: undefined,
+    href: undefined,
   },
 )
-
-const color = computed(() => {
-  if (props.tone === 'secondary') {
-    return 'secondary'
-  }
-
-  if (props.tone === 'urgent') {
-    return 'error'
-  }
-
-  return 'primary'
-})
 </script>
 
 <template>
-  <UButton
-    :to="to"
-    :href="href"
-    :type="type"
-    :size="size"
-    :variant="variant"
-    :color="color"
-    :block="block"
-    class="cursor-pointer transition-transform duration-150 active:translate-y-px"
+  <BaseSecondaryButton
+    v-if="props.tone === 'secondary'"
+    :to="props.to"
+    :href="props.href"
+    :type="props.type"
+    :size="props.size"
+    :block="props.block"
   >
     <slot>
-      {{ label }}
+      {{ props.label }}
     </slot>
-  </UButton>
+  </BaseSecondaryButton>
+
+  <BasePrimaryButton
+    v-else
+    :to="props.to"
+    :href="props.href"
+    :type="props.type"
+    :size="props.size"
+    :block="props.block"
+    :class="props.tone === 'urgent' && '!border-error/18 !bg-error/10 !text-error hover:!border-error/28 hover:!bg-error/14 hover:!text-highlighted'"
+  >
+    <slot>
+      {{ props.label }}
+    </slot>
+  </BasePrimaryButton>
 </template>

@@ -30,7 +30,7 @@ function onSearch() {
         <form class="space-y-3" @submit.prevent="onSearch">
           <!-- Search Field Container -->
           <div
-            class="flex items-center gap-2 rounded-full border border-default/50 bg-linear-to-br from-white/10 to-white/5 p-1.5 shadow-lg backdrop-blur-sm transition-all duration-300 focus-within:border-primary/60 focus-within:shadow-primary/30 focus-within:shadow-xl hover:border-primary/50"
+            class="flex items-center gap-2 rounded-full border border-default/50 bg-linear-to-br from-white/10 to-white/5 p-1.5 shadow-lg backdrop-blur-sm transition-all duration-200 focus-within:border-primary/45 focus-within:bg-white/8 focus-within:shadow-[0_16px_34px_-24px_rgba(239,170,71,0.28)]"
           >
             <!-- Search Icon -->
             <UIcon
@@ -48,22 +48,20 @@ function onSearch() {
               variant="none"
               size="lg"
               aria-label="Buscar eventos"
-              class="flex-1 border-0 bg-transparent text-base focus:ring-0"
-              :ui="{
-                base: 'border-0 bg-transparent shadow-none ring-0 placeholder:text-toned/80',
-              }"
-            />
+                class="flex-1 border-0 bg-transparent text-base text-highlighted focus:ring-0"
+                :ui="{
+                  base: 'border-0! bg-transparent! shadow-none! ring-0! hover:bg-transparent! focus:bg-transparent! focus-visible:bg-transparent! placeholder:text-toned/80',
+                }"
+              />
 
             <!-- Submit Button - Subtle outline variant -->
-            <UButton
+            <BasePrimaryButton
               type="submit"
-              color="primary"
-              variant="outline"
               size="md"
-              class="shrink-0 cursor-pointer rounded-full border-primary/60 px-6 text-primary transition-all duration-150 hover:-translate-y-0.5 hover:bg-primary/10 hover:text-primary active:translate-y-px"
+              class="shrink-0 px-6"
             >
               Buscar
-            </UButton>
+            </BasePrimaryButton>
           </div>
 
           <!-- Hint Text -->
@@ -78,15 +76,13 @@ function onSearch() {
             {{ pending ? 'Actualizando cartel...' : `Eventos visibles: ${results.length}` }}
           </p>
 
-          <UButton
+          <BaseSecondaryButton
             to="#generos"
-            color="secondary"
-            variant="outline"
             size="sm"
-            class="cursor-pointer rounded-full transition-transform duration-150 hover:-translate-y-0.5 active:translate-y-px"
+            class="px-4"
           >
             Explorar géneros
-          </UButton>
+          </BaseSecondaryButton>
         </div>
       </div>
 

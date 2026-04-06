@@ -404,16 +404,14 @@ onMounted(() => {
               Datos visibles y de contacto.
             </span>
 
-            <UButton
+            <BasePrimaryButton
               type="submit"
-              color="primary"
-              variant="solid"
               size="lg"
-              class="rounded-full px-6"
+              class="vtx-profile-submit px-6"
               :loading="profileSubmitting"
             >
               Guardar perfil
-            </UButton>
+            </BasePrimaryButton>
           </div>
         </UForm>
 
@@ -560,16 +558,14 @@ onMounted(() => {
                 Acceso y proteccion de la cuenta.
               </span>
 
-              <UButton
+              <BasePrimaryButton
                 type="submit"
-                color="primary"
-                variant="solid"
                 size="lg"
-                class="rounded-full px-6"
+                class="vtx-profile-submit px-6"
                 :loading="passwordSubmitting"
               >
                 Actualizar contrasena
-              </UButton>
+              </BasePrimaryButton>
             </div>
           </UForm>
         </section>
@@ -696,5 +692,32 @@ onMounted(() => {
   @apply absolute right-0 top-0 hidden h-20 w-20 rounded-full blur-2xl lg:block;
   content: '';
   background: radial-gradient(circle at center, rgb(44 189 230 / 0.14), rgb(255 255 255 / 0));
+}
+
+.vtx-profile-submit {
+  border: 1px solid rgb(239 170 71 / 0.14);
+  background: linear-gradient(180deg, rgb(239 170 71 / 0.1), rgb(239 170 71 / 0.06));
+  color: rgb(247 249 255);
+  box-shadow:
+    inset 0 1px 0 rgb(255 255 255 / 0.05),
+    0 14px 28px -24px rgb(239 170 71 / 0.42);
+  transition:
+    transform 0.15s ease-out,
+    border-color 0.15s ease-out,
+    background-color 0.15s ease-out,
+    box-shadow 0.15s ease-out,
+    color 0.15s ease-out;
+}
+
+.vtx-profile-submit:hover {
+  border-color: rgb(239 170 71 / 0.22);
+  background: linear-gradient(180deg, rgb(239 170 71 / 0.12), rgb(239 170 71 / 0.08));
+  color: rgb(255 255 255);
+  transform: translateY(-1px);
+  box-shadow: 0 18px 30px -24px rgb(239 170 71 / 0.5);
+}
+
+.vtx-profile-submit:active {
+  transform: translateY(1px);
 }
 </style>

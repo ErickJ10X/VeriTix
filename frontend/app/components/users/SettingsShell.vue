@@ -100,17 +100,15 @@ const toneClasses = computed(() => {
           </div>
 
           <div class="flex items-end lg:justify-end">
-            <UButton
+            <BaseSecondaryButton
               v-if="actionTo && actionLabel"
               :to="actionTo"
-              color="neutral"
-              variant="outline"
               size="lg"
-              class="rounded-full px-5"
+              class="px-5"
               :class="toneClasses.action"
             >
               {{ actionLabel }}
-            </UButton>
+            </BaseSecondaryButton>
           </div>
         </header>
 
