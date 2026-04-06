@@ -20,6 +20,20 @@ const submitting = ref(false)
 const errorMessage = ref('')
 const successMessage = ref('')
 
+const editingSurface = computed(() => ({
+  eyebrow: event.value?.status === 'DRAFT' ? 'Sesión en borrador' : 'Edición en vivo',
+  title: event.value?.name ?? 'Ajusta este evento',
+  description: 'Refina el contenido, la logística y la lectura visual del evento sin salir de una única superficie operativa.',
+  icon: 'i-lucide-sliders-horizontal',
+  accentClass: event.value?.status === 'DRAFT' ? 'from-rose' : 'from-cyan',
+  highlights: [
+    event.value?.venue.name ? `${event.value.venue.name} · ${event.value.venue.city}` : 'Venue operativo',
+    event.value?.format?.name ?? 'Sin formato específico',
+    `${event.value?.maxCapacity ?? 0} plazas`,
+    event.value?.status ?? 'Sin estado',
+  ],
+}))
+
 async function loadPage() {
   loading.value = true
   errorMessage.value = ''
@@ -87,7 +101,15 @@ onMounted(() => {
         <USkeleton class="h-14 rounded-2xl" />
       </div>
 
-      <div v-else-if="event" class="rounded-3xl border border-default/55 bg-default/6 p-6">
+      <AdminFormSurface
+        v-else-if="event"
+        :eyebrow="editingSurface.eyebrow"
+        :title="editingSurface.title"
+        :description="editingSurface.description"
+        :icon="editingSurface.icon"
+        :accent-class="editingSurface.accentClass"
+        :highlights="editingSurface.highlights"
+      >
         <AdminEventForm
           :initial-value="event"
           :genres="genres"
@@ -97,7 +119,7 @@ onMounted(() => {
           submit-label="Guardar cambios"
           @submit="updateEvent"
         />
-      </div>
+      </AdminFormSurface>
     </div>
   </AdminPageShell>
 </template>

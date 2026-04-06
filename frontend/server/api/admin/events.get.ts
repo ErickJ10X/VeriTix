@@ -10,6 +10,11 @@ export default defineEventHandler(async (event) => {
       page: Number(query.page ?? 1),
       limit: Number(query.limit ?? 50),
       search: typeof query.search === 'string' ? query.search : undefined,
+      city: typeof query.city === 'string' ? query.city : undefined,
+      genreId: typeof query.genreId === 'string' ? query.genreId : undefined,
+      formatId: typeof query.formatId === 'string' ? query.formatId : undefined,
+      dateFrom: typeof query.dateFrom === 'string' ? query.dateFrom : undefined,
+      dateTo: typeof query.dateTo === 'string' ? query.dateTo : undefined,
     },
   })
 })
