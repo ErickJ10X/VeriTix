@@ -107,7 +107,6 @@ async function clearFilters() {
                 variant="subtle"
                 size="lg"
                 class="min-w-0 sm:w-72"
-                :ui="{ base: 'h-12' }"
               />
 
               <BasePrimaryButton type="submit" size="lg" class="px-5">

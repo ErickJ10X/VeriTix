@@ -115,7 +115,6 @@ async function onSubmit() {
                 variant="subtle"
                 size="lg"
                 class="w-full"
-                :ui="{ base: 'h-12' }"
               />
             </UFormField>
 
@@ -135,7 +134,6 @@ async function onSubmit() {
                 variant="subtle"
                 size="lg"
                 class="w-full"
-                :ui="{ base: 'h-12' }"
               >
                 <template #trailing>
                   <button

@@ -336,7 +336,6 @@ onMounted(() => {
                   variant="subtle"
                   size="lg"
                   class="w-full"
-                  :ui="{ base: 'h-12' }"
                 />
               </UFormField>
 
@@ -349,7 +348,6 @@ onMounted(() => {
                   variant="subtle"
                   size="lg"
                   class="w-full"
-                  :ui="{ base: 'h-12' }"
                 />
               </UFormField>
             </div>
@@ -375,7 +373,6 @@ onMounted(() => {
                   variant="subtle"
                   size="lg"
                   class="w-full"
-                  :ui="{ base: 'h-12' }"
                 />
               </UFormField>
 
@@ -393,7 +390,6 @@ onMounted(() => {
                   variant="subtle"
                   size="lg"
                   class="w-full"
-                  :ui="{ base: 'h-12' }"
                 />
               </UFormField>
             </div>
@@ -472,7 +468,6 @@ onMounted(() => {
                 variant="subtle"
                 size="lg"
                 class="w-full"
-                :ui="{ base: 'h-12' }"
               >
                 <template #trailing>
                   <button
@@ -506,7 +501,6 @@ onMounted(() => {
                   variant="subtle"
                   size="lg"
                   class="w-full"
-                  :ui="{ base: 'h-12' }"
                 >
                   <template #trailing>
                     <button
@@ -534,7 +528,6 @@ onMounted(() => {
                   variant="subtle"
                   size="lg"
                   class="w-full"
-                  :ui="{ base: 'h-12' }"
                 >
                   <template #trailing>
                     <button
