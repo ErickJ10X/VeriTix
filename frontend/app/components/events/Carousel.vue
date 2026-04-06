@@ -16,7 +16,7 @@ defineProps<{
       :ui="{
         item: 'basis-[86%] ps-4 sm:basis-[48%]',
       }"
-      >
+    >
       <template #default="{ item }">
         <EventsListingCard :event="item" />
       </template>

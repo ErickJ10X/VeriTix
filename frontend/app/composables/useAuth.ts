@@ -18,6 +18,7 @@ export function useAuth() {
   const ensureSessionPromise = useState<Promise<boolean> | null>('auth-ensure-session-promise', () => null)
 
   const apiRequest = useApiRequest()
+  const { isApiAuthError } = useApiErrorMessage()
 
   const isAuthenticated = computed(() => {
     return Boolean(accessToken.value && user.value)
@@ -108,8 +109,11 @@ export function useAuth() {
 
       return applyAuth(response)
     }
-    catch {
-      clearAuth()
+    catch (error) {
+      if (isApiAuthError(error)) {
+        clearAuth()
+      }
+
       return null
     }
   }

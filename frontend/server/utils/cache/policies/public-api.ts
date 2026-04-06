@@ -1,7 +1,7 @@
 import type { H3Event } from 'h3'
+import type { CachedHandlerPolicy } from '../types'
 import { getRouterParam } from 'h3'
 import { hasAuthContext } from '../auth'
-import type { CachedHandlerPolicy } from '../types'
 
 const PUBLIC_API_NAMESPACE = 'veritix:public-api'
 
@@ -39,7 +39,7 @@ export function createRouteParamPublicApiPolicy<TResponse>(options: {
   staleMaxAge?: number
 }): CachedHandlerPolicy<TResponse> {
   return createAnonymousPublicPolicy({
-    getKey: (event) => `${options.prefix}:${getRouterParam(event, options.param) ?? ''}`,
+    getKey: event => `${options.prefix}:${getRouterParam(event, options.param) ?? ''}`,
     maxAge: options.maxAge,
     staleMaxAge: options.staleMaxAge,
   })
@@ -52,7 +52,7 @@ export function createNormalizedQueryPublicApiPolicy<TResponse, TQuery extends R
   staleMaxAge?: number
 }): CachedHandlerPolicy<TResponse> {
   return createAnonymousPublicPolicy({
-    getKey: (event) => `${options.prefix}:${JSON.stringify(options.getNormalizedQuery(event))}`,
+    getKey: event => `${options.prefix}:${JSON.stringify(options.getNormalizedQuery(event))}`,
     maxAge: options.maxAge,
     staleMaxAge: options.staleMaxAge,
   })

@@ -5,8 +5,6 @@ defineOptions({
   inheritAttrs: false,
 })
 
-type ButtonKind = 'primary' | 'secondary' | 'tertiary'
-
 const props = withDefaults(
   defineProps<{
     label?: string
@@ -35,6 +33,8 @@ const props = withDefaults(
     href: undefined,
   },
 )
+
+type ButtonKind = 'primary' | 'secondary' | 'tertiary'
 
 const attrs = useAttrs()
 

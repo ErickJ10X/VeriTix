@@ -11,11 +11,11 @@ export interface CacheStats {
 }
 
 export interface CacheStore {
-  get<TValue>(key: string): CacheEntry<TValue> | undefined
-  set<TValue>(key: string, entry: CacheEntry<TValue>): void
-  delete(key: string): void
-  deleteExpired(): void
-  getStats(): CacheStats
+  get: <TValue>(key: string) => CacheEntry<TValue> | undefined
+  set: <TValue>(key: string, entry: CacheEntry<TValue>) => void
+  delete: (key: string) => void
+  deleteExpired: () => void
+  getStats: () => CacheStats
 }
 
 export interface CachedHandlerPolicy<TResponse> {

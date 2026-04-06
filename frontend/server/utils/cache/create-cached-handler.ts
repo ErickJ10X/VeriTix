@@ -1,8 +1,8 @@
 import type { H3Event } from 'h3'
+import type { CachedHandlerPolicy, CacheStore } from './types'
 import { defineEventHandler } from 'h3'
 import { setNoStoreHeader, setPublicCacheHeaders } from './http'
 import { publicApiMemoryCacheStore } from './stores/memory-store'
-import type { CachedHandlerPolicy, CacheStore } from './types'
 
 function getStorageKey<TResponse>(event: H3Event, policy: CachedHandlerPolicy<TResponse>): string {
   return `${policy.namespace}:${policy.getKey(event)}`

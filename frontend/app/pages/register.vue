@@ -158,9 +158,9 @@ async function onSubmit() {
               placeholder="Minimo 8 caracteres"
               icon="i-lucide-lock"
               :show="showPassword"
-              @update:show="showPassword = $event"
               required
               class="w-full"
+              @update:show="showPassword = $event"
             />
 
             <BasePasswordField
@@ -170,9 +170,9 @@ async function onSubmit() {
               placeholder="Repite tu contrasena"
               icon="i-lucide-lock"
               :show="showPassword"
-              @update:show="showPassword = $event"
               required
               class="w-full"
+              @update:show="showPassword = $event"
             />
 
             <!-- Terms -->

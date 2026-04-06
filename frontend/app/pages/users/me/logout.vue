@@ -18,7 +18,8 @@ onMounted(async () => {
   try {
     await logout()
     await router.push('/')
-  } catch (error) {
+  }
+  catch (error) {
     errorMessage.value = getApiErrorMessage(error, 'Error al cerrar sesion.')
     loggingOut.value = false
   }

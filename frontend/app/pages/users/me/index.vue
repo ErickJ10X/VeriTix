@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import { z } from 'zod'
 import type { UserRole } from '~~/shared/types'
+import { z } from 'zod'
 
 definePageMeta({
   middleware: 'auth',
@@ -158,10 +158,10 @@ const profileMetrics = computed(() => {
 
 const hasProfileChanges = computed(() => {
   return (
-    profileState.name.trim() !== user.value?.name ||
-    profileState.lastName.trim() !== user.value?.lastName ||
-    profileState.phone.trim() !== (user.value?.phone ?? '') ||
-    profileState.avatarUrl.trim() !== (user.value?.avatarUrl ?? '')
+    profileState.name.trim() !== user.value?.name
+    || profileState.lastName.trim() !== user.value?.lastName
+    || profileState.phone.trim() !== (user.value?.phone ?? '')
+    || profileState.avatarUrl.trim() !== (user.value?.avatarUrl ?? '')
   )
 })
 
@@ -192,7 +192,9 @@ async function loadProfile() {
 }
 
 async function submitProfile() {
-  if (!hasProfileChanges.value) return
+  if (!hasProfileChanges.value) {
+    return
+  }
 
   profileErrorMessage.value = ''
   profileSuccessMessage.value = ''
@@ -262,11 +264,11 @@ onMounted(() => {
       </div>
 
       <div v-else class="grid gap-4 md:grid-cols-3">
-          <article
-            v-for="metric in profileMetrics"
-            :key="metric.label"
-            class="vtx-profile-metric"
-          >
+        <article
+          v-for="metric in profileMetrics"
+          :key="metric.label"
+          class="vtx-profile-metric"
+        >
           <p class="text-[0.68rem] font-semibold tracking-[0.22em] text-dimmed uppercase">
             {{ metric.label }}
           </p>

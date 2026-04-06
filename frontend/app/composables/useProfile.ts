@@ -19,6 +19,15 @@ export function useProfile() {
   const pending = useState<boolean>('profile-pending', () => false)
 
   const apiRequest = useApiRequest()
+  const { getApiErrorMessage, getApiErrorStatus } = useApiErrorMessage()
+
+  function normalizeProfileError(error: unknown, fallback: string): never {
+    throw createError({
+      statusCode: getApiErrorStatus(error) ?? 500,
+      statusMessage: getApiErrorMessage(error, fallback),
+      data: error,
+    })
+  }
 
   async function fetchProfile(): Promise<UserProfile> {
     pending.value = true
@@ -32,6 +41,9 @@ export function useProfile() {
       user.value = profile
 
       return profile
+    }
+    catch (error) {
+      normalizeProfileError(error, 'No pudimos cargar tu perfil.')
     }
     finally {
       pending.value = false
@@ -52,6 +64,9 @@ export function useProfile() {
 
       return profile
     }
+    catch (error) {
+      normalizeProfileError(error, 'No pudimos actualizar tu perfil.')
+    }
     finally {
       pending.value = false
     }
@@ -66,6 +81,9 @@ export function useProfile() {
         body: payload,
         headers: buildAuthHeaders(accessToken.value),
       })
+    }
+    catch (error) {
+      normalizeProfileError(error, 'No pudimos actualizar tu contraseña.')
     }
     finally {
       pending.value = false

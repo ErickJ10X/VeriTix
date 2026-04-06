@@ -96,6 +96,7 @@ async function onSubmit() {
               type="email"
               placeholder="tu@email.com"
               icon="i-lucide-mail"
+              :disabled="pending"
               required
               class="w-full"
             />
@@ -107,6 +108,7 @@ async function onSubmit() {
               label="Contrasena"
               placeholder="Tu contrasena"
               icon="i-lucide-lock"
+              :disabled="pending"
               required
               class="w-full"
             />
@@ -116,6 +118,9 @@ async function onSubmit() {
               <NuxtLink
                 to="/forgot-password"
                 class="cursor-pointer rounded-sm text-sm text-auric-300 transition-colors duration-150 hover:text-auric-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/45"
+                :class="pending && 'pointer-events-none opacity-60'"
+                :aria-disabled="pending"
+                :tabindex="pending ? -1 : undefined"
               >
                 ¿Olvidaste tu contrasena?
               </NuxtLink>

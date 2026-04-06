@@ -48,11 +48,11 @@ function onSearch() {
               variant="none"
               size="lg"
               aria-label="Buscar eventos"
-                class="flex-1 border-0 bg-transparent text-base text-highlighted focus:ring-0"
-                :ui="{
-                  base: 'border-0! bg-transparent! shadow-none! ring-0! hover:bg-transparent! focus:bg-transparent! focus-visible:bg-transparent! placeholder:text-toned/80',
-                }"
-              />
+              class="flex-1 border-0 bg-transparent text-base text-highlighted focus:ring-0"
+              :ui="{
+                base: 'border-0! bg-transparent! shadow-none! ring-0! hover:bg-transparent! focus:bg-transparent! focus-visible:bg-transparent! placeholder:text-toned/80',
+              }"
+            />
 
             <!-- Submit Button - Subtle outline variant -->
             <BasePrimaryButton

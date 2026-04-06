@@ -84,6 +84,10 @@ function buildFallbackImage(seed: string): string {
   return `https://picsum.photos/seed/${seed}/900/1200`
 }
 
+function buildEventFallbackImage(eventId: string): string {
+  return buildFallbackImage(`veritix-event-${eventId}`)
+}
+
 function normalizeCurrencyCode(value: string): CurrencyCode {
   if (value === 'USD' || value === 'EUR' || value === 'COP') {
     return value
@@ -97,7 +101,7 @@ function mapEventListItem(item: EventListApiItem): EventCatalogItem {
     id: item.id,
     name: item.name,
     dateISO: toIsoString(item.eventDate) ?? new Date().toISOString(),
-    imageUrl: item.imageUrl ?? buildFallbackImage(`veritix-event-${item.id}`),
+    imageUrl: item.imageUrl ?? buildEventFallbackImage(item.id),
     currency: normalizeCurrencyCode(item.currency),
     venue: item.venue,
     format: item.format,
@@ -114,7 +118,7 @@ function mapEventDetail(item: EventDetailApiItem): EventCatalogDetail {
     startSaleISO: toIsoString(item.startSale),
     endSaleISO: toIsoString(item.endSale),
     maxCapacity: item.maxCapacity,
-    imageUrl: item.imageUrl ?? buildFallbackImage(`veritix-event-${item.id}-detail`),
+    imageUrl: item.imageUrl ?? buildEventFallbackImage(item.id),
     currency: normalizeCurrencyCode(item.currency),
     creatorId: item.creatorId,
     venue: item.venue,
