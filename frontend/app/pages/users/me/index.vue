@@ -54,8 +54,6 @@ const showCurrentPassword = ref(false)
 const showNewPassword = ref(false)
 const showConfirmPassword = ref(false)
 
-const passwordRules = ['8+ caracteres', '1 mayuscula', '1 numero', 'Clave nueva'] as const
-
 const { user, fetchProfile, updateProfile, changePassword } = useProfile()
 const { getApiErrorMessage } = useApiErrorMessage()
 
@@ -263,20 +261,7 @@ onMounted(() => {
         <USkeleton class="h-24 rounded-2xl" />
       </div>
 
-      <div v-else class="grid gap-4 md:grid-cols-3">
-        <article
-          v-for="metric in profileMetrics"
-          :key="metric.label"
-          class="vtx-profile-metric"
-        >
-          <p class="text-[0.68rem] font-semibold tracking-[0.22em] text-dimmed uppercase">
-            {{ metric.label }}
-          </p>
-          <p class="mt-3 text-base font-semibold" :class="metric.tone">
-            {{ metric.value }}
-          </p>
-        </article>
-      </div>
+      <UsersMetrics v-else :metrics="profileMetrics" />
     </template>
 
     <section class="space-y-10">
@@ -311,82 +296,16 @@ onMounted(() => {
           class="space-y-6"
           @submit="submitProfile"
         >
-          <p
-            v-if="profileErrorMessage"
-            role="alert"
-            aria-live="polite"
-            class="rounded-2xl border border-error/40 bg-error/10 px-4 py-3 text-sm text-error"
-          >
-            {{ profileErrorMessage }}
-          </p>
+          <BaseStatusMessage v-if="profileErrorMessage" :message="profileErrorMessage" />
+          <BaseStatusMessage v-if="profileSuccessMessage" tone="success" :message="profileSuccessMessage" />
 
-          <p
-            v-if="profileSuccessMessage"
-            role="status"
-            aria-live="polite"
-            class="rounded-2xl border border-success/35 bg-success/10 px-4 py-3 text-sm text-success"
-          >
-            {{ profileSuccessMessage }}
-          </p>
-
-          <section class="space-y-4 border-b border-default/55 pb-6">
-            <div class="flex items-center justify-between gap-3">
-              <h3 class="text-lg font-semibold text-highlighted">
-                Identidad
-              </h3>
-              <UBadge color="neutral" variant="soft">
-                {{ roleLabel }}
-              </UBadge>
-            </div>
-
-            <div class="grid gap-4 sm:grid-cols-2">
-              <BaseFormField
-                v-model="profileState.name"
-                name="name"
-                label="Nombre"
-                placeholder="Nombre"
-                icon="i-lucide-user"
-                required
-              />
-
-              <BaseFormField
-                v-model="profileState.lastName"
-                name="lastName"
-                label="Apellido"
-                placeholder="Apellido"
-                icon="i-lucide-user-round"
-                required
-              />
-            </div>
-          </section>
-
-          <section class="space-y-4 border-b border-default/55 pb-6">
-            <h3 class="text-lg font-semibold text-highlighted">
-              Contacto
-            </h3>
-
-            <div class="grid gap-4">
-              <BaseFormField
-                v-model="profileState.phone"
-                name="phone"
-                label="Telefono"
-                help="Opcional · formato E.164"
-                type="tel"
-                placeholder="+34958123456"
-                icon="i-lucide-phone"
-              />
-
-              <BaseFormField
-                v-model="profileState.avatarUrl"
-                name="avatarUrl"
-                label="Avatar URL"
-                help="Opcional"
-                type="url"
-                placeholder="https://..."
-                icon="i-lucide-image"
-              />
-            </div>
-          </section>
+          <UsersProfileFields
+            v-model:name="profileState.name"
+            v-model:last-name="profileState.lastName"
+            v-model:phone="profileState.phone"
+            v-model:avatar-url="profileState.avatarUrl"
+            :role-label="roleLabel"
+          />
 
           <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between pt-2">
             <span class="text-sm text-toned">
@@ -406,27 +325,6 @@ onMounted(() => {
         </UForm>
 
         <section id="seguridad" class="scroll-mt-28 space-y-6 border-t border-default/55 pt-8">
-          <div class="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
-            <div>
-              <p class="text-[0.68rem] font-semibold tracking-[0.24em] text-dimmed uppercase">
-                Seguridad
-              </p>
-              <h3 class="mt-3 text-2xl font-semibold text-highlighted">
-                Cambiar contrasena
-              </h3>
-            </div>
-
-            <div class="flex flex-wrap gap-2">
-              <span
-                v-for="rule in passwordRules"
-                :key="rule"
-                class="inline-flex items-center rounded-full border border-default/60 bg-default/8 px-3 py-1.5 text-[0.68rem] font-semibold tracking-[0.12em] text-toned uppercase"
-              >
-                {{ rule }}
-              </span>
-            </div>
-          </div>
-
           <UForm
             :state="passwordState"
             :schema="passwordSchema"
@@ -434,59 +332,17 @@ onMounted(() => {
             class="space-y-6"
             @submit="submitPassword"
           >
-            <p
-              v-if="securityErrorMessage"
-              role="alert"
-              aria-live="polite"
-              class="rounded-2xl border border-error/40 bg-error/10 px-4 py-3 text-sm text-error"
-            >
-              {{ securityErrorMessage }}
-            </p>
+            <BaseStatusMessage v-if="securityErrorMessage" :message="securityErrorMessage" />
+            <BaseStatusMessage v-if="securitySuccessMessage" tone="success" :message="securitySuccessMessage" />
 
-            <p
-              v-if="securitySuccessMessage"
-              role="status"
-              aria-live="polite"
-              class="rounded-2xl border border-success/35 bg-success/10 px-4 py-3 text-sm text-success"
-            >
-              {{ securitySuccessMessage }}
-            </p>
-
-            <BasePasswordField
-              v-model="passwordState.currentPassword"
-              name="currentPassword"
-              label="Contrasena actual"
-              placeholder="Contrasena actual"
-              icon="i-lucide-lock"
-              :show="showCurrentPassword"
-              required
-              @update:show="showCurrentPassword = $event"
+            <UsersPasswordFields
+              v-model:current-password="passwordState.currentPassword"
+              v-model:new-password="passwordState.newPassword"
+              v-model:confirm-password="passwordState.confirmPassword"
+              v-model:show-current-password="showCurrentPassword"
+              v-model:show-new-password="showNewPassword"
+              v-model:show-confirm-password="showConfirmPassword"
             />
-
-            <div class="grid gap-5 lg:grid-cols-2">
-              <BasePasswordField
-                v-model="passwordState.newPassword"
-                name="newPassword"
-                label="Nueva contrasena"
-                help="8+ caracteres · mayuscula · minuscula · numero"
-                placeholder="Nueva contrasena"
-                icon="i-lucide-shield"
-                :show="showNewPassword"
-                required
-                @update:show="showNewPassword = $event"
-              />
-
-              <BasePasswordField
-                v-model="passwordState.confirmPassword"
-                name="confirmPassword"
-                label="Confirmar contrasena"
-                placeholder="Confirmar contrasena"
-                icon="i-lucide-check-check"
-                :show="showConfirmPassword"
-                required
-                @update:show="showConfirmPassword = $event"
-              />
-            </div>
 
             <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
               <span class="text-sm text-toned">
@@ -508,127 +364,19 @@ onMounted(() => {
     </section>
 
     <template #aside>
-      <div class="space-y-8">
-        <section class="relative vtx-profile-presence space-y-5 border-b border-default/55 pb-8">
-          <div class="flex items-center gap-4">
-            <div class="vtx-profile-avatar flex size-16 shrink-0 items-center justify-center rounded-2xl text-lg font-semibold text-auric-100">
-              {{ profileInitials }}
-            </div>
-
-            <div>
-              <p class="text-[0.68rem] font-semibold tracking-[0.22em] text-dimmed uppercase">
-                Identidad visible
-              </p>
-              <p class="mt-2 text-lg font-semibold text-highlighted">
-                {{ profileState.name || user?.name }} {{ profileState.lastName || user?.lastName }}
-              </p>
-              <p class="mt-1 text-sm text-toned">
-                {{ user?.email }}
-              </p>
-            </div>
-          </div>
-
-          <div class="grid gap-3 sm:grid-cols-2 xl:grid-cols-1">
-            <div class="vtx-profile-signal">
-              <p class="text-[0.68rem] font-semibold tracking-[0.22em] text-dimmed uppercase">
-                Avatar
-              </p>
-              <p class="mt-2 text-sm font-semibold text-highlighted">
-                {{ profileState.avatarUrl.trim() ? 'Configurado' : 'Sin personalizar' }}
-              </p>
-            </div>
-
-            <div class="vtx-profile-signal">
-              <p class="text-[0.68rem] font-semibold tracking-[0.22em] text-dimmed uppercase">
-                Telefono
-              </p>
-              <p class="mt-2 text-sm font-semibold text-highlighted">
-                {{ profileState.phone || 'Pendiente' }}
-              </p>
-            </div>
-          </div>
-        </section>
-
-        <section v-if="roleView" class="relative vtx-profile-role space-y-4 border-b border-default/55 pb-8">
-          <div>
-            <p class="text-[0.68rem] font-semibold tracking-[0.24em] text-primary uppercase">
-              {{ roleView.title }}
-            </p>
-          </div>
-
-          <ul class="space-y-3">
-            <li
-              v-for="capability in roleView.capabilities"
-              :key="capability"
-              class="flex items-start gap-3 text-sm leading-relaxed text-toned"
-            >
-              <span class="mt-0.5 inline-flex size-6 shrink-0 items-center justify-center rounded-full bg-primary/14 text-primary">
-                <UIcon name="i-lucide-check" class="size-3.5" />
-              </span>
-              <span>{{ capability }}</span>
-            </li>
-          </ul>
-        </section>
-      </div>
+      <UsersProfileAside
+        :initials="profileInitials"
+        :full-name="`${profileState.name || user?.name || ''} ${profileState.lastName || user?.lastName || ''}`.trim()"
+        :email="user?.email ?? 'Sin email'"
+        :avatar-configured="Boolean(profileState.avatarUrl.trim())"
+        :phone="profileState.phone"
+        :role-view="roleView"
+      />
     </template>
   </UsersSettingsShell>
 </template>
 
 <style scoped>
-@reference "tailwindcss";
-
-.vtx-profile-metric {
-  @apply relative overflow-hidden rounded-2xl px-4 py-4;
-  border: 1px solid rgb(145 161 190 / 0.18);
-  background:
-    linear-gradient(145deg, rgb(255 255 255 / 0.06), rgb(255 255 255 / 0.01)),
-    linear-gradient(120deg, rgb(11 17 31 / 0.46), rgb(16 23 40 / 0.26));
-}
-
-.vtx-profile-metric::before {
-  @apply absolute inset-x-4 top-0 h-px;
-  content: '';
-  background: linear-gradient(
-    90deg,
-    rgb(239 170 71 / 0),
-    rgb(239 170 71 / 0.65),
-    rgb(44 189 230 / 0.65),
-    rgb(239 170 71 / 0)
-  );
-}
-
-.vtx-profile-presence::before {
-  @apply absolute -left-2 top-0 hidden h-28 w-28 rounded-full blur-3xl lg:block;
-  content: '';
-  background: radial-gradient(circle at center, rgb(239 170 71 / 0.16), rgb(255 255 255 / 0));
-}
-
-.vtx-profile-avatar {
-  border: 1px solid rgb(239 170 71 / 0.45);
-  background:
-    radial-gradient(circle at 30% 30%, rgb(255 255 255 / 0.86), rgb(255 255 255 / 0) 38%),
-    linear-gradient(135deg, rgb(239 170 71 / 0.4), rgb(44 189 230 / 0.4), rgb(240 100 127 / 0.28));
-  box-shadow:
-    0 0 0 1px rgb(255 255 255 / 0.04),
-    0 18px 34px -24px rgb(239 170 71 / 0.8);
-}
-
-.vtx-profile-signal {
-  @apply relative pl-4;
-}
-
-.vtx-profile-signal::before {
-  @apply absolute bottom-0 left-0 top-0 w-0.5 rounded-full;
-  content: '';
-  background: linear-gradient(180deg, rgb(239 170 71 / 0.9), rgb(44 189 230 / 0.8));
-}
-
-.vtx-profile-role::after {
-  @apply absolute right-0 top-0 hidden h-20 w-20 rounded-full blur-2xl lg:block;
-  content: '';
-  background: radial-gradient(circle at center, rgb(44 189 230 / 0.14), rgb(255 255 255 / 0));
-}
-
 .vtx-profile-submit {
   border: 1px solid rgb(239 170 71 / 0.14);
   background: linear-gradient(180deg, rgb(239 170 71 / 0.1), rgb(239 170 71 / 0.06));

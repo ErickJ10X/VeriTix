@@ -32,12 +32,14 @@ export function useApiRequest() {
 
     const apiUrl = `${import.meta.server ? useRequestURL().origin : window.location.origin}${config.public.apiBase}${path}`
 
-    return await $fetch<TResponse>(apiUrl, {
+    const response: unknown = await $fetch(apiUrl, {
       method: options.method,
       body: options.body,
       headers,
       query: options.query,
       credentials: 'include' as const,
     })
+
+    return response as TResponse
   }
 }
