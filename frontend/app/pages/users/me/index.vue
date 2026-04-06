@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import type { UserRole } from '~~/shared/types'
 import { z } from 'zod'
+import type { UserRole } from '~~/shared/types'
 
 definePageMeta({
   middleware: 'auth',
@@ -156,6 +156,15 @@ const profileMetrics = computed(() => {
   ]
 })
 
+const hasProfileChanges = computed(() => {
+  return (
+    profileState.name.trim() !== user.value?.name ||
+    profileState.lastName.trim() !== user.value?.lastName ||
+    profileState.phone.trim() !== (user.value?.phone ?? '') ||
+    profileState.avatarUrl.trim() !== (user.value?.avatarUrl ?? '')
+  )
+})
+
 function applyProfileState() {
   if (!user.value) {
     return
@@ -183,6 +192,8 @@ async function loadProfile() {
 }
 
 async function submitProfile() {
+  if (!hasProfileChanges.value) return
+
   profileErrorMessage.value = ''
   profileSuccessMessage.value = ''
   profileSubmitting.value = true
@@ -290,12 +301,12 @@ onMounted(() => {
         <USkeleton class="h-11 rounded-2xl" />
       </div>
 
-      <div v-else class="space-y-10">
+      <div v-else class="space-y-8">
         <UForm
           :state="profileState"
           :schema="profileSchema"
           :validate-on="[]"
-          class="space-y-8"
+          class="space-y-6"
           @submit="submitProfile"
         >
           <p
@@ -316,7 +327,7 @@ onMounted(() => {
             {{ profileSuccessMessage }}
           </p>
 
-          <section class="space-y-5 border-b border-default/55 pb-8">
+          <section class="space-y-4 border-b border-default/55 pb-6">
             <div class="flex items-center justify-between gap-3">
               <h3 class="text-lg font-semibold text-highlighted">
                 Identidad
@@ -326,7 +337,7 @@ onMounted(() => {
               </UBadge>
             </div>
 
-            <div class="grid gap-5 sm:grid-cols-2">
+            <div class="grid gap-4 sm:grid-cols-2">
               <BaseFormField
                 v-model="profileState.name"
                 name="name"
@@ -347,12 +358,12 @@ onMounted(() => {
             </div>
           </section>
 
-          <section class="space-y-5 border-b border-default/55 pb-8">
+          <section class="space-y-4 border-b border-default/55 pb-6">
             <h3 class="text-lg font-semibold text-highlighted">
               Contacto
             </h3>
 
-            <div class="grid gap-5">
+            <div class="grid gap-4">
               <BaseFormField
                 v-model="profileState.phone"
                 name="phone"
@@ -375,7 +386,7 @@ onMounted(() => {
             </div>
           </section>
 
-          <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+          <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between pt-2">
             <span class="text-sm text-toned">
               Datos visibles y de contacto.
             </span>
@@ -385,6 +396,7 @@ onMounted(() => {
               size="lg"
               class="vtx-profile-submit px-6"
               :loading="profileSubmitting"
+              :disabled="!hasProfileChanges"
             >
               Guardar perfil
             </BasePrimaryButton>

@@ -44,7 +44,7 @@ const toneClasses = computed(() => {
     badge: 'border-auric-300/25 bg-auric-400/8 text-auric-200',
     action: 'border-default/70 bg-default/10',
     aside: 'border-default/55',
-    title: 'bg-gradient-to-r from-highlighted via-primary to-secondary bg-clip-text text-transparent',
+    title: 'bg-gradient-to-r from-white to-white/80 bg-clip-text text-transparent drop-shadow-sm',
   }
 })
 </script>
