@@ -1,25 +1,20 @@
-import type { SearchParams } from '~/types'
-
 export function useEventSearch() {
   const query = useState<string>('veritix-search-query', () => '')
-  const genre = useState<string>('veritix-search-genre', () => '')
 
-  const params = computed<SearchParams>(() => {
+  const filters = computed(() => {
     return {
-      query: query.value,
-      genre: genre.value,
+      search: query.value,
     }
   })
 
-  const { data, pending } = useEvents(params)
+  const { data, pending } = usePublicEvents(filters)
 
   const results = computed(() => {
-    return data.value ?? []
+    return data.value?.data ?? []
   })
 
   return {
     query,
-    genre,
     results,
     pending,
   }

@@ -1,8 +1,8 @@
 <script setup lang="ts">
-import type { Event } from '~/types'
+import type { EventCatalogItem } from '~/types'
 
 defineProps<{
-  events: Event[]
+  events: EventCatalogItem[]
 }>()
 </script>
 
@@ -16,9 +16,9 @@ defineProps<{
       :ui="{
         item: 'basis-[86%] ps-4 sm:basis-[48%]',
       }"
-    >
+      >
       <template #default="{ item }">
-        <EventsCard :event="item" />
+        <EventsListingCard :event="item" />
       </template>
     </UCarousel>
   </div>

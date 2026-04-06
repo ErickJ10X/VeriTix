@@ -11,7 +11,7 @@ const featuredEvents = computed(() => {
     <UiSectionHeading
       eyebrow="Cartel"
       title="Eventos destacados"
-      description="Seleccion curada de conciertos con disponibilidad en tiempo real y jerarquia visual clara para decidir rapido."
+      description="Una selección viva del catálogo real. Misma lectura visual que en /events, pero más editorial para descubrir rápido qué merece tu atención."
     />
 
     <div
@@ -31,11 +31,23 @@ const featuredEvents = computed(() => {
       </div>
 
       <div class="mt-8 hidden grid-cols-2 gap-6 md:grid lg:grid-cols-3">
-        <EventsCard
+        <EventsListingCard
           v-for="event in featuredEvents"
           :key="event.id"
           :event="event"
         />
+      </div>
+
+      <div v-if="featuredEvents.length" class="mt-6 flex justify-end">
+        <UButton
+          to="/events"
+          color="primary"
+          variant="ghost"
+          size="sm"
+          class="cursor-pointer rounded-full px-1 text-sm text-primary transition-colors duration-150 hover:text-auric-200"
+        >
+          Ver cartel completo
+        </UButton>
       </div>
 
       <p

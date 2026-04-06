@@ -26,16 +26,13 @@ withDefaults(
       aria-hidden="true"
     >
       <span
-        class="h-px w-[2.2rem]"
-        style="background: linear-gradient(90deg, rgb(239 170 71 / 0.8), rgb(20 128 188 / 0.8));"
+        class="h-px w-[2.2rem] bg-linear-to-r from-primary/80 to-secondary/80"
       />
       <span
-        class="h-[0.62rem] w-[0.62rem] rounded-full border border-white/35"
-        style="background: radial-gradient(circle at 30% 30%, rgb(255 255 255 / 0.92), rgb(240 100 127 / 0.74)); box-shadow: 0 0 12px rgb(240 100 127 / 0.4);"
+        class="h-[0.62rem] w-[0.62rem] rounded-full border border-white/35 bg-radial-[at_30%_30%] from-white/92 to-crimson-400/74 shadow-[0_0_12px_rgb(240_100_127_/_0.4)]"
       />
       <span
-        class="h-px w-[2.2rem]"
-        style="background: linear-gradient(90deg, rgb(239 170 71 / 0.8), rgb(20 128 188 / 0.8));"
+        class="h-px w-[2.2rem] bg-linear-to-r from-primary/80 to-secondary/80"
       />
     </div>
 

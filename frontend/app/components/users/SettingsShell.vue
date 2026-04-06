@@ -44,13 +44,13 @@ const toneClasses = computed(() => {
     badge: 'border-auric-300/25 bg-auric-400/8 text-auric-200',
     action: 'border-default/70 bg-default/10',
     aside: 'border-default/55',
-    title: 'bg-[linear-gradient(120deg,rgb(255_247_219),rgb(239_170_71),rgb(44_189_230),rgb(255_247_219))] bg-[length:220%_auto] bg-clip-text text-transparent [text-shadow:0_0_24px_rgb(239_170_71_/_0.12)]',
+    title: 'bg-gradient-to-r from-highlighted via-primary to-secondary bg-clip-text text-transparent',
   }
 })
 </script>
 
 <template>
-  <section class="relative" :class="toneClasses.section">
+  <section class="vtx-settings-shell relative" :class="toneClasses.section">
     <div class="pointer-events-none absolute inset-0 overflow-hidden" aria-hidden="true">
       <div class="absolute inset-x-0 top-0 h-56 bg-linear-to-b" :class="toneClasses.glow" />
       <div class="absolute -left-16 top-28 h-56 w-56 rounded-full blur-3xl" :class="toneClasses.leftGlow" />
@@ -131,3 +131,9 @@ const toneClasses = computed(() => {
     </UContainer>
   </section>
 </template>
+
+<style scoped>
+.vtx-settings-shell {
+  isolation: isolate;
+}
+</style>
