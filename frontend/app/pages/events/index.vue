@@ -68,14 +68,7 @@ async function clearFilters() {
 </script>
 
 <template>
-  <section class="relative py-10 sm:py-14 lg:py-16">
-    <div class="pointer-events-none absolute inset-0 overflow-hidden" aria-hidden="true">
-      <div class="absolute inset-x-0 top-0 h-56 bg-linear-to-b from-primary/10 via-transparent to-transparent" />
-      <div class="absolute -left-12 top-24 h-52 w-52 rounded-full bg-primary/10 blur-3xl" />
-      <div class="absolute right-0 top-10 h-64 w-64 rounded-full bg-auric-500/10 blur-3xl" />
-    </div>
-
-    <UContainer class="relative">
+  <UiEventsPageShell variant="index" container-class="relative">
       <div class="mx-auto max-w-7xl space-y-10">
         <header class="space-y-5 border-b border-default/55 pb-8">
           <div class="flex flex-wrap items-center gap-3">
@@ -214,8 +207,7 @@ async function clearFilters() {
           </section>
         </div>
       </div>
-    </UContainer>
-  </section>
+  </UiEventsPageShell>
 </template>
 
 <style scoped>

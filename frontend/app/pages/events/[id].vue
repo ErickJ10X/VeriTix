@@ -36,14 +36,7 @@ const genreLabels = computed(() => {
 </script>
 
 <template>
-  <section class="relative py-10 sm:py-14 lg:py-16">
-    <div class="pointer-events-none absolute inset-0 overflow-hidden" aria-hidden="true">
-      <div class="absolute inset-x-0 top-0 h-56 bg-linear-to-b from-primary/10 via-transparent to-transparent" />
-      <div class="absolute -left-12 top-20 h-52 w-52 rounded-full bg-primary/10 blur-3xl" />
-      <div class="absolute right-0 top-12 h-64 w-64 rounded-full bg-auric-500/10 blur-3xl" />
-    </div>
-
-    <UContainer>
+  <UiEventsPageShell variant="detail">
       <div v-if="status === 'pending'" class="space-y-6">
         <USkeleton class="h-16 rounded-2xl" />
         <USkeleton class="h-120 rounded-3xl" />
@@ -157,6 +150,5 @@ const genreLabels = computed(() => {
           </div>
         </div>
       </div>
-    </UContainer>
-  </section>
+  </UiEventsPageShell>
 </template>
