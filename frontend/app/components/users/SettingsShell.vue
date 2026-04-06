@@ -30,7 +30,7 @@ const toneClasses = computed(() => {
       badge: 'border-default/55 bg-default/8 text-toned',
       action: 'border-default/60 bg-default/6',
       aside: 'border-default/45',
-      title: 'vtx-shell-title--minimal',
+      title: 'text-highlighted',
     }
   }
 
@@ -44,7 +44,7 @@ const toneClasses = computed(() => {
     badge: 'border-auric-300/25 bg-auric-400/8 text-auric-200',
     action: 'border-default/70 bg-default/10',
     aside: 'border-default/55',
-    title: 'vtx-shell-title--vivid',
+    title: 'bg-[linear-gradient(120deg,rgb(255_247_219),rgb(239_170_71),rgb(44_189_230),rgb(255_247_219))] bg-[length:220%_auto] bg-clip-text text-transparent [text-shadow:0_0_24px_rgb(239_170_71_/_0.12)]',
   }
 })
 </script>
@@ -131,20 +131,3 @@ const toneClasses = computed(() => {
     </UContainer>
   </section>
 </template>
-
-<style scoped>
-@reference "tailwindcss";
-
-.vtx-shell-title--vivid {
-  background-image: linear-gradient(120deg, rgb(255 247 219), rgb(239 170 71), rgb(44 189 230), rgb(255 247 219));
-  background-size: 220% auto;
-  -webkit-background-clip: text;
-  background-clip: text;
-  color: transparent;
-  text-shadow: 0 0 24px rgb(239 170 71 / 0.12);
-}
-
-.vtx-shell-title--minimal {
-  color: var(--ui-text-highlighted);
-}
-</style>

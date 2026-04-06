@@ -251,11 +251,11 @@ onMounted(() => {
       </div>
 
       <div v-else class="grid gap-4 md:grid-cols-3">
-        <article
-          v-for="metric in profileMetrics"
-          :key="metric.label"
-          class="vtx-profile-metric"
-        >
+          <article
+            v-for="metric in profileMetrics"
+            :key="metric.label"
+            class="vtx-profile-metric"
+          >
           <p class="text-[0.68rem] font-semibold tracking-[0.22em] text-dimmed uppercase">
             {{ metric.label }}
           </p>
@@ -578,7 +578,7 @@ onMounted(() => {
 
     <template #aside>
       <div class="space-y-8">
-        <section class="vtx-profile-presence space-y-5 border-b border-default/55 pb-8">
+        <section class="relative vtx-profile-presence space-y-5 border-b border-default/55 pb-8">
           <div class="flex items-center gap-4">
             <div class="vtx-profile-avatar flex size-16 shrink-0 items-center justify-center rounded-2xl text-lg font-semibold text-auric-100">
               {{ profileInitials }}
@@ -618,7 +618,7 @@ onMounted(() => {
           </div>
         </section>
 
-        <section v-if="roleView" class="vtx-profile-role space-y-4 border-b border-default/55 pb-8">
+        <section v-if="roleView" class="relative vtx-profile-role space-y-4 border-b border-default/55 pb-8">
           <div>
             <p class="text-[0.68rem] font-semibold tracking-[0.24em] text-primary uppercase">
               {{ roleView.title }}
@@ -666,10 +666,6 @@ onMounted(() => {
   );
 }
 
-.vtx-profile-presence {
-  position: relative;
-}
-
 .vtx-profile-presence::before {
   @apply absolute -left-2 top-0 hidden h-28 w-28 rounded-full blur-3xl lg:block;
   content: '';
@@ -694,10 +690,6 @@ onMounted(() => {
   @apply absolute bottom-0 left-0 top-0 w-0.5 rounded-full;
   content: '';
   background: linear-gradient(180deg, rgb(239 170 71 / 0.9), rgb(44 189 230 / 0.8));
-}
-
-.vtx-profile-role {
-  position: relative;
 }
 
 .vtx-profile-role::after {

@@ -1,5 +1,5 @@
 <template>
-  <div class="vtx-page min-h-screen text-default">
+  <div class="relative isolate min-h-screen text-default">
     <BackgroundBase />
     <BackgroundSpectrum />
     <BackgroundTexture />
@@ -15,11 +15,3 @@
     </div>
   </div>
 </template>
-
-<style scoped>
-@reference "tailwindcss";
-
-.vtx-page {
-  @apply relative isolate;
-}
-</style>

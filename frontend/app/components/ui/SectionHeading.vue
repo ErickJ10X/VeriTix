@@ -21,13 +21,22 @@ withDefaults(
     ]"
   >
     <div
-      class="vtx-section-sigil"
+      class="mb-0.5 inline-flex items-center gap-2"
       :class="center ? 'mx-auto' : ''"
       aria-hidden="true"
     >
-      <span class="vtx-section-sigil__line" />
-      <span class="vtx-section-sigil__core" />
-      <span class="vtx-section-sigil__line" />
+      <span
+        class="h-px w-[2.2rem]"
+        style="background: linear-gradient(90deg, rgb(239 170 71 / 0.8), rgb(20 128 188 / 0.8));"
+      />
+      <span
+        class="h-[0.62rem] w-[0.62rem] rounded-full border border-white/35"
+        style="background: radial-gradient(circle at 30% 30%, rgb(255 255 255 / 0.92), rgb(240 100 127 / 0.74)); box-shadow: 0 0 12px rgb(240 100 127 / 0.4);"
+      />
+      <span
+        class="h-px w-[2.2rem]"
+        style="background: linear-gradient(90deg, rgb(239 170 71 / 0.8), rgb(20 128 188 / 0.8));"
+      />
     </div>
 
     <p
@@ -54,22 +63,3 @@ withDefaults(
     </p>
   </div>
 </template>
-
-<style scoped>
-@reference "tailwindcss";
-
-.vtx-section-sigil {
-  @apply inline-flex items-center gap-2 mb-0.5;
-}
-
-.vtx-section-sigil__line {
-  @apply h-px w-[2.2rem];
-  background: linear-gradient(90deg, rgb(239 170 71 / 0.8), rgb(20 128 188 / 0.8));
-}
-
-.vtx-section-sigil__core {
-  @apply h-[0.62rem] w-[0.62rem] rounded-full border border-white/35;
-  background: radial-gradient(circle at 30% 30%, rgb(255 255 255 / 0.92), rgb(240 100 127 / 0.74));
-  box-shadow: 0 0 12px rgb(240 100 127 / 0.4);
-}
-</style>
