@@ -115,6 +115,8 @@ const roleView = computed(() => {
   return roleViews[user.value.role]
 })
 
+const isAdmin = computed(() => user.value?.role === 'ADMIN')
+
 const profileInitials = computed(() => {
   const initials = [profileState.name || user.value?.name, profileState.lastName || user.value?.lastName]
     .map(value => value?.trim()?.charAt(0)?.toUpperCase() ?? '')
@@ -349,14 +351,24 @@ onMounted(() => {
                 Acceso y proteccion de la cuenta.
               </span>
 
-              <BasePrimaryButton
-                type="submit"
-                size="lg"
-                class="vtx-profile-submit px-6"
-                :loading="passwordSubmitting"
-              >
-                Actualizar contrasena
-              </BasePrimaryButton>
+              <div class="flex flex-col gap-3 sm:flex-row sm:items-center">
+                <BaseSecondaryButton
+                  to="/users/me/logout"
+                  size="lg"
+                  class="px-6"
+                >
+                  Cerrar sesion
+                </BaseSecondaryButton>
+
+                <BasePrimaryButton
+                  type="submit"
+                  size="lg"
+                  class="vtx-profile-submit px-6"
+                  :loading="passwordSubmitting"
+                >
+                  Actualizar contrasena
+                </BasePrimaryButton>
+              </div>
             </div>
           </UForm>
         </section>
@@ -370,6 +382,7 @@ onMounted(() => {
         :email="user?.email ?? 'Sin email'"
         :avatar-configured="Boolean(profileState.avatarUrl.trim())"
         :phone="profileState.phone"
+        :is-admin="isAdmin"
         :role-view="roleView"
       />
     </template>

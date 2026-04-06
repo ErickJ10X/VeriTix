@@ -1,6 +1,40 @@
 <script setup lang="ts">
 const { user } = useAuth()
 
+const accountMenuItems = computed(() => {
+  const items = [] as Array<{
+    label: string
+    description: string
+    to: string
+    icon: string
+  }>
+
+  if (user.value?.role === 'ADMIN') {
+    items.push({
+      label: 'Admin dashboard',
+      description: 'Eventos, usuarios y artistas',
+      to: '/admin',
+      icon: 'i-lucide-shield-check',
+    })
+  }
+
+  items.push({
+    label: 'Ajustes',
+    description: 'Perfil, contacto y seguridad',
+    to: '/users/me',
+    icon: 'i-lucide-settings-2',
+  })
+
+  items.push({
+    label: 'Cerrar sesion',
+    description: 'Salir de VeriTix de forma segura',
+    to: '/users/me/logout',
+    icon: 'i-lucide-log-out',
+  })
+
+  return items
+})
+
 const accountAvatarAlt = computed(() => {
   const fullName = [user.value?.name, user.value?.lastName]
     .filter(Boolean)
@@ -73,17 +107,22 @@ const accountSubtitle = computed(() => {
           </div>
         </div>
 
-        <NuxtLink to="/users/me" class="vtx-account-panel-link">
+        <NuxtLink
+          v-for="item in accountMenuItems"
+          :key="item.to"
+          :to="item.to"
+          class="vtx-account-panel-link"
+        >
           <div class="vtx-account-panel-link-icon-wrap" aria-hidden="true">
-            <UIcon name="i-lucide-settings-2" class="vtx-account-panel-link-icon" />
+            <UIcon :name="item.icon" class="vtx-account-panel-link-icon" />
           </div>
 
           <div class="min-w-0 flex-1">
             <p class="vtx-account-panel-link-title">
-              Ajustes
+              {{ item.label }}
             </p>
             <p class="vtx-account-panel-link-subtitle truncate">
-              Perfil, contacto y seguridad
+              {{ item.description }}
             </p>
           </div>
 
@@ -188,6 +227,10 @@ const accountSubtitle = computed(() => {
     border-color 0.12s ease-out,
     background-color 0.12s ease-out,
     box-shadow 0.12s ease-out;
+}
+
+.vtx-account-panel-link + .vtx-account-panel-link {
+  margin-top: 0.55rem;
 }
 
 .vtx-account-panel-link:hover {
