@@ -22,7 +22,6 @@ const state = reactive({
 
 const form = useTemplateRef('form')
 const errorMessage = ref('')
-const showPassword = ref(false)
 const { login, pending } = useAuth()
 const { getApiErrorMessage } = useApiErrorMessage()
 
@@ -48,17 +47,7 @@ async function onSubmit() {
 </script>
 
 <template>
-  <div class="relative min-h-screen overflow-hidden">
-    <div class="pointer-events-none absolute inset-0">
-      <div class="absolute left-1/2 -top-56 h-96 w-96 -translate-x-1/2 rounded-full bg-primary/18 blur-3xl" />
-      <div class="absolute -right-24 top-1/3 h-72 w-72 rounded-full bg-secondary/12 blur-3xl" />
-      <div class="absolute -left-24 bottom-12 h-64 w-64 rounded-full bg-auric-500/12 blur-3xl" />
-      <div class="absolute left-[8%] top-32 hidden h-40 w-40 rounded-full border border-auric-200/20 bg-linear-to-br from-auric-200/14 to-transparent blur-sm md:block" />
-      <div class="absolute right-[10%] bottom-28 hidden h-32 w-32 rounded-full border border-electric-300/20 bg-linear-to-br from-electric-200/14 to-transparent blur-sm lg:block" />
-      <div class="absolute left-[18%] bottom-[18%] hidden h-px w-44 bg-linear-to-r from-transparent via-auric-300/35 to-transparent md:block" />
-      <div class="absolute right-[16%] top-[22%] hidden h-px w-36 bg-linear-to-r from-transparent via-electric-300/35 to-transparent lg:block" />
-    </div>
-
+  <UiAuthPageShell variant="login">
     <UiAuthContainer>
       <div class="w-full max-w-lg px-4 sm:px-0">
         <section class="space-y-8">
@@ -100,49 +89,27 @@ async function onSubmit() {
             </p>
 
             <!-- Email -->
-            <UFormField
+            <BaseFormField
+              v-model="state.email"
               name="email"
               label="Email"
+              type="email"
+              placeholder="tu@email.com"
+              icon="i-lucide-mail"
               required
               class="w-full"
-            >
-              <BaseFormInput
-                v-model="state.email"
-                type="email"
-                placeholder="tu@email.com"
-                icon="i-lucide-mail"
-              />
-            </UFormField>
+            />
 
             <!-- Password -->
-            <UFormField
+            <BasePasswordField
+              v-model="state.password"
               name="password"
               label="Contrasena"
+              placeholder="Tu contrasena"
+              icon="i-lucide-lock"
               required
               class="w-full"
-            >
-              <BaseFormInput
-                v-model="state.password"
-                :type="showPassword ? 'text' : 'password'"
-                placeholder="Tu contrasena"
-                icon="i-lucide-lock"
-              >
-                <template #trailing>
-                  <button
-                    type="button"
-                    :aria-label="showPassword ? 'Ocultar contrasena' : 'Mostrar contrasena'"
-                    :aria-pressed="showPassword"
-                    class="cursor-pointer rounded-md p-0.5 text-muted transition-colors duration-150 hover:bg-white/6 hover:text-auric-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/45"
-                    @click="showPassword = !showPassword"
-                  >
-                    <UIcon
-                      :name="showPassword ? 'i-lucide-eye-off' : 'i-lucide-eye'"
-                      class="size-5"
-                    />
-                  </button>
-                </template>
-              </BaseFormInput>
-            </UFormField>
+            />
 
             <!-- Forgot password link -->
             <div class="flex justify-end -mt-2">
@@ -184,5 +151,5 @@ async function onSubmit() {
         </section>
       </div>
     </UiAuthContainer>
-  </div>
+  </UiAuthPageShell>
 </template>

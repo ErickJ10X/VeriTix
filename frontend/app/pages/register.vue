@@ -62,17 +62,7 @@ async function onSubmit() {
 </script>
 
 <template>
-  <div class="relative min-h-screen overflow-hidden">
-    <div class="pointer-events-none absolute inset-0">
-      <div class="absolute left-1/2 -top-56 h-96 w-96 -translate-x-1/2 rounded-full bg-auric-500/18 blur-3xl" />
-      <div class="absolute -right-24 top-1/4 h-72 w-72 rounded-full bg-secondary/16 blur-3xl" />
-      <div class="absolute -left-24 bottom-12 h-64 w-64 rounded-full bg-primary/12 blur-3xl" />
-      <div class="absolute right-[10%] top-24 hidden h-40 w-40 rounded-full border border-secondary/24 bg-linear-to-br from-secondary/14 to-transparent blur-sm md:block" />
-      <div class="absolute left-[9%] bottom-24 hidden h-36 w-36 rounded-full border border-auric-300/22 bg-linear-to-br from-auric-300/14 to-transparent blur-sm lg:block" />
-      <div class="absolute right-[20%] bottom-[20%] hidden h-px w-40 bg-linear-to-r from-transparent via-secondary/35 to-transparent md:block" />
-      <div class="absolute left-[18%] top-[24%] hidden h-px w-32 bg-linear-to-r from-transparent via-auric-300/35 to-transparent lg:block" />
-    </div>
-
+  <UiAuthPageShell variant="register">
     <UiAuthContainer>
       <div class="w-full max-w-lg px-4 sm:px-0">
         <section class="space-y-8">
@@ -114,107 +104,76 @@ async function onSubmit() {
             </p>
 
             <!-- All fields stacked vertically with equal spacing -->
-            <UFormField
+            <BaseFormField
+              v-model="state.email"
               name="email"
               label="Email"
               help="Te servira para iniciar sesion y recuperar acceso."
+              type="email"
+              placeholder="tu@email.com"
+              icon="i-lucide-mail"
               required
               class="w-full"
-            >
-              <BaseFormInput
-                v-model="state.email"
-                type="email"
-                placeholder="tu@email.com"
-                icon="i-lucide-mail"
-              />
-            </UFormField>
+            />
 
             <div class="grid gap-4 md:grid-cols-2">
-              <UFormField
+              <BaseFormField
+                v-model="state.name"
                 name="name"
                 label="Nombre"
+                placeholder="Juan"
+                icon="i-lucide-user"
                 required
                 class="w-full"
-              >
-                <BaseFormInput
-                  v-model="state.name"
-                  placeholder="Juan"
-                  icon="i-lucide-user"
-                />
-              </UFormField>
+              />
 
-              <UFormField
+              <BaseFormField
+                v-model="state.lastName"
                 name="lastName"
                 label="Apellido"
+                placeholder="Garcia"
+                icon="i-lucide-user-round"
                 required
                 class="w-full"
-              >
-                <BaseFormInput
-                  v-model="state.lastName"
-                  placeholder="Garcia"
-                  icon="i-lucide-user-round"
-                />
-              </UFormField>
+              />
             </div>
 
-            <UFormField
+            <BaseFormField
+              v-model="state.phone"
               name="phone"
               label="Telefono"
               help="Formato internacional E.164. Ejemplo: +34958123456"
+              type="tel"
+              placeholder="+34958123456"
+              icon="i-lucide-phone"
               required
               class="w-full"
-            >
-              <BaseFormInput
-                v-model="state.phone"
-                type="tel"
-                placeholder="+34958123456"
-                icon="i-lucide-phone"
-              />
-            </UFormField>
+            />
 
-            <UFormField
+            <BasePasswordField
+              v-model="state.password"
               name="password"
               label="Contrasena"
               help="Incluye mayuscula, minuscula y un numero."
+              placeholder="Minimo 8 caracteres"
+              icon="i-lucide-lock"
+              :show="showPassword"
+              @update:show="showPassword = $event"
               required
               class="w-full"
-            >
-              <BaseFormInput
-                v-model="state.password"
-                :type="showPassword ? 'text' : 'password'"
-                placeholder="Minimo 8 caracteres"
-                icon="i-lucide-lock"
-              >
-                <template #trailing>
-                  <button
-                    type="button"
-                    :aria-label="showPassword ? 'Ocultar contrasena' : 'Mostrar contrasena'"
-                    :aria-pressed="showPassword"
-                    class="cursor-pointer rounded-md p-0.5 text-muted transition-colors duration-150 hover:bg-white/6 hover:text-auric-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/45"
-                    @click="showPassword = !showPassword"
-                  >
-                    <UIcon
-                      :name="showPassword ? 'i-lucide-eye-off' : 'i-lucide-eye'"
-                      class="h-5 w-5"
-                    />
-                  </button>
-                </template>
-              </BaseFormInput>
-            </UFormField>
+            />
 
-            <UFormField
+            <BasePasswordField
+              v-model="state.confirmPassword"
               name="confirmPassword"
               label="Confirmar contrasena"
+              placeholder="Repite tu contrasena"
+              icon="i-lucide-lock"
+              :show="showPassword"
+              @update:show="showPassword = $event"
               required
               class="w-full"
-            >
-              <BaseFormInput
-                v-model="state.confirmPassword"
-                :type="showPassword ? 'text' : 'password'"
-                placeholder="Repite tu contrasena"
-                icon="i-lucide-lock"
-              />
-            </UFormField>
+            />
 
             <!-- Terms -->
             <p class="mt-2 text-center text-xs text-muted">
@@ -264,5 +223,5 @@ async function onSubmit() {
         </section>
       </div>
     </UiAuthContainer>
-  </div>
+  </UiAuthPageShell>
 </template>

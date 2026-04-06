@@ -327,21 +327,23 @@ onMounted(() => {
             </div>
 
             <div class="grid gap-5 sm:grid-cols-2">
-              <UFormField name="name" label="Nombre" required>
-                <BaseFormInput
-                  v-model="profileState.name"
-                  placeholder="Nombre"
-                  icon="i-lucide-user"
-                />
-              </UFormField>
+              <BaseFormField
+                v-model="profileState.name"
+                name="name"
+                label="Nombre"
+                placeholder="Nombre"
+                icon="i-lucide-user"
+                required
+              />
 
-              <UFormField name="lastName" label="Apellido" required>
-                <BaseFormInput
-                  v-model="profileState.lastName"
-                  placeholder="Apellido"
-                  icon="i-lucide-user-round"
-                />
-              </UFormField>
+              <BaseFormField
+                v-model="profileState.lastName"
+                name="lastName"
+                label="Apellido"
+                placeholder="Apellido"
+                icon="i-lucide-user-round"
+                required
+              />
             </div>
           </section>
 
@@ -351,31 +353,25 @@ onMounted(() => {
             </h3>
 
             <div class="grid gap-5">
-              <UFormField
+              <BaseFormField
+                v-model="profileState.phone"
                 name="phone"
                 label="Telefono"
                 help="Opcional · formato E.164"
-              >
-                <BaseFormInput
-                  v-model="profileState.phone"
-                  type="tel"
-                  placeholder="+34958123456"
-                  icon="i-lucide-phone"
-                />
-              </UFormField>
+                type="tel"
+                placeholder="+34958123456"
+                icon="i-lucide-phone"
+              />
 
-              <UFormField
+              <BaseFormField
+                v-model="profileState.avatarUrl"
                 name="avatarUrl"
                 label="Avatar URL"
                 help="Opcional"
-              >
-                <BaseFormInput
-                  v-model="profileState.avatarUrl"
-                  type="url"
-                  placeholder="https://..."
-                  icon="i-lucide-image"
-                />
-              </UFormField>
+                type="url"
+                placeholder="https://..."
+                icon="i-lucide-image"
+              />
             </div>
           </section>
 
@@ -442,80 +438,40 @@ onMounted(() => {
               {{ securitySuccessMessage }}
             </p>
 
-            <UFormField name="currentPassword" label="Contrasena actual" required>
-              <BaseFormInput
-                v-model="passwordState.currentPassword"
-                :type="showCurrentPassword ? 'text' : 'password'"
-                placeholder="Contrasena actual"
-                icon="i-lucide-lock"
-              >
-                <template #trailing>
-                  <button
-                    type="button"
-                    :aria-label="showCurrentPassword ? 'Ocultar contrasena actual' : 'Mostrar contrasena actual'"
-                    class="cursor-pointer rounded-md p-0.5 text-muted transition-colors duration-150 hover:bg-white/6 hover:text-auric-300"
-                    @click="showCurrentPassword = !showCurrentPassword"
-                  >
-                    <UIcon
-                      :name="showCurrentPassword ? 'i-lucide-eye-off' : 'i-lucide-eye'"
-                      class="size-5"
-                    />
-                  </button>
-                </template>
-              </BaseFormInput>
-            </UFormField>
+            <BasePasswordField
+              v-model="passwordState.currentPassword"
+              name="currentPassword"
+              label="Contrasena actual"
+              placeholder="Contrasena actual"
+              icon="i-lucide-lock"
+              :show="showCurrentPassword"
+              required
+              @update:show="showCurrentPassword = $event"
+            />
 
             <div class="grid gap-5 lg:grid-cols-2">
-              <UFormField
+              <BasePasswordField
+                v-model="passwordState.newPassword"
                 name="newPassword"
                 label="Nueva contrasena"
                 help="8+ caracteres · mayuscula · minuscula · numero"
+                placeholder="Nueva contrasena"
+                icon="i-lucide-shield"
+                :show="showNewPassword"
                 required
-              >
-                <BaseFormInput
-                  v-model="passwordState.newPassword"
-                  :type="showNewPassword ? 'text' : 'password'"
-                  placeholder="Nueva contrasena"
-                  icon="i-lucide-shield"
-                >
-                  <template #trailing>
-                    <button
-                      type="button"
-                      :aria-label="showNewPassword ? 'Ocultar nueva contrasena' : 'Mostrar nueva contrasena'"
-                      class="cursor-pointer rounded-md p-0.5 text-muted transition-colors duration-150 hover:bg-white/6 hover:text-auric-300"
-                      @click="showNewPassword = !showNewPassword"
-                    >
-                      <UIcon
-                        :name="showNewPassword ? 'i-lucide-eye-off' : 'i-lucide-eye'"
-                        class="size-5"
-                      />
-                    </button>
-                  </template>
-                </BaseFormInput>
-              </UFormField>
+                @update:show="showNewPassword = $event"
+              />
 
-              <UFormField name="confirmPassword" label="Confirmar contrasena" required>
-                <BaseFormInput
-                  v-model="passwordState.confirmPassword"
-                  :type="showConfirmPassword ? 'text' : 'password'"
-                  placeholder="Confirmar contrasena"
-                  icon="i-lucide-check-check"
-                >
-                  <template #trailing>
-                    <button
-                      type="button"
-                      :aria-label="showConfirmPassword ? 'Ocultar confirmacion de contrasena' : 'Mostrar confirmacion de contrasena'"
-                      class="cursor-pointer rounded-md p-0.5 text-muted transition-colors duration-150 hover:bg-white/6 hover:text-auric-300"
-                      @click="showConfirmPassword = !showConfirmPassword"
-                    >
-                      <UIcon
-                        :name="showConfirmPassword ? 'i-lucide-eye-off' : 'i-lucide-eye'"
-                        class="size-5"
-                      />
-                    </button>
-                  </template>
-                </BaseFormInput>
-              </UFormField>
+              <BasePasswordField
+                v-model="passwordState.confirmPassword"
+                name="confirmPassword"
+                label="Confirmar contrasena"
+                placeholder="Confirmar contrasena"
+                icon="i-lucide-check-check"
+                :show="showConfirmPassword"
+                required
+                @update:show="showConfirmPassword = $event"
+              />
             </div>
 
             <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
