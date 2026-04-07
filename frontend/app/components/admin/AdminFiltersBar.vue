@@ -1,3 +1,71 @@
+<script setup lang="ts">
+import { computed } from 'vue'
+
+interface Props {
+  search?: string
+  city?: string
+  genreId?: string
+  formatId?: string
+  dateFrom?: string
+  dateTo?: string
+  genres?: Array<{ id: string, name: string }>
+  formats?: Array<{ id: string, name: string }>
+  pageSize?: number
+  loading?: boolean
+  quickWindow?: string | null
+  quickWindowOptions?: Array<{ value: string, label: string }>
+}
+
+const props = withDefaults(defineProps<Props>(), {
+  search: '',
+  city: '',
+  genreId: '',
+  formatId: '',
+  dateFrom: '',
+  dateTo: '',
+  genres: () => [],
+  formats: () => [],
+  pageSize: 24,
+  loading: false,
+  quickWindow: null,
+  quickWindowOptions: () => [],
+})
+
+defineEmits<{
+  (e: 'update:search', value: string): void
+  (e: 'update:city', value: string): void
+  (e: 'update:genreId', value: string): void
+  (e: 'update:formatId', value: string): void
+  (e: 'update:dateFrom', value: string): void
+  (e: 'update:dateTo', value: string): void
+  (e: 'update:pageSize', value: number): void
+  (e: 'update:quickWindow', value: string): void
+  (e: 'apply'): void
+  (e: 'reset'): void
+}>()
+
+const pageSizeOptions = [
+  { label: '12', value: 12 },
+  { label: '24', value: 24 },
+  { label: '48', value: 48 },
+  { label: '96', value: 96 },
+]
+
+const genreOptions = computed(() => {
+  return [
+    { label: 'All Genres', value: '' },
+    ...props.genres.map(g => ({ label: g.name, value: g.id })),
+  ]
+})
+
+const formatOptions = computed(() => {
+  return [
+    { label: 'All Formats', value: '' },
+    ...props.formats.map(f => ({ label: f.name, value: f.id })),
+  ]
+})
+</script>
+
 <template>
   <div class="flex flex-col gap-4 w-full">
     <!-- Top Row: Search, City, Page Size -->
@@ -5,32 +73,32 @@
       <UFormField label="Search Events" class="md:col-span-5">
         <UInput
           :model-value="search"
-          @update:model-value="$emit('update:search', $event)"
           icon="i-heroicons-magnifying-glass"
           placeholder="Search by event name..."
           class="w-full"
           :disabled="loading"
+          @update:model-value="$emit('update:search', $event)"
         />
       </UFormField>
 
       <UFormField label="City" class="md:col-span-5">
         <UInput
           :model-value="city"
-          @update:model-value="$emit('update:city', $event)"
           icon="i-heroicons-map-pin"
           placeholder="Filter by city..."
           class="w-full"
           :disabled="loading"
+          @update:model-value="$emit('update:city', $event)"
         />
       </UFormField>
 
       <UFormField label="Per Page" class="md:col-span-2">
         <USelect
           :model-value="pageSize"
-          @update:model-value="$emit('update:pageSize', Number($event))"
           :options="pageSizeOptions"
           class="w-full"
           :disabled="loading"
+          @update:model-value="$emit('update:pageSize', Number($event))"
         />
       </UFormField>
     </div>
@@ -40,20 +108,20 @@
       <UFormField label="Genre" class="md:col-span-3">
         <USelect
           :model-value="genreId"
-          @update:model-value="$emit('update:genreId', $event)"
           :options="genreOptions"
           class="w-full"
           :disabled="loading"
+          @update:model-value="$emit('update:genreId', $event)"
         />
       </UFormField>
 
       <UFormField label="Format" class="md:col-span-3">
         <USelect
           :model-value="formatId"
-          @update:model-value="$emit('update:formatId', $event)"
           :options="formatOptions"
           class="w-full"
           :disabled="loading"
+          @update:model-value="$emit('update:formatId', $event)"
         />
       </UFormField>
 
@@ -61,9 +129,9 @@
         <UInput
           type="date"
           :model-value="dateFrom"
-          @update:model-value="$emit('update:dateFrom', $event)"
           class="w-full"
           :disabled="loading"
+          @update:model-value="$emit('update:dateFrom', $event)"
         />
       </UFormField>
 
@@ -71,9 +139,9 @@
         <UInput
           type="date"
           :model-value="dateTo"
-          @update:model-value="$emit('update:dateTo', $event)"
           class="w-full"
           :disabled="loading"
+          @update:model-value="$emit('update:dateTo', $event)"
         />
       </UFormField>
 
@@ -111,71 +179,3 @@
     </div>
   </div>
 </template>
-
-<script setup lang="ts">
-import { computed } from 'vue'
-
-interface Props {
-  search?: string
-  city?: string
-  genreId?: string
-  formatId?: string
-  dateFrom?: string
-  dateTo?: string
-  genres?: Array<{id: string, name: string}>
-  formats?: Array<{id: string, name: string}>
-  pageSize?: number
-  loading?: boolean
-  quickWindow?: string | null
-  quickWindowOptions?: Array<{value: string, label: string}>
-}
-
-const props = withDefaults(defineProps<Props>(), {
-  search: '',
-  city: '',
-  genreId: '',
-  formatId: '',
-  dateFrom: '',
-  dateTo: '',
-  genres: () => [],
-  formats: () => [],
-  pageSize: 24,
-  loading: false,
-  quickWindow: null,
-  quickWindowOptions: () => []
-})
-
-defineEmits<{
-  (e: 'update:search', value: string): void
-  (e: 'update:city', value: string): void
-  (e: 'update:genreId', value: string): void
-  (e: 'update:formatId', value: string): void
-  (e: 'update:dateFrom', value: string): void
-  (e: 'update:dateTo', value: string): void
-  (e: 'update:pageSize', value: number): void
-  (e: 'update:quickWindow', value: string): void
-  (e: 'apply'): void
-  (e: 'reset'): void
-}>()
-
-const pageSizeOptions = [
-  { label: '12', value: 12 },
-  { label: '24', value: 24 },
-  { label: '48', value: 48 },
-  { label: '96', value: 96 }
-]
-
-const genreOptions = computed(() => {
-  return [
-    { label: 'All Genres', value: '' },
-    ...props.genres.map(g => ({ label: g.name, value: g.id }))
-  ]
-})
-
-const formatOptions = computed(() => {
-  return [
-    { label: 'All Formats', value: '' },
-    ...props.formats.map(f => ({ label: f.name, value: f.id }))
-  ]
-})
-</script>

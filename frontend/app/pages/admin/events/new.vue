@@ -21,7 +21,7 @@ const creationSurface = {
   title: 'Diseña el próximo evento',
   description: 'Construye la ficha operativa con contexto visual, datos de venta y metadatos curatoriales en una sola superficie.',
   icon: 'i-lucide-calendar-plus-2',
-  accentClass: 'from-auric',
+  variant: 'warning',
   highlights: ['Venue y aforo', 'Venta y timing', 'Imagen y géneros', 'Salida directa a edición'],
 } as const
 
@@ -95,7 +95,7 @@ onMounted(() => {
         :title="creationSurface.title"
         :description="creationSurface.description"
         :icon="creationSurface.icon"
-        :accent-class="creationSurface.accentClass"
+        :variant="creationSurface.variant"
         :highlights="creationSurface.highlights"
       >
         <AdminEventForm

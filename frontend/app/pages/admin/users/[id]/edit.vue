@@ -17,6 +17,15 @@ const submitting = ref(false)
 const errorMessage = ref('')
 const successMessage = ref('')
 
+const updateSurface = {
+  eyebrow: 'Edición manual',
+  title: 'Actualiza los datos del usuario',
+  description: 'Modifica la información básica, rol y estado de la cuenta en el sistema.',
+  icon: 'i-lucide-user-cog',
+  variant: 'primary',
+  highlights: ['Datos personales', 'Cambio de rol', 'Gestión de estado'],
+} as const
+
 async function loadUser() {
   loading.value = true
   errorMessage.value = ''
@@ -73,9 +82,17 @@ onMounted(() => {
         <USkeleton class="h-36 rounded-2xl" />
       </div>
 
-      <div v-else-if="userRecord" class="rounded-3xl border border-default/55 bg-default/6 p-6">
+      <AdminFormSurface
+        v-else-if="userRecord"
+        :eyebrow="updateSurface.eyebrow"
+        :title="updateSurface.title"
+        :description="updateSurface.description"
+        :icon="updateSurface.icon"
+        :variant="updateSurface.variant"
+        :highlights="updateSurface.highlights"
+      >
         <AdminUserForm mode="edit" :initial-value="userRecord" :submitting="submitting" submit-label="Guardar cambios" @submit="updateUser" />
-      </div>
+      </AdminFormSurface>
     </div>
   </AdminPageShell>
 </template>

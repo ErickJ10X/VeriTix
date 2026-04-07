@@ -2,7 +2,6 @@
 import type { AdminUserRecord, PaginatedResponse } from '~/types'
 
 definePageMeta({ middleware: 'admin' })
-
 useSeoMeta({ title: 'Admin usuarios | VeriTix' })
 
 const apiRequest = useApiRequest()
@@ -14,26 +13,59 @@ const pending = ref(true)
 const errorMessage = ref('')
 const deletingUserId = ref('')
 const search = ref('')
+const filterStatus = ref<'all' | 'active' | 'inactive'>('all')
 
 const filteredUsers = computed(() => {
-  if (!search.value.trim()) return users.value
-  const term = search.value.toLowerCase()
-  return users.value.filter(u => 
-    u.name.toLowerCase().includes(term) ||
-    u.lastName.toLowerCase().includes(term) ||
-    u.email.toLowerCase().includes(term)
-  )
+  let result = users.value
+
+  if (search.value.trim()) {
+    const term = search.value.toLowerCase()
+    result = result.filter(u =>
+      u.name.toLowerCase().includes(term)
+      || u.lastName.toLowerCase().includes(term)
+      || u.email.toLowerCase().includes(term),
+    )
+  }
+
+  if (filterStatus.value !== 'all') {
+    result = result.filter(u =>
+      filterStatus.value === 'active' ? u.isActive : !u.isActive,
+    )
+  }
+
+  return result
 })
 
 const metrics = computed(() => {
   const active = users.value.filter(u => u.isActive).length
   const inactive = users.value.length - active
   const admins = users.value.filter(u => u.role === 'ADMIN').length
+
   return [
-    { label: 'Total', value: users.value.length },
-    { label: 'Activos', value: active },
-    { label: 'Inactivos', value: inactive },
-    { label: 'Admins', value: admins },
+    {
+      label: 'Total usuarios',
+      value: users.value.length,
+      icon: 'i-lucide-users',
+      variant: 'primary' as const,
+    },
+    {
+      label: 'Activos',
+      value: active,
+      icon: 'i-lucide-user-check',
+      variant: 'success' as const,
+    },
+    {
+      label: 'Inactivos',
+      value: inactive,
+      icon: 'i-lucide-user-x',
+      variant: inactive > 0 ? 'warning' as const : 'default' as const,
+    },
+    {
+      label: 'Administradores',
+      value: admins,
+      icon: 'i-lucide-shield',
+      variant: 'primary' as const,
+    },
   ]
 })
 
@@ -48,9 +80,11 @@ async function loadUsers() {
       query: { page: 1, limit: 100 },
     })
     users.value = response.data
-  } catch (error) {
+  }
+  catch (error) {
     errorMessage.value = getApiErrorMessage(error, 'No pudimos cargar los usuarios.')
-  } finally {
+  }
+  finally {
     pending.value = false
   }
 }
@@ -60,11 +94,23 @@ async function removeUser(userId: string) {
   try {
     await apiRequest(`/admin/users/${userId}`, { method: 'DELETE', headers: requireAdminHeaders() })
     await loadUsers()
-  } catch (error) {
+  }
+  catch (error) {
     errorMessage.value = getApiErrorMessage(error, 'No pudimos eliminar el usuario.')
-  } finally {
+  }
+  finally {
     deletingUserId.value = ''
   }
+}
+
+function getInitials(user: AdminUserRecord) {
+  return `${user.name.charAt(0)}${user.lastName.charAt(0)}`.toUpperCase()
+}
+
+function getAvatarColor(user: AdminUserRecord) {
+  if (user.role === 'ADMIN') { return 'bg-blue-50 dark:bg-blue-500/10 text-blue-600 dark:text-blue-400 border-blue-200 dark:border-blue-500/20' }
+  if (user.isActive) { return 'bg-emerald-50 dark:bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-200 dark:border-emerald-500/20' }
+  return 'bg-default text-muted border-default'
 }
 
 onMounted(() => {
@@ -74,12 +120,12 @@ onMounted(() => {
 
 <template>
   <AdminPageShell
-    title="Usuarios"
-    description="Gestión de cuentas, roles y estado operativo de usuarios."
+    title="Gestión de usuarios"
+    description="Administra cuentas, roles y permisos de acceso al sistema."
     primary-action-to="/admin/users/new"
-    primary-action-label="Crear usuario"
+    primary-action-label="Nuevo usuario"
   >
-    <div class="max-w-7xl mx-auto space-y-8">
+    <div class="max-w-6xl mx-auto space-y-6">
       <!-- Error -->
       <UAlert
         v-if="errorMessage"
@@ -89,80 +135,159 @@ onMounted(() => {
         icon="i-lucide-alert-circle"
       />
 
-      <!-- Metrics -->
-      <div class="grid grid-cols-2 lg:grid-cols-4 gap-6 border-b border-default pb-8">
+      <!-- Metrics Grid -->
+      <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
         <template v-if="pending">
-          <USkeleton v-for="i in 4" :key="i" class="h-20" />
+          <div v-for="i in 4" :key="i" class="p-6 rounded-2xl border border-default bg-default shadow-sm">
+            <USkeleton class="size-10 rounded-lg mb-4" />
+            <USkeleton class="h-8 w-16 mb-2" />
+            <USkeleton class="h-4 w-24" />
+          </div>
         </template>
         <template v-else>
-          <div v-for="metric in metrics" :key="metric.label">
-            <p class="text-sm text-muted">{{ metric.label }}</p>
-            <p class="text-3xl font-semibold mt-1">{{ metric.value }}</p>
-          </div>
+          <AdminMetric
+            v-for="metric in metrics"
+            :key="metric.label"
+            :label="metric.label"
+            :value="metric.value"
+            :icon="metric.icon"
+            :variant="metric.variant"
+          />
         </template>
       </div>
 
-      <!-- Search -->
-      <div class="flex gap-4">
-        <UInput
-          v-model="search"
-          placeholder="Buscar por nombre o email..."
-          icon="i-lucide-search"
-          class="max-w-md"
-        />
-      </div>
-
-      <!-- List -->
-      <div v-if="pending" class="space-y-3">
-        <USkeleton v-for="i in 6" :key="i" class="h-20" />
-      </div>
-
-      <div v-else-if="filteredUsers.length === 0" class="text-center py-12 text-muted">
-        <UIcon name="i-lucide-users" class="size-12 mx-auto mb-4 opacity-50" />
-        <p>No hay usuarios disponibles.</p>
-      </div>
-
-      <div v-else class="divide-y divide-default">
-        <div
-          v-for="user in filteredUsers"
-          :key="user.id"
-          class="flex items-center justify-between py-4 hover:bg-elevated -mx-2 px-2 rounded transition-colors"
-        >
-          <div class="flex items-center gap-4">
-            <div class="size-10 rounded-full bg-default border border-default flex items-center justify-center text-sm font-medium">
-              {{ user.name.charAt(0) }}{{ user.lastName.charAt(0) }}
-            </div>
-            <div>
-              <p class="font-medium">{{ user.name }} {{ user.lastName }}</p>
-              <p class="text-sm text-muted">{{ user.email }}</p>
-            </div>
+      <!-- Main Section -->
+      <AdminCard padding="none" class="flex flex-col">
+        <!-- Filters Bar -->
+        <div class="p-4 sm:p-5 border-b border-default bg-elevated flex flex-col sm:flex-row sm:items-center gap-4 justify-between rounded-t-2xl">
+          <div class="flex-1 max-w-md">
+            <UInput
+              v-model="search"
+              placeholder="Buscar por nombre o email..."
+              icon="i-lucide-search"
+              size="md"
+              class="w-full"
+              :ui="{ icon: { trailing: { pointer: '' } }, wrapper: 'relative w-full' }"
+            />
           </div>
-
-          <div class="flex items-center gap-4">
-            <div class="text-right hidden sm:block">
-              <UBadge :color="user.isActive ? 'success' : 'neutral'" variant="soft" size="sm">
-                {{ user.isActive ? 'Activo' : 'Inactivo' }}
-              </UBadge>
-              <p class="text-xs text-muted mt-1">{{ user.role }}</p>
-            </div>
-            <div class="flex items-center gap-2">
-              <UButton
-                :to="`/admin/users/${user.id}/edit`"
-                color="neutral"
-                variant="ghost"
-                size="sm"
-              >
-                Editar
-              </UButton>
-              <AdminDeleteAction
-                :item-label="`${user.name} ${user.lastName}`.trim()"
-                :pending="deletingUserId === user.id"
-                @confirm="removeUser(user.id)"
-              />
-            </div>
+          <div class="flex items-center gap-1.5 p-1 rounded-lg bg-elevated border border-default self-start sm:self-auto">
+            <button
+              v-for="option in [
+                { value: 'all', label: 'Todos' },
+                { value: 'active', label: 'Activos' },
+                { value: 'inactive', label: 'Inactivos' },
+              ]"
+              :key="option.value"
+              class="px-3 py-1.5 text-sm font-medium rounded-md transition-all duration-200" :class="[
+                filterStatus === option.value
+                  ? 'bg-default text-default shadow-sm ring-1 ring-default'
+                  : 'text-muted hover:text-default hover:bg-elevated',
+              ]"
+              @click="filterStatus = option.value as any"
+            >
+              {{ option.label }}
+            </button>
           </div>
         </div>
-      </div>
+
+        <!-- Results Info -->
+        <div class="px-5 py-3 border-b border-default bg-default flex items-center justify-between text-sm text-muted">
+          <p class="font-medium">
+            <span class="text-default">{{ filteredUsers.length }}</span> usuario{{ filteredUsers.length !== 1 ? 's' : '' }}
+          </p>
+          <p v-if="search || filterStatus !== 'all'" class="text-amber-600 dark:text-amber-500 font-medium flex items-center gap-1.5">
+            <UIcon name="i-lucide-filter" class="size-4" />
+            Filtros aplicados
+          </p>
+        </div>
+
+        <!-- List Area -->
+        <div class="bg-elevated min-h-[400px] p-4 sm:p-5 rounded-b-2xl">
+          <!-- Loading State -->
+          <div v-if="pending" class="space-y-3">
+            <USkeleton v-for="i in 5" :key="i" class="h-20 w-full rounded-2xl" />
+          </div>
+
+          <!-- Empty State -->
+          <div v-else-if="filteredUsers.length === 0" class="flex flex-col items-center justify-center h-full py-16 text-center">
+            <div class="p-4 rounded-full bg-elevated mb-4 ring-1 ring-slate-200 dark:ring-slate-700">
+              <UIcon name="i-lucide-users" class="size-8 text-muted" />
+            </div>
+            <h3 class="text-lg font-semibold text-default mb-1">
+              No se encontraron usuarios
+            </h3>
+            <p class="text-muted text-sm max-w-sm">
+              {{ search ? 'Intenta con otros términos de búsqueda o cambia los filtros activos.' : 'Actualmente no hay usuarios registrados en la plataforma.' }}
+            </p>
+            <UButton v-if="search || filterStatus !== 'all'" color="neutral" variant="soft" class="mt-6 font-medium" @click="search = ''; filterStatus = 'all'">
+              Limpiar filtros
+            </UButton>
+          </div>
+
+          <!-- Users List -->
+          <div v-else class="space-y-3">
+            <AdminCard
+              v-for="user in filteredUsers"
+              :key="user.id"
+              hover
+              padding="compact"
+              class="group flex flex-col sm:flex-row sm:items-center gap-4"
+            >
+              <!-- Avatar -->
+              <div
+                class="size-11 rounded-full border flex items-center justify-center text-sm font-bold shrink-0 transition-colors"
+                :class="getAvatarColor(user)"
+              >
+                {{ getInitials(user) }}
+              </div>
+
+              <!-- Info -->
+              <div class="flex-1 min-w-0">
+                <div class="flex items-center gap-2 mb-1">
+                  <p class="font-semibold text-default truncate group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
+                    {{ user.name }} {{ user.lastName }}
+                  </p>
+                  <UBadge v-if="user.role === 'ADMIN'" color="primary" variant="soft" size="xs" class="font-semibold rounded-full px-2">
+                    ADMIN
+                  </UBadge>
+                </div>
+                <div class="flex items-center gap-3 text-sm text-muted">
+                  <span class="flex items-center gap-1.5 truncate">
+                    <UIcon name="i-lucide-mail" class="size-3.5 shrink-0" />
+                    <span class="truncate">{{ user.email }}</span>
+                  </span>
+                </div>
+              </div>
+
+              <!-- Status & Actions -->
+              <div class="flex items-center justify-between sm:justify-end gap-6 sm:w-64 mt-3 sm:mt-0 pt-3 sm:pt-0 border-t border-default sm:border-t-0">
+                <div class="flex items-center gap-2">
+                  <div class="size-2 rounded-full" :class="user.isActive ? 'bg-emerald-500' : 'bg-muted'" />
+                  <span class="text-xs font-medium" :class="user.isActive ? 'text-emerald-600 dark:text-emerald-400' : 'text-muted'">
+                    {{ user.isActive ? 'Activo' : 'Inactivo' }}
+                  </span>
+                </div>
+
+                <div class="flex items-center gap-2 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity duration-200">
+                  <UButton
+                    :to="`/admin/users/${user.id}/edit`"
+                    color="neutral"
+                    variant="soft"
+                    size="sm"
+                    icon="i-lucide-pencil"
+                    class="hover:bg-elevated"
+                  />
+                  <AdminDeleteAction
+                    :item-label="`${user.name} ${user.lastName}`.trim()"
+                    :pending="deletingUserId === user.id"
+                    @confirm="removeUser(user.id)"
+                  />
+                </div>
+              </div>
+            </AdminCard>
+          </div>
+        </div>
+      </AdminCard>
     </div>
   </AdminPageShell>
 </template>

@@ -9,7 +9,7 @@ const props = withDefaults(defineProps<{
   actionTo?: string
   accent?: 'auric' | 'nebula' | 'ember' | 'electric' | 'crimson' | 'verdant' | 'slate'
 }>(), {
-  accent: 'slate'
+  accent: 'slate',
 })
 
 defineEmits(['action'])
@@ -22,7 +22,7 @@ const accentClasses = computed(() => {
     electric: 'bg-electric-500/10 text-electric-500',
     crimson: 'bg-crimson-500/10 text-crimson-500',
     verdant: 'bg-verdant-500/10 text-verdant-500',
-    slate: 'bg-slate-500/10 text-slate-500'
+    slate: 'bg-slate-500/10 text-slate-500',
   }
   return map[props.accent] || map.slate
 })
@@ -33,13 +33,17 @@ const accentClasses = computed(() => {
     <div class="flex items-start gap-4">
       <div
         v-if="icon"
-        :class="['flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-lg', accentClasses]"
+        class="flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-lg" :class="[accentClasses]"
       >
         <UIcon :name="icon" class="h-6 w-6" />
       </div>
       <div>
-        <h1 class="text-2xl font-semibold text-default">{{ title }}</h1>
-        <p class="mt-1 text-muted">{{ description }}</p>
+        <h1 class="text-2xl font-semibold text-default">
+          {{ title }}
+        </h1>
+        <p class="mt-1 text-muted">
+          {{ description }}
+        </p>
       </div>
     </div>
 

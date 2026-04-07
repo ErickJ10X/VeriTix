@@ -34,8 +34,12 @@ function isActive(path: string): boolean {
         <header class="border-b border-default pb-6">
           <div class="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
             <div>
-              <h1 class="text-2xl font-semibold">{{ title }}</h1>
-              <p class="text-muted mt-1">{{ description }}</p>
+              <h1 class="text-2xl font-semibold">
+                {{ title }}
+              </h1>
+              <p class="text-muted mt-1">
+                {{ description }}
+              </p>
             </div>
 
             <div class="flex items-center gap-3">
@@ -58,8 +62,8 @@ function isActive(path: string): boolean {
               :key="item.to"
               :to="item.to"
               class="inline-flex items-center gap-2 px-3 py-1.5 text-sm font-medium rounded-md transition-colors"
-              :class="isActive(item.to) 
-                ? 'bg-default text-default border border-default' 
+              :class="isActive(item.to)
+                ? 'bg-default text-default border border-default'
                 : 'text-muted hover:text-default hover:bg-elevated'"
               :data-testid="`admin-nav-${item.label.toLowerCase()}`"
             >

@@ -252,7 +252,11 @@
   border: 1px solid color-mix(in srgb, var(--ui-border-accented) 28%, transparent);
   background:
     linear-gradient(180deg, color-mix(in srgb, var(--ui-bg) 96%, black), color-mix(in srgb, var(--ui-bg) 88%, black)),
-    linear-gradient(135deg, color-mix(in srgb, var(--color-auric-400) 6%, transparent), color-mix(in srgb, var(--color-nebula-400) 5%, transparent));
+    linear-gradient(
+      135deg,
+      color-mix(in srgb, var(--color-auric-400) 6%, transparent),
+      color-mix(in srgb, var(--color-nebula-400) 5%, transparent)
+    );
   box-shadow:
     0 22px 46px -30px rgb(0 0 0 / 0.88),
     inset 0 1px 0 rgb(255 255 255 / 0.04);

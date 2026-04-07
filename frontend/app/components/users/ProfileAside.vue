@@ -218,5 +218,4 @@ const accountMenuItems = computed(() => {
   content: '';
   background: radial-gradient(circle at center, rgb(44 189 230 / 0.14), rgb(255 255 255 / 0));
 }
-
 </style>

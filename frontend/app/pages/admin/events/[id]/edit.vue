@@ -25,7 +25,6 @@ const editingSurface = computed(() => ({
   title: event.value?.name ?? 'Ajusta este evento',
   description: 'Refina el contenido, la logística y la lectura visual del evento sin salir de una única superficie operativa.',
   icon: 'i-lucide-sliders-horizontal',
-  accentClass: event.value?.status === 'DRAFT' ? 'from-rose' : 'from-cyan',
   highlights: [
     event.value?.venue.name ? `${event.value.venue.name} · ${event.value.venue.city}` : 'Venue operativo',
     event.value?.format?.name ?? 'Sin formato específico',
@@ -103,11 +102,11 @@ onMounted(() => {
 
       <AdminFormSurface
         v-else-if="event"
+        variant="warning"
         :eyebrow="editingSurface.eyebrow"
         :title="editingSurface.title"
         :description="editingSurface.description"
         :icon="editingSurface.icon"
-        :accent-class="editingSurface.accentClass"
         :highlights="editingSurface.highlights"
       >
         <AdminEventForm

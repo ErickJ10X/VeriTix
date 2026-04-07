@@ -19,7 +19,6 @@ const creationSurface = {
   title: 'Da de alta un artista con presencia',
   description: 'Prepara una entrada sólida para el directorio con identidad, bio, visibilidad y vínculo con géneros relevantes.',
   icon: 'i-lucide-badge-plus',
-  accentClass: 'from-rose',
   highlights: ['Nombre y slug', 'Bio y enlaces', 'Visibilidad', 'Géneros asociados'],
 } as const
 
@@ -80,7 +79,7 @@ onMounted(() => {
         :title="creationSurface.title"
         :description="creationSurface.description"
         :icon="creationSurface.icon"
-        :accent-class="creationSurface.accentClass"
+        variant="success"
         :highlights="creationSurface.highlights"
       >
         <AdminArtistForm :genres="genres" :submitting="submitting" submit-label="Crear artista" @submit="createArtist" />

@@ -9,7 +9,7 @@ interface Props {
 withDefaults(defineProps<Props>(), {
   loading: false,
   emptyText: 'No items found',
-  keyField: 'id'
+  keyField: 'id',
 })
 </script>
 
@@ -17,9 +17,9 @@ withDefaults(defineProps<Props>(), {
   <div class="space-y-3">
     <!-- Loading State: Skeleton Loaders -->
     <template v-if="loading">
-      <div 
-        v-for="i in 3" 
-        :key="`skeleton-${i}`" 
+      <div
+        v-for="i in 3"
+        :key="`skeleton-${i}`"
         class="flex items-center gap-4 p-4 rounded-lg border border-default bg-default"
       >
         <USkeleton class="h-10 w-10 rounded-full" />
@@ -35,15 +35,17 @@ withDefaults(defineProps<Props>(), {
       <slot name="empty">
         <div class="flex flex-col items-center justify-center p-8 rounded-lg border border-dashed border-default bg-default text-muted">
           <UIcon name="i-heroicons-inbox" class="w-8 h-8 mb-2 opacity-50" />
-          <p class="text-sm font-medium">{{ emptyText }}</p>
+          <p class="text-sm font-medium">
+            {{ emptyText }}
+          </p>
         </div>
       </slot>
     </template>
 
     <!-- Data List -->
     <template v-else>
-      <div 
-        v-for="(item, index) in items" 
+      <div
+        v-for="(item, index) in items"
         :key="String(item[keyField] || index)"
         class="p-4 rounded-lg border border-default bg-default hover:bg-elevated transition-colors"
       >

@@ -18,7 +18,7 @@ const creationSurface = {
   title: 'Abre una cuenta con criterio operativo',
   description: 'Crea usuarios nuevos con rol inicial, datos de acceso y una presentación más clara para el equipo admin.',
   icon: 'i-lucide-user-round-plus',
-  accentClass: 'from-cyan',
+  variant: 'primary',
   highlights: ['Identidad completa', 'Rol inicial', 'Acceso seguro', 'Paso directo a edición'],
 } as const
 
@@ -85,7 +85,7 @@ onMounted(() => {
         :title="creationSurface.title"
         :description="creationSurface.description"
         :icon="creationSurface.icon"
-        :accent-class="creationSurface.accentClass"
+        :variant="creationSurface.variant"
         :highlights="creationSurface.highlights"
       >
         <AdminUserForm mode="create" :submitting="submitting" submit-label="Crear usuario" @submit="createUser" />

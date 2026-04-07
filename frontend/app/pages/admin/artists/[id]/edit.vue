@@ -18,6 +18,14 @@ const submitting = ref(false)
 const errorMessage = ref('')
 const successMessage = ref('')
 
+const editSurface = {
+  eyebrow: 'Edición editorial',
+  title: 'Modifica los datos del artista',
+  description: 'Mantén el perfil actualizado con identidad, bio, visibilidad y vínculo con géneros relevantes.',
+  icon: 'i-lucide-badge-check',
+  highlights: ['Nombre y slug', 'Bio y enlaces', 'Visibilidad', 'Géneros asociados'],
+} as const
+
 async function loadPage() {
   loading.value = true
   errorMessage.value = ''
@@ -79,9 +87,17 @@ onMounted(() => {
         <USkeleton class="h-36 rounded-2xl" />
       </div>
 
-      <div v-else-if="artist" class="rounded-3xl border border-default/55 bg-default/6 p-6">
+      <AdminFormSurface
+        v-else-if="artist"
+        :eyebrow="editSurface.eyebrow"
+        :title="editSurface.title"
+        :description="editSurface.description"
+        :icon="editSurface.icon"
+        variant="success"
+        :highlights="editSurface.highlights"
+      >
         <AdminArtistForm :initial-value="artist" :genres="genres" :submitting="submitting" submit-label="Guardar cambios" @submit="updateArtist" />
-      </div>
+      </AdminFormSurface>
     </div>
   </AdminPageShell>
 </template>

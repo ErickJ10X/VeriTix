@@ -1,116 +1,81 @@
 <script setup lang="ts">
-const props = defineProps<{
+export interface FormSurfaceProps {
   eyebrow: string
   title: string
   description: string
   icon: string
-  accentClass: string
-  highlights: readonly string[]
-}>()
+  variant?: 'default' | 'warning' | 'success' | 'primary' | 'error'
+  highlights?: readonly string[]
+}
+
+const props = withDefaults(defineProps<FormSurfaceProps>(), {
+  variant: 'default',
+  highlights: () => [],
+})
 
 const trimmedHighlights = computed(() => props.highlights.slice(0, 4))
+
+const iconContainerClasses = computed(() => {
+  const base = 'size-12 rounded-xl border flex items-center justify-center shrink-0'
+
+  if (props.variant === 'warning') {
+    return `${base} bg-amber-50 dark:bg-amber-500/10 border-amber-200 dark:border-amber-500/20 text-amber-600 dark:text-amber-400`
+  }
+  if (props.variant === 'success') {
+    return `${base} bg-emerald-50 dark:bg-emerald-500/10 border-emerald-200 dark:border-emerald-500/20 text-emerald-600 dark:text-emerald-400`
+  }
+  if (props.variant === 'primary') {
+    return `${base} bg-blue-50 dark:bg-blue-500/10 border-blue-200 dark:border-blue-500/20 text-blue-600 dark:text-blue-400`
+  }
+  if (props.variant === 'error') {
+    return `${base} bg-rose-50 dark:bg-rose-500/10 border-rose-200 dark:border-rose-500/20 text-rose-600 dark:text-rose-400`
+  }
+
+  return `${base} bg-elevated border-default text-muted`
+})
+
+const pillClasses = 'rounded-xl border border-default bg-elevated px-3 py-2 text-center text-xs font-semibold tracking-wide uppercase text-default'
 </script>
 
 <template>
-  <section class="vtx-admin-surface">
-    <div class="vtx-admin-surface__glow" :class="accentClass" aria-hidden="true" />
-
-    <div class="relative z-10 space-y-6">
-      <div class="flex flex-col gap-5 border-b border-default/60 pb-6 lg:flex-row lg:items-start lg:justify-between">
+  <AdminCard padding="none">
+    <div class="p-6">
+      <!-- Header -->
+      <div class="flex flex-col gap-5 border-b border-default pb-6 lg:flex-row lg:items-start lg:justify-between">
         <div class="max-w-3xl space-y-3">
-          <p class="text-[0.68rem] font-semibold tracking-[0.28em] text-dimmed uppercase">
+          <p class="text-xs font-semibold tracking-widest uppercase text-dimmed">
             {{ eyebrow }}
           </p>
-          <div class="space-y-3">
-            <h2 class="font-display text-3xl tracking-[0.02em] text-highlighted sm:text-[2.35rem]">
+          <div class="space-y-2">
+            <h2 class="text-2xl font-semibold tracking-tight text-default sm:text-3xl">
               {{ title }}
             </h2>
-            <p class="max-w-2xl text-sm leading-relaxed text-toned sm:text-base">
+            <p class="max-w-2xl text-sm leading-relaxed text-muted sm:text-base">
               {{ description }}
             </p>
           </div>
         </div>
 
-        <div class="vtx-admin-surface__icon" :class="accentClass">
-          <UIcon :name="icon" class="size-6" />
+        <div :class="iconContainerClasses">
+          <UIcon :name="icon" class="size-5" />
         </div>
       </div>
 
-      <div class="grid gap-3 md:grid-cols-2 xl:grid-cols-4">
+      <!-- Highlights -->
+      <div v-if="trimmedHighlights.length > 0" class="grid gap-3 md:grid-cols-2 xl:grid-cols-4 mt-6">
         <div
           v-for="highlight in trimmedHighlights"
           :key="highlight"
-          class="vtx-admin-surface__pill"
+          :class="pillClasses"
         >
           {{ highlight }}
         </div>
       </div>
 
-      <div class="vtx-admin-surface__form">
+      <!-- Form Slot -->
+      <div :class="trimmedHighlights.length > 0 ? 'mt-6' : ''">
         <slot />
       </div>
     </div>
-  </section>
+  </AdminCard>
 </template>
-
-<style scoped>
-@reference "@/assets/css/main.css";
-
-.vtx-admin-surface {
-  @apply relative overflow-hidden rounded-[2rem] border p-6 sm:p-7 lg:p-8;
-  border-color: color-mix(in srgb, var(--ui-border-accented) 26%, transparent);
-  background:
-    linear-gradient(180deg, rgb(255 255 255 / 0.06), rgb(255 255 255 / 0.015)),
-    linear-gradient(
-      135deg,
-      color-mix(in srgb, var(--ui-bg) 90%, black),
-      color-mix(in srgb, var(--ui-bg-elevated) 84%, black)
-    );
-  box-shadow:
-    inset 0 1px 0 rgb(255 255 255 / 0.06),
-    0 28px 54px -38px rgb(7 12 24 / 0.9);
-}
-
-.vtx-admin-surface::before {
-  @apply absolute inset-x-6 top-0 h-px;
-  content: '';
-  background: linear-gradient(
-    90deg,
-    rgb(255 255 255 / 0),
-    color-mix(in srgb, var(--color-auric-300) 70%, white),
-    rgb(255 255 255 / 0)
-  );
-}
-
-.vtx-admin-surface__glow {
-  @apply pointer-events-none absolute -right-8 top-0 h-44 w-44 rounded-full blur-3xl opacity-85;
-  background: var(--vtx-accent-glow);
-}
-
-.vtx-admin-surface__icon {
-  @apply inline-flex size-16 shrink-0 items-center justify-center rounded-[1.45rem] border text-lg;
-  color: var(--vtx-accent-color);
-  border-color: color-mix(in srgb, var(--ui-border-accented) 22%, transparent);
-  background:
-    radial-gradient(circle at 30% 30%, rgb(255 255 255 / 0.18), rgb(255 255 255 / 0) 42%),
-    linear-gradient(145deg, rgb(255 255 255 / 0.12), rgb(255 255 255 / 0.04));
-  box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.08);
-}
-
-.vtx-admin-surface__pill {
-  @apply rounded-2xl border px-3 py-3 text-center text-[0.72rem] font-semibold tracking-[0.16em] uppercase;
-  border-color: color-mix(in srgb, var(--ui-border-accented) 18%, transparent);
-  background: color-mix(in srgb, var(--ui-bg-accented) 36%, transparent);
-  color: var(--ui-text-highlighted);
-}
-
-.vtx-admin-surface__form {
-  @apply rounded-[1.75rem] border p-5 sm:p-6 lg:p-7;
-  border-color: color-mix(in srgb, var(--ui-border-accented) 18%, transparent);
-  background:
-    linear-gradient(180deg, rgb(255 255 255 / 0.04), rgb(255 255 255 / 0.01)),
-    color-mix(in srgb, var(--ui-bg) 76%, transparent);
-  box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.04);
-}
-
-</style>
