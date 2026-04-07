@@ -1,6 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { OrderStatus, PaymentStatus } from '../../generated/prisma/enums';
 import { PrismaService } from '../../prisma/prisma.service';
+import { TicketsGenerator } from '../tickets/tickets.generator';
 import { StripeWebhookService } from './stripe-webhook.service';
 
 // ── Mock data ─────────────────────────────────────────────────────────────────
@@ -15,7 +16,7 @@ const mockOrderItems = [
   { ticketTypeId: 'uuid-tt-2', quantity: 1 },
 ];
 
-// ── Prisma mock ───────────────────────────────────────────────────────────────
+// ── Mocks ─────────────────────────────────────────────────────────────────────
 
 const mockPrismaService = {
   payment: {
@@ -34,22 +35,29 @@ const mockPrismaService = {
   $transaction: jest.fn(),
 };
 
+const mockTicketsGenerator = {
+  generateForOrder: jest.fn(),
+};
+
 // ── Suite ─────────────────────────────────────────────────────────────────────
 
 describe('StripeWebhookService', () => {
   let service: StripeWebhookService;
   let prisma: typeof mockPrismaService;
+  let ticketsGenerator: typeof mockTicketsGenerator;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         StripeWebhookService,
         { provide: PrismaService, useValue: mockPrismaService },
+        { provide: TicketsGenerator, useValue: mockTicketsGenerator },
       ],
     }).compile();
 
     service = module.get<StripeWebhookService>(StripeWebhookService);
     prisma = module.get(PrismaService);
+    ticketsGenerator = module.get(TicketsGenerator);
   });
 
   afterEach(() => {
@@ -65,15 +73,22 @@ describe('StripeWebhookService', () => {
       metadata: { orderId: 'uuid-order-1' },
     };
 
-    it('should mark Payment COMPLETED and Order COMPLETED', async () => {
+    beforeEach(() => {
       prisma.payment.findUnique.mockResolvedValue(mockPayment);
       prisma.payment.update.mockResolvedValue({});
       prisma.order.update.mockResolvedValue({});
-      // $transaction batch (array) — ejecuta las promesas pasadas
-      prisma.$transaction.mockImplementation(async (ops: Promise<any>[]) =>
-        Promise.all(ops),
-      );
+      mockTicketsGenerator.generateForOrder.mockResolvedValue(undefined);
+      // $transaction callback — ejecuta con tx mock
+      prisma.$transaction.mockImplementation(async (cb: any) => {
+        const tx = {
+          payment: { update: prisma.payment.update },
+          order: { update: prisma.order.update },
+        };
+        return cb(tx);
+      });
+    });
 
+    it('should mark Payment COMPLETED and Order COMPLETED', async () => {
       await service.handleCheckoutSessionCompleted(sessionData);
 
       expect(prisma.payment.findUnique).toHaveBeenCalledWith({
@@ -83,22 +98,16 @@ describe('StripeWebhookService', () => {
       expect(prisma.$transaction).toHaveBeenCalled();
     });
 
-    it('should do nothing if Payment not found (idempotent)', async () => {
-      prisma.payment.findUnique.mockResolvedValue(null);
-
+    it('should call generateForOrder inside the transaction', async () => {
       await service.handleCheckoutSessionCompleted(sessionData);
 
-      expect(prisma.$transaction).not.toHaveBeenCalled();
+      expect(ticketsGenerator.generateForOrder).toHaveBeenCalledWith(
+        'uuid-order-1',
+        expect.any(Object), // el tx
+      );
     });
 
     it('should set providerPaymentId from payment_intent', async () => {
-      prisma.payment.findUnique.mockResolvedValue(mockPayment);
-      prisma.payment.update.mockResolvedValue({});
-      prisma.order.update.mockResolvedValue({});
-      prisma.$transaction.mockImplementation(async (ops: Promise<any>[]) =>
-        Promise.all(ops),
-      );
-
       await service.handleCheckoutSessionCompleted(sessionData);
 
       expect(prisma.payment.update).toHaveBeenCalledWith(
@@ -110,10 +119,24 @@ describe('StripeWebhookService', () => {
           }),
         }),
       );
+    });
+
+    it('should mark Order COMPLETED', async () => {
+      await service.handleCheckoutSessionCompleted(sessionData);
+
       expect(prisma.order.update).toHaveBeenCalledWith({
         where: { id: 'uuid-order-1' },
         data: { status: OrderStatus.COMPLETED },
       });
+    });
+
+    it('should do nothing if Payment not found (idempotent)', async () => {
+      prisma.payment.findUnique.mockResolvedValue(null);
+
+      await service.handleCheckoutSessionCompleted(sessionData);
+
+      expect(prisma.$transaction).not.toHaveBeenCalled();
+      expect(ticketsGenerator.generateForOrder).not.toHaveBeenCalled();
     });
   });
 
@@ -150,6 +173,12 @@ describe('StripeWebhookService', () => {
         select: { ticketTypeId: true, quantity: true },
       });
       expect(prisma.$transaction).toHaveBeenCalled();
+    });
+
+    it('should NOT call generateForOrder', async () => {
+      await service.handleCheckoutSessionExpired(sessionData);
+
+      expect(ticketsGenerator.generateForOrder).not.toHaveBeenCalled();
     });
 
     it('should increment availableQuantity for each order item in transaction', async () => {
@@ -251,6 +280,15 @@ describe('StripeWebhookService', () => {
       });
     });
 
+    it('should NOT call generateForOrder', async () => {
+      prisma.payment.findUnique.mockResolvedValue(mockPayment);
+      prisma.payment.update.mockResolvedValue({});
+
+      await service.handlePaymentIntentFailed(intentData);
+
+      expect(ticketsGenerator.generateForOrder).not.toHaveBeenCalled();
+    });
+
     it('should use default failureReason when last_payment_error has no message', async () => {
       prisma.payment.findUnique.mockResolvedValue(mockPayment);
       prisma.payment.update.mockResolvedValue({});
@@ -310,6 +348,12 @@ describe('StripeWebhookService', () => {
         select: { ticketTypeId: true, quantity: true },
       });
       expect(prisma.$transaction).toHaveBeenCalled();
+    });
+
+    it('should NOT call generateForOrder', async () => {
+      await service.handleChargeRefunded(chargeData);
+
+      expect(ticketsGenerator.generateForOrder).not.toHaveBeenCalled();
     });
 
     it('should increment stock for each item in transaction', async () => {

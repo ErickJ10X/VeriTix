@@ -1,6 +1,7 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { OrderStatus, PaymentStatus } from '../../generated/prisma/enums';
 import { PrismaService } from '../../prisma/prisma.service';
+import { TicketsGenerator } from '../tickets/tickets.generator';
 
 // ── Tipos internos ────────────────────────────────────────────────────────────
 
@@ -30,11 +31,15 @@ type ChargeRefundedEvent = {
 export class StripeWebhookService {
   private readonly logger = new Logger(StripeWebhookService.name);
 
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly ticketsGenerator: TicketsGenerator,
+  ) {}
 
   // ── checkout.session.completed ───────────────────────────────────────────
-  // Pago exitoso: marcar Payment COMPLETED + Order COMPLETED
-  // providerPaymentId viene del payment_intent de la session
+  // Pago exitoso: marcar Payment COMPLETED + Order COMPLETED + generar Tickets
+  // Todo en una sola transacción — si falla la generación de tickets,
+  // se revierten también el payment y la order (atomicidad total)
 
   async handleCheckoutSessionCompleted(
     data: CheckoutSessionCompletedEvent,
@@ -51,23 +56,27 @@ export class StripeWebhookService {
       return;
     }
 
-    await this.prisma.$transaction([
-      this.prisma.payment.update({
+    // Cambiamos de batch-array a callback para poder pasar tx al generator
+    await this.prisma.$transaction(async (tx) => {
+      await tx.payment.update({
         where: { id: payment.id },
         data: {
           status: PaymentStatus.COMPLETED,
           providerPaymentId: data.payment_intent ?? undefined,
           paidAt: new Date(),
         },
-      }),
-      this.prisma.order.update({
+      });
+
+      await tx.order.update({
         where: { id: payment.orderId },
         data: { status: OrderStatus.COMPLETED },
-      }),
-    ]);
+      });
+
+      await this.ticketsGenerator.generateForOrder(payment.orderId, tx);
+    });
 
     this.logger.log(
-      `Order ${payment.orderId} marcada COMPLETED (session ${data.id})`,
+      `Order ${payment.orderId} COMPLETED — tickets generados (session ${data.id})`,
     );
   }
 
@@ -90,14 +99,12 @@ export class StripeWebhookService {
       return;
     }
 
-    // Cargar items de la orden para revertir stock
     const orderItems = await this.prisma.orderItem.findMany({
       where: { orderId: payment.orderId },
       select: { ticketTypeId: true, quantity: true },
     });
 
     await this.prisma.$transaction(async (tx) => {
-      // Revertir availableQuantity
       for (const item of orderItems) {
         await tx.ticketType.update({
           where: { id: item.ticketTypeId },
@@ -133,7 +140,6 @@ export class StripeWebhookService {
     });
 
     if (!payment) {
-      // Puede llegar antes de que se guarde providerPaymentId — no es error crítico
       this.logger.warn(
         `payment_intent.payment_failed: Payment no encontrado para intent ${data.id}`,
       );
