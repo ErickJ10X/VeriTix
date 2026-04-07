@@ -401,7 +401,7 @@ onMounted(() => {
 </template>
 
 <style scoped>
-@reference "tailwindcss";
+@reference "@/assets/css/main.css";
 
 .vtx-admin-hero {
   @apply flex flex-col gap-5 rounded-[2rem] border px-5 py-5 sm:px-6 sm:py-6 xl:flex-row xl:items-end xl:justify-between;

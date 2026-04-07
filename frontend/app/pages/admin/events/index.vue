@@ -682,7 +682,7 @@ onMounted(() => {
 </template>
 
 <style scoped>
-@reference "tailwindcss";
+@reference "@/assets/css/main.css";
 
 .vtx-events-hero {
   @apply relative overflow-hidden rounded-[2rem] border p-6 sm:p-7 lg:p-8;

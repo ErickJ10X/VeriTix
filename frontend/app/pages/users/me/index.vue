@@ -388,32 +388,3 @@ onMounted(() => {
     </template>
   </UsersSettingsShell>
 </template>
-
-<style scoped>
-.vtx-profile-submit {
-  border: 1px solid rgb(239 170 71 / 0.14);
-  background: linear-gradient(180deg, rgb(239 170 71 / 0.1), rgb(239 170 71 / 0.06));
-  color: rgb(247 249 255);
-  box-shadow:
-    inset 0 1px 0 rgb(255 255 255 / 0.05),
-    0 14px 28px -24px rgb(239 170 71 / 0.42);
-  transition:
-    transform 0.15s ease-out,
-    border-color 0.15s ease-out,
-    background-color 0.15s ease-out,
-    box-shadow 0.15s ease-out,
-    color 0.15s ease-out;
-}
-
-.vtx-profile-submit:hover {
-  border-color: rgb(239 170 71 / 0.22);
-  background: linear-gradient(180deg, rgb(239 170 71 / 0.12), rgb(239 170 71 / 0.08));
-  color: rgb(255 255 255);
-  transform: translateY(-1px);
-  box-shadow: 0 18px 30px -24px rgb(239 170 71 / 0.5);
-}
-
-.vtx-profile-submit:active {
-  transform: translateY(1px);
-}
-</style>

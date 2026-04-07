@@ -47,7 +47,7 @@ defineProps<{
 </template>
 
 <style scoped>
-@reference "tailwindcss";
+@reference "@/assets/css/main.css";
 
 .vtx-admin-dashboard-panel {
   @apply relative overflow-hidden rounded-[2rem] border p-6 sm:p-7;
@@ -66,42 +66,17 @@ defineProps<{
 
 .vtx-admin-dashboard-panel__glow {
   @apply absolute right-0 top-0 h-36 w-36 rounded-full blur-3xl opacity-80;
+  background: var(--vtx-accent-glow);
   transform: translate(32%, -18%);
 }
 
 .vtx-admin-dashboard-panel__icon {
   @apply inline-flex size-12 shrink-0 items-center justify-center rounded-2xl border text-base;
+  color: var(--vtx-accent-color);
   border-color: color-mix(in srgb, var(--ui-border-accented) 24%, transparent);
   background:
     radial-gradient(circle at 30% 30%, rgb(255 255 255 / 0.16), rgb(255 255 255 / 0) 42%),
     linear-gradient(145deg, rgb(255 255 255 / 0.12), rgb(255 255 255 / 0.04));
   box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.08);
-}
-
-.from-auric {
-  background: radial-gradient(
-    circle at center,
-    color-mix(in srgb, var(--color-auric-400) 34%, transparent),
-    transparent 72%
-  );
-  color: var(--color-auric-300);
-}
-
-.from-cyan {
-  background: radial-gradient(
-    circle at center,
-    color-mix(in srgb, var(--color-nebula-400) 34%, transparent),
-    transparent 72%
-  );
-  color: var(--color-nebula-300);
-}
-
-.from-rose {
-  background: radial-gradient(
-    circle at center,
-    color-mix(in srgb, var(--color-crimson-400) 34%, transparent),
-    transparent 72%
-  );
-  color: var(--color-crimson-200);
 }
 </style>

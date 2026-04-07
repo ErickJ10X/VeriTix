@@ -134,7 +134,7 @@ const accountSubtitle = computed(() => {
 </template>
 
 <style scoped>
-@reference "tailwindcss";
+@reference "@/assets/css/main.css";
 
 .vtx-account-trigger {
   @apply inline-flex cursor-pointer items-center justify-center rounded-full;
@@ -178,107 +178,4 @@ const accountSubtitle = computed(() => {
     0 8px 18px -14px rgb(0 0 0 / 0.85);
 }
 
-.vtx-account-panel {
-  width: min(21rem, calc(100vw - 2rem));
-  padding: 0.9rem;
-  border-radius: 1.15rem;
-  border: 1px solid rgb(137 154 186 / 0.2);
-  background:
-    linear-gradient(180deg, rgb(17 24 39 / 0.98), rgb(9 14 26 / 0.99)),
-    linear-gradient(135deg, rgb(239 170 71 / 0.06), rgb(20 128 188 / 0.05));
-  box-shadow:
-    0 22px 46px -30px rgb(0 0 0 / 0.88),
-    inset 0 1px 0 rgb(255 255 255 / 0.04);
-}
-
-.vtx-account-panel-hero {
-  @apply flex items-center gap-3;
-  margin-bottom: 0.8rem;
-  padding: 0.2rem;
-}
-
-.vtx-account-panel-avatar {
-  box-shadow:
-    0 0 0 1px rgb(255 255 255 / 0.08),
-    0 10px 24px -16px rgb(0 0 0 / 0.9);
-}
-
-.vtx-account-panel-title {
-  color: rgb(247 249 255);
-  font-size: 0.9rem;
-  font-weight: 600;
-}
-
-.vtx-account-panel-subtitle {
-  color: rgb(176 186 208 / 0.8);
-  font-size: 0.72rem;
-  margin-top: 0.18rem;
-}
-
-.vtx-account-panel-link {
-  @apply flex cursor-pointer items-center no-underline;
-  gap: 0.8rem;
-  width: 100%;
-  padding: 0.85rem 0.9rem;
-  border-radius: 0.95rem;
-  border: 1px solid rgb(137 154 186 / 0.14);
-  background: linear-gradient(135deg, rgb(255 255 255 / 0.055), rgb(255 255 255 / 0.025));
-  transition:
-    border-color 0.12s ease-out,
-    background-color 0.12s ease-out,
-    box-shadow 0.12s ease-out;
-}
-
-.vtx-account-panel-link + .vtx-account-panel-link {
-  margin-top: 0.55rem;
-}
-
-.vtx-account-panel-link:hover {
-  border-color: rgb(239 170 71 / 0.22);
-  background: linear-gradient(135deg, rgb(239 170 71 / 0.1), rgb(20 128 188 / 0.07));
-  box-shadow: 0 14px 24px -24px rgb(239 170 71 / 0.34);
-}
-
-.vtx-account-panel-link:focus-visible {
-  outline: none;
-  box-shadow:
-    0 0 0 2px rgb(239 170 71 / 0.35),
-    0 0 0 5px rgb(239 170 71 / 0.08);
-}
-
-.vtx-account-panel-link:active {
-  background: linear-gradient(135deg, rgb(239 170 71 / 0.12), rgb(20 128 188 / 0.09));
-}
-
-.vtx-account-panel-link-icon-wrap {
-  @apply inline-flex items-center justify-center rounded-xl;
-  width: 2.4rem;
-  height: 2.4rem;
-  background: linear-gradient(135deg, rgb(239 170 71 / 0.14), rgb(20 128 188 / 0.1));
-  border: 1px solid rgb(255 255 255 / 0.07);
-}
-
-.vtx-account-panel-link-icon {
-  width: 1rem;
-  height: 1rem;
-  color: rgb(248 194 103);
-}
-
-.vtx-account-panel-link-title {
-  color: rgb(247 249 255);
-  font-size: 0.82rem;
-  font-weight: 600;
-}
-
-.vtx-account-panel-link-subtitle {
-  color: rgb(176 186 208 / 0.74);
-  font-size: 0.7rem;
-  margin-top: 0.16rem;
-}
-
-.vtx-account-panel-link-arrow {
-  width: 0.92rem;
-  height: 0.92rem;
-  color: rgb(176 186 208 / 0.72);
-}
 </style>

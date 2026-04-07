@@ -32,7 +32,7 @@ defineProps<{
 </template>
 
 <style scoped>
-@reference "tailwindcss";
+@reference "@/assets/css/main.css";
 
 .vtx-admin-metric-card {
   @apply flex h-full flex-col justify-between gap-6 rounded-[1.8rem] border p-5 sm:p-6;
@@ -51,26 +51,12 @@ defineProps<{
 
 .vtx-admin-metric-card__icon {
   @apply inline-flex size-12 shrink-0 items-center justify-center rounded-2xl border text-base;
+  color: var(--vtx-accent-color);
   border-color: color-mix(in srgb, var(--ui-border-accented) 24%, transparent);
   background:
     radial-gradient(circle at 30% 30%, rgb(255 255 255 / 0.16), rgb(255 255 255 / 0) 42%),
-    linear-gradient(145deg, rgb(255 255 255 / 0.12), rgb(255 255 255 / 0.04));
+    linear-gradient(145deg, rgb(255 255 255 / 0.12), rgb(255 255 255 / 0.04)),
+    var(--vtx-accent-glow);
   box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.08);
-}
-
-.from-auric {
-  color: var(--color-auric-300);
-}
-
-.from-cyan {
-  color: var(--color-nebula-300);
-}
-
-.from-rose {
-  color: var(--color-crimson-200);
-}
-
-.from-verdant {
-  color: var(--color-verdant-300);
 }
 </style>

@@ -77,7 +77,7 @@ const isEventsRoute = computed(() => {
 </template>
 
 <style scoped>
-@reference "tailwindcss";
+@reference "@/assets/css/main.css";
 
 .vtx-header-minimal {
   @apply relative rounded-2xl;

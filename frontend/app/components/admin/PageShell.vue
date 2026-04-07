@@ -91,7 +91,7 @@ function isActive(path: string): boolean {
 </template>
 
 <style scoped>
-@reference "tailwindcss";
+@reference "@/assets/css/main.css";
 
 .vtx-admin-shell {
   isolation: isolate;

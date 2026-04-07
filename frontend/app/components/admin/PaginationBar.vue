@@ -111,7 +111,7 @@ function goToPage(page: number) {
 </template>
 
 <style scoped>
-@reference "tailwindcss";
+@reference "@/assets/css/main.css";
 
 .vtx-admin-pagination {
   @apply flex flex-col gap-4 rounded-[1.6rem] border p-4 sm:flex-row sm:items-center sm:justify-between sm:p-5;

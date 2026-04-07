@@ -112,18 +112,3 @@ onMounted(() => {
     </div>
   </AdminPageShell>
 </template>
-
-<style scoped>
-@reference "tailwindcss";
-
-.vtx-admin-list-card,
-.vtx-admin-empty {
-  @apply rounded-3xl border p-6;
-  border-color: rgb(145 161 190 / 0.2);
-  background: rgb(255 255 255 / 0.04);
-}
-
-.vtx-admin-list-card {
-  @apply flex flex-col justify-between gap-5;
-}
-</style>

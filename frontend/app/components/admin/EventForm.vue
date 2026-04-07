@@ -209,7 +209,7 @@ watch(() => props.initialValue, applyInitialValue, { immediate: true })
 </template>
 
 <style scoped>
-@reference "tailwindcss";
+@reference "@/assets/css/main.css";
 
 .vtx-admin-textarea,
 .vtx-admin-select {

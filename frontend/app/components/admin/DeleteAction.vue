@@ -63,7 +63,7 @@ function handleConfirm() {
 </template>
 
 <style scoped>
-@reference "tailwindcss";
+@reference "@/assets/css/main.css";
 
 .vtx-admin-confirm-panel {
   width: min(20rem, calc(100vw - 2rem));

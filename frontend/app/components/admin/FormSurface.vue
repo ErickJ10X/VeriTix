@@ -54,7 +54,7 @@ const trimmedHighlights = computed(() => props.highlights.slice(0, 4))
 </template>
 
 <style scoped>
-@reference "tailwindcss";
+@reference "@/assets/css/main.css";
 
 .vtx-admin-surface {
   @apply relative overflow-hidden rounded-[2rem] border p-6 sm:p-7 lg:p-8;
@@ -84,10 +84,12 @@ const trimmedHighlights = computed(() => props.highlights.slice(0, 4))
 
 .vtx-admin-surface__glow {
   @apply pointer-events-none absolute -right-8 top-0 h-44 w-44 rounded-full blur-3xl opacity-85;
+  background: var(--vtx-accent-glow);
 }
 
 .vtx-admin-surface__icon {
   @apply inline-flex size-16 shrink-0 items-center justify-center rounded-[1.45rem] border text-lg;
+  color: var(--vtx-accent-color);
   border-color: color-mix(in srgb, var(--ui-border-accented) 22%, transparent);
   background:
     radial-gradient(circle at 30% 30%, rgb(255 255 255 / 0.18), rgb(255 255 255 / 0) 42%),
@@ -111,30 +113,4 @@ const trimmedHighlights = computed(() => props.highlights.slice(0, 4))
   box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.04);
 }
 
-.from-auric {
-  background: radial-gradient(
-    circle at center,
-    color-mix(in srgb, var(--color-auric-400) 38%, transparent),
-    transparent 72%
-  );
-  color: var(--color-auric-300);
-}
-
-.from-cyan {
-  background: radial-gradient(
-    circle at center,
-    color-mix(in srgb, var(--color-nebula-400) 34%, transparent),
-    transparent 72%
-  );
-  color: var(--color-nebula-300);
-}
-
-.from-rose {
-  background: radial-gradient(
-    circle at center,
-    color-mix(in srgb, var(--color-crimson-400) 34%, transparent),
-    transparent 72%
-  );
-  color: var(--color-crimson-200);
-}
 </style>

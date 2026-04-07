@@ -124,7 +124,7 @@ watch(() => props.initialValue, applyInitialValue, { immediate: true })
 </template>
 
 <style scoped>
-@reference "tailwindcss";
+@reference "@/assets/css/main.css";
 
 .vtx-admin-textarea {
   @apply w-full rounded-2xl border px-4 py-3 text-sm outline-none transition-colors duration-150;

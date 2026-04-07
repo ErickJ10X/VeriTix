@@ -241,7 +241,7 @@ async function clearFilters() {
 </template>
 
 <style scoped>
-@reference "tailwindcss";
+@reference "@/assets/css/main.css";
 
 .vtx-filter-chip {
   @apply inline-flex cursor-pointer items-center rounded-full border px-3 py-2 text-[0.72rem] font-semibold tracking-[0.08em] transition-colors duration-150;
