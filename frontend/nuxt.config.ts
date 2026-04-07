@@ -4,6 +4,13 @@ export default defineNuxtConfig({
   compatibilityDate: '2025-07-15',
   devtools: { enabled: true },
 
+  runtimeConfig: {
+    backendApiBase: 'http://localhost:3001/api/v1',
+    public: {
+      apiBase: '/api',
+    },
+  },
+
   modules: ['@nuxt/eslint', '@nuxt/image', '@nuxt/ui', '@nuxt/fonts'],
 
   ui: {
@@ -23,6 +30,13 @@ export default defineNuxtConfig({
     plugins: [
       tailwindcss(),
     ],
+    optimizeDeps: {
+      include: [
+        '@vue/devtools-core',
+        '@vue/devtools-kit',
+        'zod',
+      ],
+    },
   },
 
   eslint: {

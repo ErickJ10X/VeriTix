@@ -22,6 +22,7 @@
     { "rule": "*quotes", "severity": "off", "fixable": true },
     { "rule": "*semi", "severity": "off", "fixable": true }
   ],
+  "css.lint.unknownAtRules": "ignore",
 
   // Enable eslint for all supported languages
   "eslint.validate": [
@@ -59,4 +60,5 @@
   "tailwindCSS.experimental.classRegex": [
     ["ui:\\s*{([^)]*)\\s*}", "(?:'|\"|`)([^']*)(?:'|\"|`)"]
   ]
+
 }

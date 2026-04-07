@@ -1,0 +1,65 @@
+<script setup lang="ts">
+definePageMeta({
+  middleware: 'auth',
+})
+
+useSeoMeta({
+  title: 'Cerrando sesion | VeriTix',
+})
+
+const { logout } = useAuth()
+const { getApiErrorMessage } = useApiErrorMessage()
+const router = useRouter()
+
+const errorMessage = ref('')
+const loggingOut = ref(true)
+
+onMounted(async () => {
+  try {
+    await logout()
+    await router.push('/')
+  }
+  catch (error) {
+    errorMessage.value = getApiErrorMessage(error, 'Error al cerrar sesion.')
+    loggingOut.value = false
+  }
+})
+</script>
+
+<template>
+  <UsersSettingsShell
+    title="Cerrando sesion"
+    description="Espera un momento mientras cerramos tu sesion de forma segura."
+    tone="minimal"
+  >
+    <div class="flex flex-col items-center justify-center py-20 text-center">
+      <template v-if="loggingOut">
+        <UIcon name="i-lucide-loader-2" class="size-10 animate-spin text-auric-400" />
+        <p class="mt-6 text-lg font-medium text-highlighted">
+          Cerrando sesion...
+        </p>
+        <p class="mt-2 text-sm text-toned">
+          Saliendo de VeriTix de forma segura.
+        </p>
+      </template>
+
+      <template v-else>
+        <div class="mx-auto rounded-full bg-error/10 p-4 text-error w-fit">
+          <UIcon name="i-lucide-alert-circle" class="size-8" />
+        </div>
+        <p class="mt-6 text-lg font-medium text-highlighted">
+          Ha ocurrido un problema
+        </p>
+        <p class="mt-2 text-sm text-toned">
+          {{ errorMessage }}
+        </p>
+        <BasePrimaryButton
+          class="mt-8"
+          @click="() => { router.push('/') }"
+        >
+          Volver al inicio
+        </BasePrimaryButton>
+      </template>
+    </div>
+  </UsersSettingsShell>
+</template>

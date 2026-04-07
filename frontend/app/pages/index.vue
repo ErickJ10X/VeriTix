@@ -9,7 +9,9 @@ useSeoMeta({
 </script>
 
 <template>
-  <SectionsHeroSection />
-  <SectionsFeaturedEventsSection />
-  <SectionsHowItWorksSection />
+  <div>
+    <HomeHeroSection />
+    <HomeFeaturedEventsSection />
+    <HomeHowItWorksSection />
+  </div>
 </template>
