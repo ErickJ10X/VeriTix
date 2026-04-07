@@ -79,7 +79,7 @@ const trimmedHighlights = computed(() => props.highlights.slice(0, 3))
 @reference "@/assets/css/main.css";
 
 .vtx-admin-module-card {
-  @apply relative overflow-hidden rounded-[2rem] border p-6 sm:p-7;
+  @apply relative overflow-hidden rounded-4xl border p-6 sm:p-7;
   border-color: color-mix(in srgb, var(--ui-border-accented) 24%, transparent);
   background:
     linear-gradient(180deg, rgb(255 255 255 / 0.06), rgb(255 255 255 / 0.015)),
@@ -173,5 +173,4 @@ const trimmedHighlights = computed(() => props.highlights.slice(0, 3))
     @apply flex-row items-center justify-between gap-6;
   }
 }
-
 </style>
