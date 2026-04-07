@@ -6,13 +6,19 @@ import {
 } from '@nestjs/common';
 import { PaginatedResponse } from '@common/dto';
 import { JwtPayload } from '@common/interfaces';
-import { EventStatus, Role } from '../../generated/prisma/enums';
+import { EventStatus, OrderStatus, Role } from '../../generated/prisma/enums';
 import { PrismaService } from '../../prisma/prisma.service';
 import {
   CreateEventDto,
   EventDetailResponseDto,
   EventListResponseDto,
+  EventMetricsResponseDto,
   EventQueryDto,
+  RequiresAttentionResponseDto,
+  TopEventResponseDto,
+  TopEventsQueryDto,
+  UpcomingEventResponseDto,
+  UpcomingQueryDto,
   UpdateEventDto,
 } from './dto';
 import {
@@ -158,5 +164,137 @@ export class EventsService {
       EventStatus.PUBLISHED,
     );
     return published as unknown as EventDetailResponseDto;
+  }
+
+  // ── Analytics ────────────────────────────────────────────────────────────
+
+  async getUpcoming(
+    user: JwtPayload,
+    query: UpcomingQueryDto,
+  ): Promise<UpcomingEventResponseDto[]> {
+    const creatorId = user.role === Role.ADMIN ? undefined : user.sub;
+    const rows = await this.eventsRepository.findUpcoming(query.limit, creatorId);
+
+    return rows.map((r) => ({
+      id: r.id,
+      name: r.name,
+      eventDate: r.eventDate,
+      venue: r.venue,
+      ticketsSold: r.ticketsSold,
+      totalCapacity: r.maxCapacity,
+    }));
+  }
+
+  async getRequiresAttention(
+    user: JwtPayload,
+  ): Promise<RequiresAttentionResponseDto[]> {
+    const creatorId = user.role === Role.ADMIN ? undefined : user.sub;
+    const rows = await this.eventsRepository.findRequiresAttention(creatorId);
+
+    const result: RequiresAttentionResponseDto[] = [];
+
+    for (const row of rows) {
+      const issues: string[] = [];
+
+      if (!row.imageUrl) issues.push('Sin imagen');
+      if (!row.formatId) issues.push('Sin formato');
+      if (row._count.artists === 0) issues.push('Sin artistas');
+      if (row._count.ticketTypes === 0) issues.push('Sin tipos de entrada');
+
+      // "Sin entradas disponibles" solo aplica a PUBLISHED
+      if (
+        row.status === EventStatus.PUBLISHED &&
+        row._count.ticketTypes > 0 &&
+        row.ticketTypes.reduce((sum, tt) => sum + tt.availableQuantity, 0) === 0
+      ) {
+        issues.push('Sin entradas disponibles');
+      }
+
+      if (issues.length > 0) {
+        result.push({ id: row.id, name: row.name, status: row.status, eventDate: row.eventDate, issues });
+      }
+    }
+
+    return result;
+  }
+
+  async getTopEvents(
+    query: TopEventsQueryDto,
+  ): Promise<TopEventResponseDto[]> {
+    const rows = await this.eventsRepository.findTopEvents(query.limit);
+
+    return rows.map((r) => ({
+      id: r.id,
+      name: r.name,
+      eventDate: r.eventDate,
+      venue: r.venue,
+      ticketsSold: r.ticketsSold,
+      totalCapacity: r.maxCapacity,
+      revenue: r.revenue,
+    }));
+  }
+
+  async getEventMetrics(
+    id: string,
+    user: JwtPayload,
+  ): Promise<EventMetricsResponseDto> {
+    const raw = await this.eventsRepository.findMetricsById(id);
+    if (!raw) throw new NotFoundException('Evento no encontrado');
+
+    this.assertOwnerOrAdmin(raw, user.sub, user.role);
+
+    // ── Capacidad ──────────────────────────────────────────────────────────
+    let sold = 0;
+    for (const tt of raw.ticketTypes) {
+      for (const item of tt.orderItems) {
+        if (item.order.status === OrderStatus.COMPLETED) {
+          sold += item.quantity;
+        }
+      }
+    }
+    const total = raw.maxCapacity;
+    const available = total - sold;
+    const occupancyRate = total > 0 ? Math.round((sold / total) * 10000) / 10000 : 0;
+
+    // ── Revenue por tipo de ticket ─────────────────────────────────────────
+    let totalRevenue = 0;
+    const byTicketType = raw.ticketTypes.map((tt) => {
+      let ttSold = 0;
+      let ttRevenue = 0;
+      for (const item of tt.orderItems) {
+        if (item.order.status === OrderStatus.COMPLETED) {
+          ttSold += item.quantity;
+          ttRevenue += Number(item.subtotal);
+        }
+      }
+      totalRevenue += ttRevenue;
+      return { name: tt.name, sold: ttSold, revenue: Math.round(ttRevenue * 100) / 100 };
+    });
+
+    // ── Órdenes por estado ─────────────────────────────────────────────────
+    const orderCounts = { total: raw.orders.length, completed: 0, pending: 0, cancelled: 0, refunded: 0 };
+    for (const o of raw.orders) {
+      if (o.status === OrderStatus.COMPLETED) orderCounts.completed++;
+      else if (o.status === OrderStatus.PENDING) orderCounts.pending++;
+      else if (o.status === OrderStatus.CANCELLED) orderCounts.cancelled++;
+      else if (o.status === OrderStatus.REFUNDED) orderCounts.refunded++;
+    }
+
+    // ── Top ticket type ────────────────────────────────────────────────────
+    const topTicketType = byTicketType.length > 0
+      ? byTicketType.reduce((best, tt) => (tt.sold > best.sold ? tt : best))
+      : null;
+
+    return {
+      eventId: raw.id,
+      eventName: raw.name,
+      status: raw.status,
+      capacity: { total, sold, available, occupancyRate },
+      revenue: { total: Math.round(totalRevenue * 100) / 100, byTicketType },
+      orders: orderCounts,
+      topTicketType: topTicketType && topTicketType.sold > 0
+        ? { name: topTicketType.name, sold: topTicketType.sold }
+        : null,
+    };
   }
 }
