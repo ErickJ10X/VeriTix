@@ -8,3 +8,11 @@ export {
   FormatDetailDto,
   GenreSummaryDto,
 } from './event-detail-response.dto';
+export {
+  UpcomingEventResponseDto,
+  RequiresAttentionResponseDto,
+  TopEventResponseDto,
+  EventMetricsResponseDto,
+  UpcomingQueryDto,
+  TopEventsQueryDto,
+} from './analytics-response.dto';
