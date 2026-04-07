@@ -73,6 +73,46 @@ const resultSummary = computed(() => {
   return `Mostrando ${start}-${end} de ${meta.value.total} eventos.`
 })
 
+function toStartOfDayIso(value: string): string | undefined {
+  if (!value) return undefined
+  return new Date(`${value}T00:00:00`).toISOString()
+}
+
+function toEndOfDayIso(value: string): string | undefined {
+  if (!value) return undefined
+  return new Date(`${value}T23:59:59`).toISOString()
+}
+
+function getQuickWindowRange() {
+  const now = new Date()
+  if (quickWindow.value === 'upcoming') {
+    return { dateFrom: now.toISOString(), dateTo: undefined }
+  }
+  if (quickWindow.value === 'past') {
+    return { dateFrom: undefined, dateTo: now.toISOString() }
+  }
+  if (quickWindow.value === 'thisMonth') {
+    const monthStart = new Date(now.getFullYear(), now.getMonth(), 1)
+    const monthEnd = new Date(now.getFullYear(), now.getMonth() + 1, 0, 23, 59, 59)
+    return { dateFrom: monthStart.toISOString(), dateTo: monthEnd.toISOString() }
+  }
+  return { dateFrom: undefined, dateTo: undefined }
+}
+
+function buildQuery(pageValue = page.value) {
+  const quickRange = !filters.dateFrom && !filters.dateTo ? getQuickWindowRange() : { dateFrom: undefined, dateTo: undefined }
+  return {
+    page: pageValue,
+    limit: pageSize.value,
+    search: filters.search.trim() || undefined,
+    city: filters.city.trim() || undefined,
+    genreId: filters.genreId || undefined,
+    formatId: filters.formatId || undefined,
+    dateFrom: toStartOfDayIso(filters.dateFrom) ?? quickRange.dateFrom,
+    dateTo: toEndOfDayIso(filters.dateTo) ?? quickRange.dateTo,
+  }
+}
+
 function formatDate(value: string) {
   return new Date(value).toLocaleString('es-ES', { dateStyle: 'medium', timeStyle: 'short' })
 }
