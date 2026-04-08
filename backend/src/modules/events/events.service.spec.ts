@@ -7,7 +7,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { JwtPayload } from '@common/interfaces';
 import { EventStatus, Role } from '../../generated/prisma/enums';
 import { PrismaService } from '../../prisma/prisma.service';
-import { CreateEventDto, EventQueryDto, UpdateEventDto } from './dto';
+import { CreateEventDto, EventQueryDto, TopEventsQueryDto, UpcomingQueryDto, UpdateEventDto } from './dto';
 import { EventsRepository } from './events.repository';
 import { EventsService } from './events.service';
 
@@ -71,6 +71,10 @@ const mockEventsRepository = {
   findById: jest.fn(),
   update: jest.fn(),
   updateStatus: jest.fn(),
+  findUpcoming: jest.fn(),
+  findRequiresAttention: jest.fn(),
+  findTopEvents: jest.fn(),
+  findMetricsById: jest.fn(),
 };
 
 const mockPrismaService = {
@@ -421,6 +425,375 @@ describe('EventsService', () => {
       const result = await service.publish('uuid-event-1', 'uuid-admin', Role.ADMIN);
 
       expect(result).toEqual(publishedEvent);
+    });
+  });
+
+  // ── getUpcoming() ─────────────────────────────────────────────────────────
+
+  describe('getUpcoming()', () => {
+    const mockUpcomingRow = {
+      id: 'uuid-event-1',
+      name: 'Granada Indie Night 2026',
+      eventDate: new Date('2026-09-19T21:00:00Z'),
+      maxCapacity: 2000,
+      venue: { name: 'Palacio de Congresos', city: 'Granada' },
+      ticketsSold: 42,
+    };
+
+    it('should call findUpcoming with undefined creatorId for ADMIN', async () => {
+      const adminUser: JwtPayload = { sub: 'uuid-admin', email: 'admin@test.com', role: Role.ADMIN };
+      const query: UpcomingQueryDto = { limit: 5 };
+      repo.findUpcoming.mockResolvedValue([mockUpcomingRow]);
+
+      const result = await service.getUpcoming(adminUser, query);
+
+      expect(repo.findUpcoming).toHaveBeenCalledWith(5, undefined);
+      expect(result[0].ticketsSold).toBe(42);
+      expect(result[0].totalCapacity).toBe(2000);
+    });
+
+    it('should call findUpcoming with creatorId for CREATOR', async () => {
+      const creatorUser: JwtPayload = { sub: 'uuid-creator-1', email: 'creator@test.com', role: Role.CREATOR };
+      const query: UpcomingQueryDto = { limit: 3 };
+      repo.findUpcoming.mockResolvedValue([mockUpcomingRow]);
+
+      await service.getUpcoming(creatorUser, query);
+
+      expect(repo.findUpcoming).toHaveBeenCalledWith(3, 'uuid-creator-1');
+    });
+
+    it('should map rows to UpcomingEventResponseDto', async () => {
+      const adminUser: JwtPayload = { sub: 'uuid-admin', email: 'admin@test.com', role: Role.ADMIN };
+      repo.findUpcoming.mockResolvedValue([mockUpcomingRow]);
+
+      const result = await service.getUpcoming(adminUser, { limit: 5 });
+
+      expect(result).toHaveLength(1);
+      expect(result[0]).toMatchObject({
+        id: 'uuid-event-1',
+        name: 'Granada Indie Night 2026',
+        venue: { name: 'Palacio de Congresos', city: 'Granada' },
+        ticketsSold: 42,
+        totalCapacity: 2000,
+      });
+    });
+  });
+
+  // ── getRequiresAttention() ────────────────────────────────────────────────
+
+  describe('getRequiresAttention()', () => {
+    const adminUser: JwtPayload = { sub: 'uuid-admin', email: 'admin@test.com', role: Role.ADMIN };
+    const creatorUser: JwtPayload = { sub: 'uuid-creator-1', email: 'creator@test.com', role: Role.CREATOR };
+
+    it('should call findRequiresAttention with undefined for ADMIN', async () => {
+      repo.findRequiresAttention.mockResolvedValue([]);
+
+      await service.getRequiresAttention(adminUser);
+
+      expect(repo.findRequiresAttention).toHaveBeenCalledWith(undefined);
+    });
+
+    it('should call findRequiresAttention with creatorId for CREATOR', async () => {
+      repo.findRequiresAttention.mockResolvedValue([]);
+
+      await service.getRequiresAttention(creatorUser);
+
+      expect(repo.findRequiresAttention).toHaveBeenCalledWith('uuid-creator-1');
+    });
+
+    it('should detect "Sin imagen" issue', async () => {
+      repo.findRequiresAttention.mockResolvedValue([{
+        id: 'uuid-event-1', name: 'Test', status: EventStatus.DRAFT,
+        eventDate: new Date(), imageUrl: null, formatId: 'fmt-1',
+        _count: { artists: 1, ticketTypes: 1 }, ticketTypes: [{ availableQuantity: 10 }],
+      }]);
+
+      const result = await service.getRequiresAttention(adminUser);
+
+      expect(result).toHaveLength(1);
+      expect(result[0].issues).toContain('Sin imagen');
+    });
+
+    it('should detect "Sin formato" issue', async () => {
+      repo.findRequiresAttention.mockResolvedValue([{
+        id: 'uuid-event-1', name: 'Test', status: EventStatus.DRAFT,
+        eventDate: new Date(), imageUrl: 'http://img.com', formatId: null,
+        _count: { artists: 1, ticketTypes: 1 }, ticketTypes: [{ availableQuantity: 10 }],
+      }]);
+
+      const result = await service.getRequiresAttention(adminUser);
+
+      expect(result[0].issues).toContain('Sin formato');
+    });
+
+    it('should detect "Sin artistas" issue', async () => {
+      repo.findRequiresAttention.mockResolvedValue([{
+        id: 'uuid-event-1', name: 'Test', status: EventStatus.DRAFT,
+        eventDate: new Date(), imageUrl: 'http://img.com', formatId: 'fmt-1',
+        _count: { artists: 0, ticketTypes: 1 }, ticketTypes: [{ availableQuantity: 10 }],
+      }]);
+
+      const result = await service.getRequiresAttention(adminUser);
+
+      expect(result[0].issues).toContain('Sin artistas');
+    });
+
+    it('should detect "Sin tipos de entrada" issue', async () => {
+      repo.findRequiresAttention.mockResolvedValue([{
+        id: 'uuid-event-1', name: 'Test', status: EventStatus.DRAFT,
+        eventDate: new Date(), imageUrl: 'http://img.com', formatId: 'fmt-1',
+        _count: { artists: 1, ticketTypes: 0 }, ticketTypes: [],
+      }]);
+
+      const result = await service.getRequiresAttention(adminUser);
+
+      expect(result[0].issues).toContain('Sin tipos de entrada');
+    });
+
+    it('should detect "Sin entradas disponibles" only for PUBLISHED with 0 available', async () => {
+      repo.findRequiresAttention.mockResolvedValue([{
+        id: 'uuid-event-1', name: 'Test', status: EventStatus.PUBLISHED,
+        eventDate: new Date(), imageUrl: 'http://img.com', formatId: 'fmt-1',
+        _count: { artists: 1, ticketTypes: 2 },
+        ticketTypes: [{ availableQuantity: 0 }, { availableQuantity: 0 }],
+      }]);
+
+      const result = await service.getRequiresAttention(adminUser);
+
+      expect(result[0].issues).toContain('Sin entradas disponibles');
+    });
+
+    it('should NOT add "Sin entradas disponibles" for DRAFT events', async () => {
+      repo.findRequiresAttention.mockResolvedValue([{
+        id: 'uuid-event-1', name: 'Test', status: EventStatus.DRAFT,
+        eventDate: new Date(), imageUrl: 'http://img.com', formatId: 'fmt-1',
+        _count: { artists: 1, ticketTypes: 1 }, ticketTypes: [{ availableQuantity: 0 }],
+      }]);
+
+      const result = await service.getRequiresAttention(adminUser);
+
+      // DRAFT con 0 disponibles no es un issue (aún no está publicado)
+      expect(result).toHaveLength(0);
+    });
+
+    it('should exclude events with no issues', async () => {
+      repo.findRequiresAttention.mockResolvedValue([{
+        id: 'uuid-event-1', name: 'Test', status: EventStatus.PUBLISHED,
+        eventDate: new Date(), imageUrl: 'http://img.com', formatId: 'fmt-1',
+        _count: { artists: 2, ticketTypes: 2 }, ticketTypes: [{ availableQuantity: 100 }],
+      }]);
+
+      const result = await service.getRequiresAttention(adminUser);
+
+      expect(result).toHaveLength(0);
+    });
+
+    it('should accumulate multiple issues on same event', async () => {
+      repo.findRequiresAttention.mockResolvedValue([{
+        id: 'uuid-event-1', name: 'Test', status: EventStatus.DRAFT,
+        eventDate: new Date(), imageUrl: null, formatId: null,
+        _count: { artists: 0, ticketTypes: 0 }, ticketTypes: [],
+      }]);
+
+      const result = await service.getRequiresAttention(adminUser);
+
+      expect(result[0].issues).toHaveLength(4); // Sin imagen, Sin formato, Sin artistas, Sin tipos de entrada
+      expect(result[0].issues).toEqual(
+        expect.arrayContaining(['Sin imagen', 'Sin formato', 'Sin artistas', 'Sin tipos de entrada']),
+      );
+    });
+  });
+
+  // ── getTopEvents() ────────────────────────────────────────────────────────
+
+  describe('getTopEvents()', () => {
+    const mockTopRow = {
+      id: 'uuid-event-1',
+      name: 'Madrid Rock Fest 2025',
+      eventDate: new Date('2025-11-15T20:00:00Z'),
+      maxCapacity: 17000,
+      venue: { name: 'WiZink Center', city: 'Madrid' },
+      ticketsSold: 147,
+      revenue: 9185.0,
+    };
+
+    it('should delegate to findTopEvents with the given limit', async () => {
+      const query: TopEventsQueryDto = { limit: 10 };
+      repo.findTopEvents.mockResolvedValue([mockTopRow]);
+
+      const result = await service.getTopEvents(query);
+
+      expect(repo.findTopEvents).toHaveBeenCalledWith(10);
+      expect(result).toHaveLength(1);
+    });
+
+    it('should map rows to TopEventResponseDto', async () => {
+      repo.findTopEvents.mockResolvedValue([mockTopRow]);
+
+      const result = await service.getTopEvents({ limit: 10 });
+
+      expect(result[0]).toMatchObject({
+        id: 'uuid-event-1',
+        ticketsSold: 147,
+        totalCapacity: 17000,
+        revenue: 9185.0,
+        venue: { name: 'WiZink Center', city: 'Madrid' },
+      });
+    });
+
+    it('should return empty array when no events have sales', async () => {
+      repo.findTopEvents.mockResolvedValue([]);
+
+      const result = await service.getTopEvents({ limit: 10 });
+
+      expect(result).toHaveLength(0);
+    });
+  });
+
+  // ── getEventMetrics() ─────────────────────────────────────────────────────
+
+  describe('getEventMetrics()', () => {
+    const adminUser: JwtPayload = { sub: 'uuid-admin', email: 'admin@test.com', role: Role.ADMIN };
+    const creatorUser: JwtPayload = { sub: 'uuid-creator-1', email: 'creator@test.com', role: Role.CREATOR };
+    const otherUser: JwtPayload = { sub: 'uuid-other', email: 'other@test.com', role: Role.BUYER };
+
+    const mockMetricsRaw = {
+      id: 'uuid-event-1',
+      name: 'Granada Indie Night 2025',
+      status: EventStatus.FINISHED,
+      creatorId: 'uuid-creator-1',
+      maxCapacity: 2000,
+      ticketTypes: [
+        {
+          id: 'uuid-tt-1',
+          name: 'General',
+          totalQuantity: 1200,
+          availableQuantity: 0,
+          orderItems: [
+            { quantity: 4, subtotal: '140.00', order: { status: 'COMPLETED' } },
+            { quantity: 2, subtotal: '70.00', order: { status: 'COMPLETED' } },
+          ],
+        },
+        {
+          id: 'uuid-tt-2',
+          name: 'Preferente',
+          totalQuantity: 500,
+          availableQuantity: 0,
+          orderItems: [
+            { quantity: 2, subtotal: '120.00', order: { status: 'COMPLETED' } },
+          ],
+        },
+      ],
+      orders: [
+        { status: 'COMPLETED' },
+        { status: 'COMPLETED' },
+        { status: 'COMPLETED' },
+        { status: 'PENDING' },
+        { status: 'CANCELLED' },
+      ],
+    };
+
+    it('should return complete metrics for ADMIN', async () => {
+      repo.findMetricsById.mockResolvedValue(mockMetricsRaw as any);
+
+      const result = await service.getEventMetrics('uuid-event-1', adminUser);
+
+      expect(result.eventId).toBe('uuid-event-1');
+      expect(result.eventName).toBe('Granada Indie Night 2025');
+      expect(result.status).toBe(EventStatus.FINISHED);
+    });
+
+    it('should allow CREATOR to see their own event metrics', async () => {
+      repo.findMetricsById.mockResolvedValue(mockMetricsRaw as any);
+
+      const result = await service.getEventMetrics('uuid-event-1', creatorUser);
+
+      expect(result.eventId).toBe('uuid-event-1');
+    });
+
+    it('should throw ForbiddenException when CREATOR accesses another creator event', async () => {
+      repo.findMetricsById.mockResolvedValue(mockMetricsRaw as any); // creatorId: uuid-creator-1
+
+      await expect(service.getEventMetrics('uuid-event-1', otherUser)).rejects.toThrow(
+        ForbiddenException,
+      );
+    });
+
+    it('should throw NotFoundException when event does not exist', async () => {
+      repo.findMetricsById.mockResolvedValue(null);
+
+      await expect(service.getEventMetrics('uuid-not-found', adminUser)).rejects.toThrow(
+        NotFoundException,
+      );
+    });
+
+    it('should calculate sold tickets correctly', async () => {
+      repo.findMetricsById.mockResolvedValue(mockMetricsRaw as any);
+
+      const result = await service.getEventMetrics('uuid-event-1', adminUser);
+
+      // General: 4+2=6, Preferente: 2 → total 8
+      expect(result.capacity.sold).toBe(8);
+      expect(result.capacity.total).toBe(2000);
+      expect(result.capacity.available).toBe(1992);
+    });
+
+    it('should calculate occupancyRate correctly', async () => {
+      repo.findMetricsById.mockResolvedValue(mockMetricsRaw as any);
+
+      const result = await service.getEventMetrics('uuid-event-1', adminUser);
+
+      // 8 / 2000 = 0.004
+      expect(result.capacity.occupancyRate).toBe(0.004);
+    });
+
+    it('should calculate revenue per ticket type', async () => {
+      repo.findMetricsById.mockResolvedValue(mockMetricsRaw as any);
+
+      const result = await service.getEventMetrics('uuid-event-1', adminUser);
+
+      const general = result.revenue.byTicketType.find((t) => t.name === 'General')!;
+      const preferente = result.revenue.byTicketType.find((t) => t.name === 'Preferente')!;
+
+      expect(general.sold).toBe(6);
+      expect(general.revenue).toBe(210);
+      expect(preferente.sold).toBe(2);
+      expect(preferente.revenue).toBe(120);
+      expect(result.revenue.total).toBe(330);
+    });
+
+    it('should count orders by status', async () => {
+      repo.findMetricsById.mockResolvedValue(mockMetricsRaw as any);
+
+      const result = await service.getEventMetrics('uuid-event-1', adminUser);
+
+      expect(result.orders.total).toBe(5);
+      expect(result.orders.completed).toBe(3);
+      expect(result.orders.pending).toBe(1);
+      expect(result.orders.cancelled).toBe(1);
+      expect(result.orders.refunded).toBe(0);
+    });
+
+    it('should identify the top ticket type by sold count', async () => {
+      repo.findMetricsById.mockResolvedValue(mockMetricsRaw as any);
+
+      const result = await service.getEventMetrics('uuid-event-1', adminUser);
+
+      expect(result.topTicketType).toEqual({ name: 'General', sold: 6 });
+    });
+
+    it('should return null topTicketType when no tickets have been sold', async () => {
+      repo.findMetricsById.mockResolvedValue({
+        ...mockMetricsRaw,
+        ticketTypes: [
+          { id: 'tt-1', name: 'General', totalQuantity: 100, availableQuantity: 100, orderItems: [] },
+        ],
+        orders: [],
+      } as any);
+
+      const result = await service.getEventMetrics('uuid-event-1', adminUser);
+
+      expect(result.topTicketType).toBeNull();
     });
   });
 });

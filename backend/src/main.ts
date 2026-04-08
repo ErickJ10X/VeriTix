@@ -8,9 +8,29 @@ import { Logger } from 'nestjs-pino';
 import { AppModule } from './app.module';
 
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule, { bufferLogs: true });
+  // bodyParser: false — configuramos los parsers manualmente para poder
+  // guardar el rawBody en req para el webhook de Stripe
+  const app = await NestFactory.create(AppModule, {
+    bufferLogs: true,
+    bodyParser: false,
+  });
   app.useLogger(app.get(Logger));
   const config = app.get(ConfigService);
+
+  // ── Body parsers ──────────────────────────────────────────────────────────
+  // express.json() con verify: guarda el raw buffer en req.rawBody
+  // para que el webhook de Stripe pueda verificar la firma
+  // eslint-disable-next-line @typescript-eslint/no-require-imports
+  const bodyParser = require('body-parser');
+
+  app.use(
+    bodyParser.json({
+      verify: (req: any, _res: any, buf: Buffer) => {
+        req.rawBody = buf;
+      },
+    }),
+  );
+  app.use(bodyParser.urlencoded({ extended: true }));
 
   // Seguridad: headers HTTP (X-Content-Type-Options, Strict-Transport-Security, etc.)
   app.use(helmet());
