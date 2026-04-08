@@ -1,5 +1,5 @@
 import { Injectable, Logger } from '@nestjs/common';
-import { OrderStatus, PaymentStatus } from '../../generated/prisma/enums';
+import { OrderStatus, PaymentStatus, TicketStatus } from '../../generated/prisma/enums';
 import { PrismaService } from '../../prisma/prisma.service';
 import { TicketsGenerator } from '../tickets/tickets.generator';
 
@@ -203,10 +203,17 @@ export class StripeWebhookService {
         where: { id: payment.orderId },
         data: { status: OrderStatus.REFUNDED },
       });
+
+      // Marcar todos los tickets de la orden como REFUNDED
+      // Evita que puedan ser usados en la puerta después del reembolso
+      await tx.ticket.updateMany({
+        where: { orderId: payment.orderId },
+        data: { status: TicketStatus.REFUNDED },
+      });
     });
 
     this.logger.log(
-      `Order ${payment.orderId} marcada REFUNDED (intent ${data.payment_intent})`,
+      `Order ${payment.orderId} marcada REFUNDED — tickets invalidados (intent ${data.payment_intent})`,
     );
   }
 }
