@@ -205,11 +205,11 @@ onMounted(() => {
               <AdminCard hover>
                 <div class="flex items-center justify-between gap-4">
                   <div class="min-w-0 flex items-center gap-4">
-                    <div class="hidden sm:flex size-12 rounded-xl bg-amber-50 dark:bg-amber-500/10 border border-amber-200 dark:border-amber-500/20 items-center justify-center text-amber-600 dark:text-amber-400 shrink-0">
+                    <div class="hidden sm:flex size-12 rounded-xl bg-warning/10 border border-warning/20 items-center justify-center text-warning shrink-0">
                       <UIcon name="i-lucide-calendar" class="size-5" />
                     </div>
                     <div class="min-w-0">
-                      <p class="font-medium text-default truncate group-hover:text-amber-600 dark:group-hover:text-amber-400 transition-colors">
+                      <p class="font-medium text-default truncate group-hover:text-warning transition-colors">
                         {{ event.name }}
                       </p>
                       <div class="flex items-center gap-2 mt-1 text-sm text-muted">
@@ -263,18 +263,18 @@ onMounted(() => {
                 :to="`/admin/users/${user.id}/edit`"
                 class="group flex items-center gap-3 p-2 rounded-lg hover:bg-elevated transition-colors"
               >
-                <div class="size-9 rounded-full bg-blue-50 dark:bg-blue-500/10 border border-blue-200 dark:border-blue-500/20 flex items-center justify-center text-xs font-semibold text-blue-600 dark:text-blue-400">
+                <div class="size-9 rounded-full bg-primary/10 border border-primary/20 flex items-center justify-center text-xs font-semibold text-primary">
                   {{ user.name.charAt(0) }}{{ user.lastName.charAt(0) }}
                 </div>
                 <div class="min-w-0 flex-1">
-                  <p class="text-sm font-medium text-default truncate group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
+                  <p class="text-sm font-medium text-default truncate group-hover:text-primary transition-colors">
                     {{ user.name }} {{ user.lastName }}
                   </p>
                   <p class="text-xs text-muted truncate">
                     {{ user.email }}
                   </p>
                 </div>
-                <div class="size-2 rounded-full" :class="user.isActive ? 'bg-emerald-500' : 'bg-muted'" />
+                <div class="size-2 rounded-full" :class="user.isActive ? 'bg-success' : 'bg-muted'" />
               </NuxtLink>
             </div>
           </AdminSection>
@@ -302,11 +302,11 @@ onMounted(() => {
                 :to="`/admin/artists/${artist.id}/edit`"
                 class="group flex items-center gap-3 p-2 rounded-lg hover:bg-elevated transition-colors"
               >
-                <div class="size-9 rounded-full bg-emerald-50 dark:bg-emerald-500/10 border border-emerald-200 dark:border-emerald-500/20 flex items-center justify-center text-xs font-semibold text-emerald-600 dark:text-emerald-400">
+                <div class="size-9 rounded-full bg-success/10 border border-success/20 flex items-center justify-center text-xs font-semibold text-success">
                   {{ artist.name.charAt(0) }}
                 </div>
                 <div class="min-w-0 flex-1">
-                  <p class="text-sm font-medium text-default truncate group-hover:text-emerald-600 dark:group-hover:text-emerald-400 transition-colors">
+                  <p class="text-sm font-medium text-default truncate group-hover:text-success transition-colors">
                     {{ artist.name }}
                   </p>
                   <p class="text-xs text-muted truncate">

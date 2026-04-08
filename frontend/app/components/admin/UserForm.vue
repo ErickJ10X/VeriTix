@@ -113,11 +113,7 @@ watch(() => props.initialValue, applyInitialValue, { immediate: true })
 
     <div class="grid gap-5 lg:grid-cols-2">
       <UFormField name="role" label="Rol" required>
-        <select v-model="state.role" class="vtx-admin-select">
-          <option v-for="option in roleOptions" :key="option.value" :value="option.value">
-            {{ option.label }}
-          </option>
-        </select>
+        <USelect v-model="state.role" :items="roleOptions" placeholder="Selecciona un rol" />
       </UFormField>
 
       <BaseFormField v-if="mode === 'edit'" v-model="state.avatarUrl" name="avatarUrl" label="Avatar URL" type="url" placeholder="https://..." />
@@ -125,21 +121,19 @@ watch(() => props.initialValue, applyInitialValue, { immediate: true })
     </div>
 
     <div v-if="mode === 'edit'" class="grid gap-4 lg:grid-cols-2">
-      <label class="vtx-admin-toggle">
-        <input v-model="state.isActive" type="checkbox">
-        <span>
-          <strong>Usuario activo</strong>
-          <small>Permite acceso a la plataforma</small>
-        </span>
-      </label>
+      <UCheckbox
+        v-model="state.isActive"
+        label="Usuario activo"
+        description="Permite acceso a la plataforma"
+        variant="card"
+      />
 
-      <label class="vtx-admin-toggle">
-        <input v-model="state.emailVerified" type="checkbox">
-        <span>
-          <strong>Email verificado</strong>
-          <small>Marca la cuenta como validada</small>
-        </span>
-      </label>
+      <UCheckbox
+        v-model="state.emailVerified"
+        label="Email verificado"
+        description="Marca la cuenta como validada"
+        variant="card"
+      />
     </div>
 
     <div class="flex justify-end">
@@ -149,37 +143,3 @@ watch(() => props.initialValue, applyInitialValue, { immediate: true })
     </div>
   </UForm>
 </template>
-
-<style scoped>
-@reference "@/assets/css/main.css";
-
-.vtx-admin-select {
-  @apply w-full rounded-2xl border px-4 py-3 text-sm outline-none transition-colors duration-150;
-  border-color: rgb(145 161 190 / 0.24);
-  background: rgb(255 255 255 / 0.04);
-  color: rgb(247 249 255);
-}
-
-.vtx-admin-toggle {
-  @apply flex items-start gap-3 rounded-2xl border px-4 py-4;
-  border-color: rgb(145 161 190 / 0.18);
-  background: rgb(255 255 255 / 0.03);
-}
-
-.vtx-admin-toggle input {
-  margin-top: 0.2rem;
-}
-
-.vtx-admin-toggle strong {
-  display: block;
-  color: rgb(247 249 255);
-  font-size: 0.92rem;
-}
-
-.vtx-admin-toggle small {
-  display: block;
-  margin-top: 0.2rem;
-  color: rgb(176 186 208 / 0.82);
-  font-size: 0.76rem;
-}
-</style>

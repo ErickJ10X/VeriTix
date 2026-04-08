@@ -49,6 +49,26 @@ const state = reactive({
   genreIds: [] as string[],
 })
 
+const currencyOptions = ['EUR', 'USD', 'COP']
+
+const venueOptions = computed(() => {
+  return props.venues.map(venue => ({
+    label: `${venue.name} · ${venue.city}`,
+    value: venue.id,
+  }))
+})
+
+const formatOptions = computed(() => {
+  return [
+    { label: 'Sin formato específico', value: '' },
+    ...props.formats.map(format => ({ label: format.name, value: format.id })),
+  ]
+})
+
+const genreOptions = computed(() => {
+  return props.genres.map(genre => ({ label: genre.name, value: genre.id }))
+})
+
 function padDatePart(value: number): string {
   return String(value).padStart(2, '0')
 }
@@ -96,15 +116,6 @@ function applyInitialValue() {
   state.genreIds = props.initialValue?.genres?.map(genre => genre.id) ?? []
 }
 
-function toggleGenre(genreId: string) {
-  if (state.genreIds.includes(genreId)) {
-    state.genreIds = state.genreIds.filter(id => id !== genreId)
-    return
-  }
-
-  state.genreIds = [...state.genreIds, genreId]
-}
-
 function handleSubmit() {
   emit('submit', {
     name: state.name.trim(),
@@ -133,7 +144,7 @@ watch(() => props.initialValue, applyInitialValue, { immediate: true })
     </div>
 
     <UFormField name="description" label="Descripción">
-      <textarea v-model="state.description" class="vtx-admin-textarea" rows="5" placeholder="Describe la propuesta del evento" />
+      <UTextarea v-model="state.description" :rows="5" placeholder="Describe la propuesta del evento" />
     </UFormField>
 
     <div class="grid gap-5 lg:grid-cols-3">
@@ -149,55 +160,25 @@ watch(() => props.initialValue, applyInitialValue, { immediate: true })
 
     <div class="grid gap-5 lg:grid-cols-3">
       <UFormField name="currency" label="Moneda" required>
-        <select v-model="state.currency" class="vtx-admin-select">
-          <option value="EUR">
-            EUR
-          </option>
-          <option value="USD">
-            USD
-          </option>
-          <option value="COP">
-            COP
-          </option>
-        </select>
+        <USelect v-model="state.currency" :items="currencyOptions" />
       </UFormField>
 
       <UFormField name="venueId" label="Venue" required>
-        <select v-model="state.venueId" class="vtx-admin-select">
-          <option value="">
-            Selecciona un venue
-          </option>
-          <option v-for="venue in venues" :key="venue.id" :value="venue.id">
-            {{ venue.name }} · {{ venue.city }}
-          </option>
-        </select>
+        <USelect v-model="state.venueId" :items="venueOptions" placeholder="Selecciona un venue" />
       </UFormField>
 
       <UFormField name="formatId" label="Formato">
-        <select v-model="state.formatId" class="vtx-admin-select">
-          <option value="">
-            Sin formato específico
-          </option>
-          <option v-for="format in formats" :key="format.id" :value="format.id">
-            {{ format.name }}
-          </option>
-        </select>
+        <USelect v-model="state.formatId" :items="formatOptions" />
       </UFormField>
     </div>
 
     <UFormField name="genreIds" label="Géneros">
-      <div class="flex flex-wrap gap-2">
-        <button
-          v-for="genre in genres"
-          :key="genre.id"
-          type="button"
-          class="vtx-admin-chip"
-          :class="state.genreIds.includes(genre.id) && 'vtx-admin-chip--active'"
-          @click="toggleGenre(genre.id)"
-        >
-          {{ genre.name }}
-        </button>
-      </div>
+      <USelect
+        v-model="state.genreIds"
+        :items="genreOptions"
+        multiple
+        placeholder="Selecciona géneros"
+      />
     </UFormField>
 
     <div class="flex justify-end">
@@ -207,34 +188,3 @@ watch(() => props.initialValue, applyInitialValue, { immediate: true })
     </div>
   </UForm>
 </template>
-
-<style scoped>
-@reference "@/assets/css/main.css";
-
-.vtx-admin-textarea,
-.vtx-admin-select {
-  @apply w-full rounded-2xl border px-4 py-3 text-sm outline-none transition-colors duration-150;
-  border-color: rgb(145 161 190 / 0.24);
-  background: rgb(255 255 255 / 0.04);
-  color: rgb(247 249 255);
-}
-
-.vtx-admin-textarea:focus,
-.vtx-admin-select:focus {
-  border-color: rgb(239 170 71 / 0.38);
-  box-shadow: 0 0 0 3px rgb(239 170 71 / 0.08);
-}
-
-.vtx-admin-chip {
-  @apply inline-flex items-center rounded-full border px-3 py-2 text-xs font-semibold transition-all duration-150;
-  border-color: rgb(145 161 190 / 0.22);
-  background: rgb(255 255 255 / 0.03);
-  color: rgb(176 186 208 / 0.88);
-}
-
-.vtx-admin-chip--active {
-  border-color: rgb(239 170 71 / 0.42);
-  background: rgb(239 170 71 / 0.14);
-  color: rgb(248 194 103);
-}
-</style>

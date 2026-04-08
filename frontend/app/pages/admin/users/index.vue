@@ -108,8 +108,8 @@ function getInitials(user: AdminUserRecord) {
 }
 
 function getAvatarColor(user: AdminUserRecord) {
-  if (user.role === 'ADMIN') { return 'bg-blue-50 dark:bg-blue-500/10 text-blue-600 dark:text-blue-400 border-blue-200 dark:border-blue-500/20' }
-  if (user.isActive) { return 'bg-emerald-50 dark:bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-200 dark:border-emerald-500/20' }
+  if (user.role === 'ADMIN') { return 'bg-primary/10 text-primary border-primary/20' }
+  if (user.isActive) { return 'bg-success/10 text-success border-success/20' }
   return 'bg-default text-muted border-default'
 }
 
@@ -195,7 +195,7 @@ onMounted(() => {
           <p class="font-medium">
             <span class="text-default">{{ filteredUsers.length }}</span> usuario{{ filteredUsers.length !== 1 ? 's' : '' }}
           </p>
-          <p v-if="search || filterStatus !== 'all'" class="text-amber-600 dark:text-amber-500 font-medium flex items-center gap-1.5">
+          <p v-if="search || filterStatus !== 'all'" class="text-warning font-medium flex items-center gap-1.5">
             <UIcon name="i-lucide-filter" class="size-4" />
             Filtros aplicados
           </p>
@@ -210,7 +210,7 @@ onMounted(() => {
 
           <!-- Empty State -->
           <div v-else-if="filteredUsers.length === 0" class="flex flex-col items-center justify-center h-full py-16 text-center">
-            <div class="p-4 rounded-full bg-elevated mb-4 ring-1 ring-slate-200 dark:ring-slate-700">
+            <div class="p-4 rounded-full bg-elevated mb-4 ring-1 ring-default">
               <UIcon name="i-lucide-users" class="size-8 text-muted" />
             </div>
             <h3 class="text-lg font-semibold text-default mb-1">
@@ -244,7 +244,7 @@ onMounted(() => {
               <!-- Info -->
               <div class="flex-1 min-w-0">
                 <div class="flex items-center gap-2 mb-1">
-                  <p class="font-semibold text-default truncate group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
+                  <p class="font-semibold text-default truncate group-hover:text-primary transition-colors">
                     {{ user.name }} {{ user.lastName }}
                   </p>
                   <UBadge v-if="user.role === 'ADMIN'" color="primary" variant="soft" size="xs" class="font-semibold rounded-full px-2">
@@ -262,8 +262,8 @@ onMounted(() => {
               <!-- Status & Actions -->
               <div class="flex items-center justify-between sm:justify-end gap-6 sm:w-64 mt-3 sm:mt-0 pt-3 sm:pt-0 border-t border-default sm:border-t-0">
                 <div class="flex items-center gap-2">
-                  <div class="size-2 rounded-full" :class="user.isActive ? 'bg-emerald-500' : 'bg-muted'" />
-                  <span class="text-xs font-medium" :class="user.isActive ? 'text-emerald-600 dark:text-emerald-400' : 'text-muted'">
+                  <div class="size-2 rounded-full" :class="user.isActive ? 'bg-success' : 'bg-muted'" />
+                  <span class="text-xs font-medium" :class="user.isActive ? 'text-success' : 'text-muted'">
                     {{ user.isActive ? 'Activo' : 'Inactivo' }}
                   </span>
                 </div>

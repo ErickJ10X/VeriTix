@@ -12,33 +12,33 @@ const props = withDefaults(defineProps<AdminMetricProps>(), {
   hint: '',
 })
 
-const iconContainerClasses = computed(() => {
-  const base = 'p-2.5 rounded-lg border transition-colors'
+  const iconContainerClasses = computed(() => {
+    const base = 'p-2.5 rounded-lg border transition-colors'
 
-  if (props.variant === 'warning') {
-    return `${base} bg-amber-50/50 dark:bg-amber-500/10 border-amber-200 dark:border-amber-500/20`
-  }
-  if (props.variant === 'success') {
-    return `${base} bg-emerald-50/50 dark:bg-emerald-500/10 border-emerald-200 dark:border-emerald-500/20`
-  }
-  if (props.variant === 'primary') {
-    return `${base} bg-blue-50/50 dark:bg-blue-500/10 border-blue-200 dark:border-blue-500/20`
-  }
-  if (props.variant === 'error') {
-    return `${base} bg-rose-50/50 dark:bg-rose-500/10 border-rose-200 dark:border-rose-500/20`
-  }
+    if (props.variant === 'warning') {
+      return `${base} bg-warning/10 border-warning/20`
+    }
+    if (props.variant === 'success') {
+      return `${base} bg-success/10 border-success/20`
+    }
+    if (props.variant === 'primary') {
+      return `${base} bg-primary/10 border-primary/20`
+    }
+    if (props.variant === 'error') {
+      return `${base} bg-error/10 border-error/20`
+    }
 
-  return `${base} bg-default border-default`
-})
+    return `${base} bg-default border-default`
+  })
 
-const iconClasses = computed(() => {
-  if (props.variant === 'warning') { return 'text-amber-600 dark:text-amber-400' }
-  if (props.variant === 'success') { return 'text-emerald-600 dark:text-emerald-400' }
-  if (props.variant === 'primary') { return 'text-blue-600 dark:text-blue-400' }
-  if (props.variant === 'error') { return 'text-rose-600 dark:text-rose-400' }
+  const iconClasses = computed(() => {
+    if (props.variant === 'warning') { return 'text-warning' }
+    if (props.variant === 'success') { return 'text-success' }
+    if (props.variant === 'primary') { return 'text-primary' }
+    if (props.variant === 'error') { return 'text-error' }
 
-  return 'text-muted'
-})
+    return 'text-muted'
+  })
 </script>
 
 <template>

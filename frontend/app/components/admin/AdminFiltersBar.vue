@@ -147,14 +147,14 @@ const formatOptions = computed(() => {
 
       <div class="md:col-span-2 flex items-center justify-end gap-2 h-8">
         <UButton
-          color="gray"
+          color="neutral"
           variant="ghost"
           label="Reset"
           :disabled="loading"
           @click="$emit('reset')"
         />
         <UButton
-          color="black"
+          color="primary"
           label="Apply"
           :loading="loading"
           @click="$emit('apply')"
@@ -163,12 +163,12 @@ const formatOptions = computed(() => {
     </div>
 
     <!-- Quick Filters -->
-    <div v-if="quickWindowOptions && quickWindowOptions.length > 0" class="flex flex-wrap gap-2 items-center pt-2 border-t border-gray-200 dark:border-gray-800">
-      <span class="text-sm text-gray-500 dark:text-gray-400 font-medium mr-2">Quick dates:</span>
+    <div v-if="quickWindowOptions && quickWindowOptions.length > 0" class="flex flex-wrap gap-2 items-center pt-2 border-t border-default">
+      <span class="text-sm text-muted font-medium mr-2">Quick dates:</span>
       <UButton
         v-for="option in quickWindowOptions"
         :key="option.value"
-        :color="quickWindow === option.value ? 'primary' : 'gray'"
+        :color="quickWindow === option.value ? 'primary' : 'neutral'"
         :variant="quickWindow === option.value ? 'soft' : 'ghost'"
         size="xs"
         class="rounded-full"
