@@ -168,8 +168,8 @@ async function handlePageChange(page: number) {
 
 <template>
   <UiEventsPageShell variant="index" container-class="relative">
-    <div class="mx-auto max-w-7xl space-y-7">
-      <header class="space-y-4 border-b border-default/55 pb-7">
+    <div class="mx-auto max-w-7xl space-y-8 sm:space-y-9">
+      <header class="space-y-4 border-b border-default/55 pb-8">
         <p class="text-[0.68rem] font-semibold tracking-[0.3em] text-secondary uppercase">
           Cartelera
         </p>
@@ -178,13 +178,13 @@ async function handlePageChange(page: number) {
           <h1 class="font-display text-3xl text-highlighted sm:text-4xl lg:text-[2.85rem]">
             Eventos en vivo
           </h1>
-          <p class="mt-2.5 max-w-2xl text-sm leading-relaxed text-toned sm:text-base">
+          <p class="mt-2.5 max-w-3xl text-sm leading-relaxed text-toned sm:text-base">
             Descubre la cartelera y encuentra rápido lo que quieres ver.
           </p>
         </div>
       </header>
 
-      <section class="grid gap-7 xl:grid-cols-[292px_minmax(0,1fr)] xl:items-start xl:gap-8">
+      <section class="grid gap-8 xl:grid-cols-[292px_minmax(0,1fr)] xl:items-start xl:gap-10">
         <aside class="xl:sticky xl:top-24">
           <div class="rounded-[2rem] border border-default/65 bg-[linear-gradient(180deg,rgba(255,255,255,0.05),rgba(255,255,255,0.02)),linear-gradient(145deg,rgba(11,17,31,0.68),rgba(16,23,40,0.6))] p-5 shadow-[0_24px_48px_-34px_rgba(0,0,0,0.82)] backdrop-blur-xl sm:p-6">
             <div class="border-b border-default/55 pb-5">
@@ -214,7 +214,7 @@ async function handlePageChange(page: number) {
             </div>
 
             <div class="mt-5 space-y-4.5">
-              <section class="rounded-[1.5rem] border border-default/60 bg-default/30 p-4.5">
+              <section class="rounded-[1.25rem] border border-default/60 bg-default/30 p-4.5">
                 <p class="text-[0.68rem] font-semibold tracking-[0.18em] text-dimmed uppercase">
                   Búsqueda
                 </p>
@@ -241,7 +241,7 @@ async function handlePageChange(page: number) {
                 </form>
               </section>
 
-              <section class="rounded-[1.5rem] border border-default/60 bg-default/30 p-4.5">
+              <section class="rounded-[1.25rem] border border-default/60 bg-default/30 p-4.5">
                 <div class="flex items-center justify-between gap-3">
                   <h3 class="text-[0.74rem] font-semibold tracking-[0.16em] text-highlighted uppercase">
                     Géneros
@@ -292,7 +292,7 @@ async function handlePageChange(page: number) {
                 </BaseTertiaryButton>
               </section>
 
-              <section class="rounded-[1.5rem] border border-default/60 bg-default/30 p-4.5">
+              <section class="rounded-[1.25rem] border border-default/60 bg-default/30 p-4.5">
                 <div class="flex items-center justify-between gap-3">
                   <h3 class="text-[0.74rem] font-semibold tracking-[0.16em] text-highlighted uppercase">
                     Ubicación
@@ -336,24 +336,26 @@ async function handlePageChange(page: number) {
           </div>
         </aside>
 
-        <section class="space-y-6">
-          <div class="space-y-1 border-b border-default/55 pb-4">
-            <p class="text-[0.68rem] font-semibold tracking-[0.22em] text-secondary uppercase">
-              Resultados
-            </p>
-            <div class="flex flex-col gap-1 sm:flex-row sm:items-end sm:justify-between sm:gap-4">
-              <h2 class="text-2xl font-semibold text-highlighted">
-                {{ resultsHeading }}
-              </h2>
+        <section class="space-y-7">
+          <div class="border-b border-default/50 pb-4 sm:pb-5">
+            <div class="flex flex-col gap-2.5 md:flex-row md:items-end md:justify-between md:gap-6">
+              <div class="space-y-1">
+                <p class="text-[0.66rem] font-semibold tracking-[0.2em] text-dimmed uppercase">
+                  Resultados
+                </p>
+                <h2 class="text-[1.45rem] font-semibold tracking-[-0.02em] text-highlighted sm:text-[1.65rem]">
+                  {{ resultsHeading }}
+                </h2>
+              </div>
 
-              <p class="text-sm text-toned sm:text-right">
+              <p class="max-w-2xl text-sm leading-relaxed text-toned/88 md:text-right">
                 {{ resultsContext }}
               </p>
             </div>
           </div>
 
-          <div v-if="isPending" class="grid gap-5 md:grid-cols-2 2xl:grid-cols-3">
-            <USkeleton v-for="index in 6" :key="index" class="h-104 rounded-[1.6rem]" />
+          <div v-if="isPending" class="grid gap-6 md:grid-cols-2 2xl:grid-cols-3">
+            <USkeleton v-for="index in 6" :key="index" class="h-104 rounded-[1.25rem]" />
           </div>
 
           <div v-else-if="eventsErrorMessage" class="rounded-3xl border border-error/30 bg-error/8 px-6 py-14 text-center">
@@ -376,7 +378,7 @@ async function handlePageChange(page: number) {
             </p>
           </div>
 
-          <div v-else class="grid gap-5 md:grid-cols-2 2xl:grid-cols-3">
+          <div v-else class="grid gap-6 md:grid-cols-2 2xl:grid-cols-3">
             <EventsListingCard
               v-for="event in events"
               :key="event.id"
@@ -384,7 +386,7 @@ async function handlePageChange(page: number) {
             />
           </div>
 
-          <div v-if="meta.totalPages > 1" class="flex justify-center border-t border-default/55 pt-5">
+          <div v-if="meta.totalPages > 1" class="mt-2 flex justify-center border-t border-default/55 pt-8">
             <UPagination
               :page="filters.page"
               :total="meta.total"
