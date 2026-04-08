@@ -30,11 +30,11 @@ function handleConfirm() {
 
 <template>
   <UPopover v-model:open="open" :content="{ align: 'end', side: 'top', sideOffset: 10 }">
-    <BaseTertiaryButton size="sm" :disabled="pending" :data-testid="testId || undefined">
+    <BaseButton kind="tertiary" size="sm" :disabled="pending" :data-testid="testId || undefined">
       <slot>
         Eliminar
       </slot>
-    </BaseTertiaryButton>
+    </BaseButton>
 
     <template #content>
       <div class="vtx-admin-confirm-panel">
@@ -50,12 +50,12 @@ function handleConfirm() {
         </div>
 
         <div class="flex justify-end gap-2 pt-2">
-          <BaseTertiaryButton size="sm" :disabled="pending" @click="open = false">
+          <BaseButton kind="tertiary" size="sm" :disabled="pending" @click="open = false">
             {{ cancelLabel }}
-          </BaseTertiaryButton>
-          <BasePrimaryButton size="sm" :loading="pending" :disabled="pending" @click="handleConfirm">
+          </BaseButton>
+          <BaseButton kind="primary" size="sm" :loading="pending" :disabled="pending" @click="handleConfirm">
             {{ confirmLabel }}
-          </BasePrimaryButton>
+          </BaseButton>
         </div>
       </div>
     </template>

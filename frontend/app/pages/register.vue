@@ -194,7 +194,8 @@ async function onSubmit() {
             </p>
 
             <!-- Submit button -->
-            <BasePrimaryButton
+            <BaseButton
+              kind="primary"
               type="submit"
               size="lg"
               block
@@ -202,7 +203,7 @@ async function onSubmit() {
               class="mt-2"
             >
               Crear cuenta
-            </BasePrimaryButton>
+            </BaseButton>
 
             <p class="text-center text-xs text-toned">
               Tu cuenta se crea en segundos y podras gestionar eventos de inmediato.

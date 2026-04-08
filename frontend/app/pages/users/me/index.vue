@@ -253,7 +253,8 @@ onMounted(() => {
                 Datos visibles y de contacto.
               </span>
 
-              <BasePrimaryButton
+              <BaseButton
+                kind="primary"
                 type="submit"
                 size="lg"
                 class="vtx-profile-submit px-6"
@@ -261,7 +262,7 @@ onMounted(() => {
                 :disabled="!hasProfileChanges"
               >
                 Guardar perfil
-              </BasePrimaryButton>
+              </BaseButton>
             </div>
           </UForm>
         </article>
@@ -304,22 +305,24 @@ onMounted(() => {
               </span>
 
               <div class="flex flex-col gap-3 sm:flex-row sm:items-center">
-                <BaseSecondaryButton
+                <BaseButton
+                  kind="secondary"
                   to="/users/me/logout"
                   size="lg"
                   class="px-6"
                 >
                   Cerrar sesion
-                </BaseSecondaryButton>
+                </BaseButton>
 
-                <BasePrimaryButton
+                <BaseButton
+                  kind="primary"
                   type="submit"
                   size="lg"
                   class="vtx-profile-submit px-6"
                   :loading="passwordSubmitting"
                 >
                   Actualizar contrasena
-                </BasePrimaryButton>
+                </BaseButton>
               </div>
             </div>
           </UForm>

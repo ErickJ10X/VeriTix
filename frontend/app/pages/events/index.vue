@@ -2,6 +2,8 @@
 const route = useRoute()
 const { getApiErrorMessage } = useApiErrorMessage()
 
+const VISIBLE_GENRE_LIMIT = 8
+
 function readQueryValue(value: unknown): string {
   return typeof value === 'string' ? value : ''
 }
@@ -46,15 +48,15 @@ const cityOptions = computed(() => {
 })
 
 const visibleGenres = computed(() => {
-  if (showAllGenres.value || genreOptions.value.length <= 8) {
+  if (showAllGenres.value || genreOptions.value.length <= VISIBLE_GENRE_LIMIT) {
     return genreOptions.value
   }
 
   const selectedGenre = genreOptions.value.find(genre => genre.id === filters.value.genreId)
-  const leadingGenres = genreOptions.value.slice(0, 8)
+  const leadingGenres = genreOptions.value.slice(0, VISIBLE_GENRE_LIMIT)
 
   if (selectedGenre && !leadingGenres.some(genre => genre.id === selectedGenre.id)) {
-    return [...leadingGenres.slice(0, 7), selectedGenre]
+    return [...leadingGenres.slice(0, VISIBLE_GENRE_LIMIT - 1), selectedGenre]
   }
 
   return leadingGenres
@@ -122,10 +124,6 @@ const hasActiveFilters = computed(() => {
   return Boolean(filters.value.search || filters.value.genreId || filters.value.city)
 })
 
-const filterButtonUi = {
-  base: 'border border-default/70 bg-default/65 text-toned shadow-none transition-all duration-150 hover:border-primary/18 hover:bg-elevated hover:text-default focus-visible:border-primary/35 focus-visible:bg-elevated focus-visible:text-default',
-} as const
-
 async function updateFilters(next: Partial<typeof filters.value>) {
   const shouldResetPage = next.search !== undefined || next.genreId !== undefined || next.city !== undefined
   const query = {
@@ -170,12 +168,12 @@ async function handlePageChange(page: number) {
   <UiEventsPageShell variant="index" container-class="relative">
     <div class="mx-auto max-w-7xl space-y-8 sm:space-y-9">
       <header class="space-y-4 border-b border-default/55 pb-8">
-        <p class="text-[0.68rem] font-semibold tracking-[0.3em] text-secondary uppercase">
+        <p class="text-xs font-semibold tracking-widest text-secondary uppercase">
           Cartelera
         </p>
 
         <div>
-          <h1 class="font-display text-3xl text-highlighted sm:text-4xl lg:text-[2.85rem]">
+          <h1 class="font-display text-3xl text-highlighted sm:text-4xl lg:text-5xl">
             Eventos en vivo
           </h1>
           <p class="mt-2.5 max-w-3xl text-sm leading-relaxed text-toned sm:text-base">
@@ -186,10 +184,10 @@ async function handlePageChange(page: number) {
 
       <section class="grid gap-8 xl:grid-cols-[292px_minmax(0,1fr)] xl:items-start xl:gap-10">
         <aside class="xl:sticky xl:top-24">
-          <div class="rounded-[2rem] border border-default/65 bg-[linear-gradient(180deg,rgba(255,255,255,0.05),rgba(255,255,255,0.02)),linear-gradient(145deg,rgba(11,17,31,0.68),rgba(16,23,40,0.6))] p-5 shadow-[0_24px_48px_-34px_rgba(0,0,0,0.82)] backdrop-blur-xl sm:p-6">
+          <UiGlassPanel padding="lg" radius="md">
             <div class="border-b border-default/55 pb-5">
               <div>
-                <p class="text-[0.68rem] font-semibold tracking-[0.22em] text-secondary uppercase">
+                <p class="text-xs font-semibold tracking-wide text-secondary uppercase">
                   Filtros
                 </p>
                 <h2 class="mt-1.5 text-xl font-semibold text-highlighted">
@@ -198,27 +196,24 @@ async function handlePageChange(page: number) {
               </div>
 
               <div v-if="hasActiveFilters" class="mt-4 flex flex-wrap items-center gap-2">
-                <p class="text-[0.72rem] font-medium tracking-[0.14em] text-dimmed uppercase">
+                <p class="text-xs font-medium text-dimmed uppercase">
                   {{ activeFilterCount }} filtro{{ activeFilterCount > 1 ? 's' : '' }} activo{{ activeFilterCount > 1 ? 's' : '' }}
                 </p>
 
-                <BaseTertiaryButton
+                <BaseButton
+                  kind="tertiary"
                   size="xs"
                   :disabled="isPending"
                   class="px-2.5"
                   @click="clearFilters"
                 >
                   Limpiar todo
-                </BaseTertiaryButton>
+                </BaseButton>
               </div>
             </div>
 
             <div class="mt-5 space-y-4.5">
-              <section class="rounded-[1.25rem] border border-default/60 bg-default/30 p-4.5">
-                <p class="text-[0.68rem] font-semibold tracking-[0.18em] text-dimmed uppercase">
-                  Búsqueda
-                </p>
-
+              <EventsFilterSection title="Búsqueda">
                 <form class="mt-3.5 space-y-3" @submit.prevent="submitSearch">
                   <BaseFormInput
                     v-model="searchDraft"
@@ -232,118 +227,82 @@ async function handlePageChange(page: number) {
                     v-model="artistNameDraft"
                     placeholder="Buscar por artista"
                     icon="i-lucide-mic-vocal"
+                    :disabled="isPending"
                     class="min-w-0"
                   />
 
-                  <BasePrimaryButton type="submit" size="sm" :loading="isPending" :disabled="isPending" block>
+                  <BaseButton kind="primary" type="submit" size="sm" :loading="isPending" :disabled="isPending" block>
                     Buscar
-                  </BasePrimaryButton>
+                  </BaseButton>
                 </form>
-              </section>
+              </EventsFilterSection>
 
-              <section class="rounded-[1.25rem] border border-default/60 bg-default/30 p-4.5">
-                <div class="flex items-center justify-between gap-3">
-                  <h3 class="text-[0.74rem] font-semibold tracking-[0.16em] text-highlighted uppercase">
-                    Géneros
-                  </h3>
-                  <span class="text-[0.65rem] font-medium text-dimmed uppercase tracking-[0.14em]">
-                    {{ filters.genreId ? '1 seleccionado' : 'Top' }}
-                  </span>
-                </div>
-
+              <EventsFilterSection title="Géneros" :status="filters.genreId ? '1 seleccionado' : 'Top'">
                 <div class="mt-3.5 flex flex-wrap gap-2.5">
-                  <UButton
-                    type="button"
+                  <EventsFilterChip
+                    label="Todos"
                     size="sm"
-                    :ui="filterButtonUi"
-                    class="rounded-full px-3 py-1.5 text-[0.72rem] font-semibold tracking-[0.05em]"
+                    :active="!filters.genreId"
                     :disabled="isPending"
-                    :color="!filters.genreId ? 'primary' : 'neutral'"
-                    :variant="!filters.genreId ? 'soft' : 'outline'"
                     @click="updateFilters({ genreId: '' })"
-                  >
-                    Todos
-                  </UButton>
+                  />
 
-                  <UButton
+                  <EventsFilterChip
                     v-for="genre in visibleGenres"
                     :key="genre.id"
-                    type="button"
+                    :label="genre.name"
                     size="sm"
-                    :ui="filterButtonUi"
-                    class="rounded-full px-3 py-1.5 text-[0.72rem] font-semibold tracking-[0.05em]"
+                    :active="filters.genreId === genre.id"
                     :disabled="isPending"
-                    :color="filters.genreId === genre.id ? 'primary' : 'neutral'"
-                    :variant="filters.genreId === genre.id ? 'soft' : 'outline'"
                     @click="updateFilters({ genreId: genre.id })"
-                  >
-                    {{ genre.name }}
-                  </UButton>
+                  />
                 </div>
 
-                <BaseTertiaryButton
+                <BaseButton
                   v-if="hiddenGenresCount > 0"
+                  kind="tertiary"
                   size="xs"
                   class="mt-3 px-0"
                   :disabled="isPending"
                   @click="showAllGenres = !showAllGenres"
                 >
                   {{ showAllGenres ? 'Mostrar menos' : `Ver ${hiddenGenresCount} más` }}
-                </BaseTertiaryButton>
-              </section>
+                </BaseButton>
+              </EventsFilterSection>
 
-              <section class="rounded-[1.25rem] border border-default/60 bg-default/30 p-4.5">
-                <div class="flex items-center justify-between gap-3">
-                  <h3 class="text-[0.74rem] font-semibold tracking-[0.16em] text-highlighted uppercase">
-                    Ubicación
-                  </h3>
-                  <span class="text-[0.65rem] font-medium text-dimmed uppercase tracking-[0.14em]">
-                    {{ filters.city ? '1' : 'Todas' }}
-                  </span>
-                </div>
-
+              <EventsFilterSection title="Ubicación" :status="filters.city ? '1' : 'Todas'">
                 <div class="mt-3.5 flex flex-wrap gap-2.5">
-                  <UButton
-                    type="button"
+                  <EventsFilterChip
+                    label="Todas"
                     size="sm"
-                    :ui="filterButtonUi"
-                    class="rounded-full px-3 py-1.5 text-[0.72rem] font-semibold tracking-[0.05em]"
+                    :active="!filters.city"
                     :disabled="isPending"
-                    :color="!filters.city ? 'primary' : 'neutral'"
-                    :variant="!filters.city ? 'soft' : 'outline'"
                     @click="updateFilters({ city: '' })"
-                  >
-                    Todas
-                  </UButton>
+                  />
 
-                  <UButton
+                  <EventsFilterChip
                     v-for="city in cityOptions"
                     :key="city"
-                    type="button"
+                    :label="city"
                     size="sm"
-                    :ui="filterButtonUi"
-                    class="rounded-full px-3 py-1.5 text-[0.72rem] font-semibold tracking-[0.05em]"
+                    :active="filters.city === city"
                     :disabled="isPending"
-                    :color="filters.city === city ? 'primary' : 'neutral'"
-                    :variant="filters.city === city ? 'soft' : 'outline'"
                     @click="updateFilters({ city })"
-                  >
-                    {{ city }}
-                  </UButton>
+                  />
                 </div>
-              </section>
+              </EventsFilterSection>
             </div>
-          </div>
+          </UiGlassPanel>
         </aside>
 
         <section class="space-y-7">
           <div class="border-b border-default/50 pb-4 sm:pb-5">
             <div class="flex flex-col gap-2.5 md:flex-row md:items-end md:justify-between md:gap-6">
               <div class="space-y-1">
-                <p class="text-[0.66rem] font-semibold tracking-[0.2em] text-dimmed uppercase">
+                <p class="text-xs font-semibold tracking-wide text-dimmed uppercase">
                   Resultados
                 </p>
-                <h2 class="text-[1.45rem] font-semibold tracking-[-0.02em] text-highlighted sm:text-[1.65rem]">
+                <h2 class="text-2xl font-semibold text-highlighted sm:text-3xl">
                   {{ resultsHeading }}
                 </h2>
               </div>
@@ -355,10 +314,10 @@ async function handlePageChange(page: number) {
           </div>
 
           <div v-if="isPending" class="grid gap-6 md:grid-cols-2 2xl:grid-cols-3">
-            <USkeleton v-for="index in 6" :key="index" class="h-104 rounded-[1.25rem]" />
+            <USkeleton v-for="index in 6" :key="index" class="h-104 rounded-2xl" />
           </div>
 
-          <div v-else-if="eventsErrorMessage" class="rounded-3xl border border-error/30 bg-error/8 px-6 py-14 text-center">
+          <div v-else-if="eventsErrorMessage" class="rounded-2xl border border-error/30 bg-error/8 px-6 py-14 text-center">
             <div class="mx-auto flex max-w-md flex-col items-center gap-4">
               <UIcon name="i-lucide-cloud-off" class="size-8 text-error" />
               <div class="space-y-2">
@@ -372,7 +331,7 @@ async function handlePageChange(page: number) {
             </div>
           </div>
 
-          <div v-else-if="events.length === 0" class="rounded-3xl border border-default/65 bg-default/8 px-6 py-14 text-center">
+          <div v-else-if="events.length === 0" class="rounded-2xl border border-default/65 bg-default/8 px-6 py-14 text-center">
             <p class="text-lg font-semibold text-highlighted">
               No hay eventos para estos filtros.
             </p>

@@ -182,9 +182,9 @@ watch(() => props.initialValue, applyInitialValue, { immediate: true })
     </UFormField>
 
     <div class="flex justify-end">
-      <BasePrimaryButton type="submit" size="lg" :loading="submitting" :disabled="submitting" data-testid="event-form-submit">
+      <BaseButton kind="primary" type="submit" size="lg" :loading="submitting" :disabled="submitting" data-testid="event-form-submit">
         {{ submitLabel }}
-      </BasePrimaryButton>
+      </BaseButton>
     </div>
   </UForm>
 </template>

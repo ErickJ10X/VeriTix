@@ -55,13 +55,14 @@ function onSearch() {
             />
 
             <!-- Submit Button - Subtle outline variant -->
-            <BasePrimaryButton
+            <BaseButton
+              kind="primary"
               type="submit"
               size="md"
               class="shrink-0 px-6"
             >
               Buscar
-            </BasePrimaryButton>
+            </BaseButton>
           </div>
 
           <!-- Hint Text -->
@@ -76,13 +77,14 @@ function onSearch() {
             {{ pending ? 'Actualizando cartel...' : `Eventos visibles: ${results.length}` }}
           </p>
 
-          <BaseSecondaryButton
+          <BaseButton
+            kind="secondary"
             to="#generos"
             size="sm"
             class="px-4"
           >
             Explorar géneros
-          </BaseSecondaryButton>
+          </BaseButton>
         </div>
       </div>
 

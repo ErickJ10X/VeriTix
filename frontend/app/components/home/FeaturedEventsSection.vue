@@ -39,14 +39,15 @@ const featuredEvents = computed(() => {
       </div>
 
       <div v-if="featuredEvents.length" class="mt-6 flex justify-end">
-        <BaseTertiaryButton
+        <BaseButton
+          kind="tertiary"
           to="/events"
           size="sm"
           trailing-icon="i-lucide-arrow-right"
           class="border border-default/55 bg-default/6 px-4"
         >
           Ver cartel completo
-        </BaseTertiaryButton>
+        </BaseButton>
       </div>
 
       <p

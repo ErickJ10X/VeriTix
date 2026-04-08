@@ -38,13 +38,13 @@
           </div>
 
           <div class="flex flex-col gap-3">
-            <BasePrimaryButton to="/login" size="lg" block>
+            <BaseButton kind="primary" to="/login" size="lg" block>
               Volver a iniciar sesión
-            </BasePrimaryButton>
+            </BaseButton>
 
-            <BaseSecondaryButton to="/" size="lg" block>
+            <BaseButton kind="secondary" to="/" size="lg" block>
               Ir al inicio
-            </BaseSecondaryButton>
+            </BaseButton>
           </div>
 
           <footer class="pt-1">

@@ -17,28 +17,28 @@ useSeoMeta({
           Primario
         </h2>
         <div class="flex flex-wrap gap-3">
-          <BasePrimaryButton size="sm">
+          <BaseButton kind="primary" size="sm">
             Primary sm
-          </BasePrimaryButton>
-          <BasePrimaryButton size="md">
+          </BaseButton>
+          <BaseButton kind="primary" size="md">
             Primary md
-          </BasePrimaryButton>
-          <BasePrimaryButton size="lg">
+          </BaseButton>
+          <BaseButton kind="primary" size="lg">
             Primary lg
-          </BasePrimaryButton>
-          <BasePrimaryButton leading-icon="i-lucide-sparkles">
+          </BaseButton>
+          <BaseButton kind="primary" leading-icon="i-lucide-sparkles">
             Primary icon
-          </BasePrimaryButton>
-          <BasePrimaryButton trailing-icon="i-lucide-arrow-right">
+          </BaseButton>
+          <BaseButton kind="primary" trailing-icon="i-lucide-arrow-right">
             Primary trailing
-          </BasePrimaryButton>
-          <BasePrimaryButton :loading="true">
+          </BaseButton>
+          <BaseButton kind="primary" :loading="true">
             Primary loading
-          </BasePrimaryButton>
+          </BaseButton>
         </div>
-        <BasePrimaryButton block>
+        <BaseButton kind="primary" block>
           Primary block
-        </BasePrimaryButton>
+        </BaseButton>
       </div>
 
       <div class="space-y-3">
@@ -46,28 +46,28 @@ useSeoMeta({
           Secundario
         </h2>
         <div class="flex flex-wrap gap-3">
-          <BaseSecondaryButton size="sm">
+          <BaseButton kind="secondary" size="sm">
             Secondary sm
-          </BaseSecondaryButton>
-          <BaseSecondaryButton size="md">
+          </BaseButton>
+          <BaseButton kind="secondary" size="md">
             Secondary md
-          </BaseSecondaryButton>
-          <BaseSecondaryButton size="lg">
+          </BaseButton>
+          <BaseButton kind="secondary" size="lg">
             Secondary lg
-          </BaseSecondaryButton>
-          <BaseSecondaryButton leading-icon="i-lucide-sparkles">
+          </BaseButton>
+          <BaseButton kind="secondary" leading-icon="i-lucide-sparkles">
             Secondary icon
-          </BaseSecondaryButton>
-          <BaseSecondaryButton trailing-icon="i-lucide-arrow-right">
+          </BaseButton>
+          <BaseButton kind="secondary" trailing-icon="i-lucide-arrow-right">
             Secondary trailing
-          </BaseSecondaryButton>
-          <BaseSecondaryButton :loading="true">
+          </BaseButton>
+          <BaseButton kind="secondary" :loading="true">
             Secondary loading
-          </BaseSecondaryButton>
+          </BaseButton>
         </div>
-        <BaseSecondaryButton block>
+        <BaseButton kind="secondary" block>
           Secondary block
-        </BaseSecondaryButton>
+        </BaseButton>
       </div>
 
       <div class="space-y-3">
@@ -75,28 +75,28 @@ useSeoMeta({
           Terciario
         </h2>
         <div class="flex flex-wrap gap-3">
-          <BaseTertiaryButton size="sm">
+          <BaseButton kind="tertiary" size="sm">
             Tertiary sm
-          </BaseTertiaryButton>
-          <BaseTertiaryButton size="md">
+          </BaseButton>
+          <BaseButton kind="tertiary" size="md">
             Tertiary md
-          </BaseTertiaryButton>
-          <BaseTertiaryButton size="lg">
+          </BaseButton>
+          <BaseButton kind="tertiary" size="lg">
             Tertiary lg
-          </BaseTertiaryButton>
-          <BaseTertiaryButton leading-icon="i-lucide-sparkles">
+          </BaseButton>
+          <BaseButton kind="tertiary" leading-icon="i-lucide-sparkles">
             Tertiary icon
-          </BaseTertiaryButton>
-          <BaseTertiaryButton trailing-icon="i-lucide-arrow-right">
+          </BaseButton>
+          <BaseButton kind="tertiary" trailing-icon="i-lucide-arrow-right">
             Tertiary trailing
-          </BaseTertiaryButton>
-          <BaseTertiaryButton :loading="true">
+          </BaseButton>
+          <BaseButton kind="tertiary" :loading="true">
             Tertiary loading
-          </BaseTertiaryButton>
+          </BaseButton>
         </div>
-        <BaseTertiaryButton block>
+        <BaseButton kind="tertiary" block>
           Tertiary block
-        </BaseTertiaryButton>
+        </BaseButton>
       </div>
     </UContainer>
   </section>

@@ -127,7 +127,8 @@ async function onSubmit() {
             </div>
 
             <!-- Submit button -->
-            <BasePrimaryButton
+            <BaseButton
+              kind="primary"
               type="submit"
               size="lg"
               block
@@ -135,7 +136,7 @@ async function onSubmit() {
               class="mt-2"
             >
               Iniciar sesion
-            </BasePrimaryButton>
+            </BaseButton>
 
             <p class="text-center text-xs text-toned">
               Protegido con sesion segura y renovacion automatica de credenciales.

@@ -67,13 +67,14 @@ function handleSubscribe() {
               class="w-full sm:w-64"
             />
 
-            <BaseSecondaryButton
+            <BaseButton
+              kind="secondary"
               type="submit"
               size="md"
               class="shrink-0 px-6"
             >
               Suscribirme
-            </BaseSecondaryButton>
+            </BaseButton>
           </form>
 
           <p
