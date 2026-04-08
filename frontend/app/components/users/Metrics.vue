@@ -15,9 +15,9 @@ defineProps<{
       :key="metric.label"
       class="vtx-profile-metric"
     >
-      <p class="text-[0.68rem] font-semibold tracking-[0.22em] text-dimmed uppercase">
+      <UiMetaLabel>
         {{ metric.label }}
-      </p>
+      </UiMetaLabel>
       <p class="mt-3 text-base font-semibold" :class="metric.tone">
         {{ metric.value }}
       </p>

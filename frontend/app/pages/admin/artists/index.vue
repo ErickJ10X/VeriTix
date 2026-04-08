@@ -303,7 +303,7 @@ onMounted(() => {
                   :color="artist.isActive ? 'success' : 'neutral'"
                   variant="soft"
                   size="xs"
-                  class="text-[0.62rem] font-bold tracking-wider uppercase"
+                  class="text-xs font-semibold tracking-wide uppercase"
                 >
                   {{ artist.isActive ? 'Activo' : 'Inactivo' }}
                 </UBadge>

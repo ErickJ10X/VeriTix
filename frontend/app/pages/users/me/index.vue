@@ -220,9 +220,9 @@ onMounted(() => {
       <div v-else class="space-y-6">
         <article class="rounded-[1.8rem] border border-default bg-elevated/40 p-5 sm:p-7">
           <div class="space-y-2 border-b border-default/55 pb-5">
-            <p class="text-[0.68rem] font-semibold tracking-[0.26em] text-dimmed uppercase">
+            <UiMetaLabel>
               Perfil
-            </p>
+            </UiMetaLabel>
             <h2 class="text-2xl font-semibold text-highlighted sm:text-[1.9rem]">
               Datos personales
             </h2>
@@ -269,9 +269,9 @@ onMounted(() => {
 
         <article id="seguridad" class="scroll-mt-28 rounded-[1.8rem] border border-default bg-elevated/40 p-5 sm:p-7">
           <div class="space-y-2 border-b border-default/55 pb-5">
-            <p class="text-[0.68rem] font-semibold tracking-[0.26em] text-dimmed uppercase">
+            <UiMetaLabel>
               Seguridad
-            </p>
+            </UiMetaLabel>
             <h2 class="text-2xl font-semibold text-highlighted sm:text-[1.9rem]">
               Acceso a la cuenta
             </h2>

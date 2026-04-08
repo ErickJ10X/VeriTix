@@ -38,9 +38,9 @@ function handleSubscribe() {
       <div class="flex flex-col items-start justify-between gap-10 lg:flex-row lg:items-center">
         <div class="max-w-md space-y-5">
           <div class="space-y-2">
-            <p class="text-[0.68rem] tracking-[0.34em] text-secondary uppercase">
+            <UiMetaLabel tone="accent">
               Cierre del ritual
-            </p>
+            </UiMetaLabel>
             <p class="font-display text-3xl text-highlighted">
               Veritix Newsletter
             </p>
@@ -94,7 +94,7 @@ function handleSubscribe() {
         </div>
       </div>
 
-      <div class="mt-10 border-t border-default/75 pt-5 text-xs tracking-[0.12em] text-muted uppercase">
+      <div class="mt-10 border-t border-default/75 pt-5 text-xs tracking-wide text-muted uppercase">
         © {{ currentYear }} Veritix. Todos los derechos reservados.
       </div>
     </UContainer>

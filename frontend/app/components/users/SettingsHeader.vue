@@ -31,9 +31,9 @@ function isActive(path: string) {
 <template>
   <section class="space-y-6">
     <div class="space-y-3">
-      <p class="text-[0.7rem] font-semibold tracking-[0.3em] text-auric-300 uppercase">
+      <UiMetaLabel tone="accent">
         Ajustes de cuenta
-      </p>
+      </UiMetaLabel>
 
       <div class="space-y-2">
         <h1 class="font-display text-3xl text-highlighted md:text-4xl">

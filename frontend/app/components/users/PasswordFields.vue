@@ -12,9 +12,9 @@ const showConfirmPasswordModel = defineModel<boolean>('showConfirmPassword', { d
   <div class="space-y-6">
     <div class="space-y-2">
       <div>
-        <p class="text-[0.68rem] font-semibold tracking-[0.24em] text-dimmed uppercase">
+        <UiMetaLabel>
           Seguridad
-        </p>
+        </UiMetaLabel>
         <h3 class="mt-3 text-2xl font-semibold text-highlighted">
           Cambiar contrasena
         </h3>

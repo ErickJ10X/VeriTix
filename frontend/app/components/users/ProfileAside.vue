@@ -102,9 +102,9 @@ const accountMenuItems = computed(() => {
         </UPopover>
 
         <div>
-          <p class="text-[0.68rem] font-semibold tracking-[0.22em] text-dimmed uppercase">
+          <UiMetaLabel>
             Identidad visible
-          </p>
+          </UiMetaLabel>
           <p class="mt-2 text-lg font-semibold text-highlighted">
             {{ fullName }}
           </p>
@@ -119,18 +119,18 @@ const accountMenuItems = computed(() => {
 
       <div class="grid gap-3 sm:grid-cols-2 xl:grid-cols-1">
         <div class="vtx-profile-signal">
-          <p class="text-[0.68rem] font-semibold tracking-[0.22em] text-dimmed uppercase">
+          <UiMetaLabel>
             Avatar
-          </p>
+          </UiMetaLabel>
           <p class="mt-2 text-sm font-semibold text-highlighted">
             {{ avatarConfigured ? 'Configurado' : 'Sin personalizar' }}
           </p>
         </div>
 
         <div class="vtx-profile-signal">
-          <p class="text-[0.68rem] font-semibold tracking-[0.22em] text-dimmed uppercase">
+          <UiMetaLabel>
             Telefono
-          </p>
+          </UiMetaLabel>
           <p class="mt-2 text-sm font-semibold text-highlighted">
             {{ phone || 'Pendiente' }}
           </p>
@@ -140,9 +140,9 @@ const accountMenuItems = computed(() => {
 
     <section v-if="roleView" class="relative vtx-profile-role space-y-4 border-b border-default/55 pb-8">
       <div>
-        <p class="text-[0.68rem] font-semibold tracking-[0.24em] text-primary uppercase">
+        <UiMetaLabel tone="accent">
           {{ roleView.title }}
-        </p>
+        </UiMetaLabel>
       </div>
 
       <ul class="space-y-3">

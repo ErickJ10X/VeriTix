@@ -36,12 +36,12 @@ withDefaults(
       />
     </div>
 
-    <p
+    <UiMetaLabel
       v-if="eyebrow"
-      class="text-[0.65rem] font-semibold tracking-[0.36em] text-secondary uppercase"
+      tone="accent"
     >
       {{ eyebrow }}
-    </p>
+    </UiMetaLabel>
 
     <h2 class="font-display text-4xl leading-[1.02] text-highlighted md:text-5xl">
       {{ title }}

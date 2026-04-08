@@ -168,9 +168,9 @@ async function handlePageChange(page: number) {
   <UiEventsPageShell variant="index" container-class="relative">
     <div class="mx-auto max-w-7xl space-y-8 sm:space-y-9">
       <header class="space-y-4 border-b border-default/55 pb-8">
-        <p class="text-xs font-semibold tracking-widest text-secondary uppercase">
+        <UiMetaLabel tone="accent">
           Cartelera
-        </p>
+        </UiMetaLabel>
 
         <div>
           <h1 class="font-display text-3xl text-highlighted sm:text-4xl lg:text-5xl">
@@ -187,12 +187,9 @@ async function handlePageChange(page: number) {
           <UiGlassPanel padding="lg" radius="md">
             <div class="border-b border-default/55 pb-5">
               <div>
-                <p class="text-xs font-semibold tracking-wide text-secondary uppercase">
+                <UiMetaLabel tone="accent">
                   Filtros
-                </p>
-                <h2 class="mt-1.5 text-xl font-semibold text-highlighted">
-                  Filtrar eventos
-                </h2>
+                </UiMetaLabel>
               </div>
 
               <div v-if="hasActiveFilters" class="mt-4 flex flex-wrap items-center gap-2">
@@ -299,9 +296,9 @@ async function handlePageChange(page: number) {
           <div class="border-b border-default/50 pb-4 sm:pb-5">
             <div class="flex flex-col gap-2.5 md:flex-row md:items-end md:justify-between md:gap-6">
               <div class="space-y-1">
-                <p class="text-xs font-semibold tracking-wide text-dimmed uppercase">
+                <UiMetaLabel>
                   Resultados
-                </p>
+                </UiMetaLabel>
                 <h2 class="text-2xl font-semibold text-highlighted sm:text-3xl">
                   {{ resultsHeading }}
                 </h2>

@@ -52,14 +52,14 @@ const eventDate = computed(() => {
       </div>
 
       <div class="mt-auto border-t border-white/10 pt-3 transition-colors duration-200 group-hover:border-default/55 group-focus-within:border-default/55">
-        <div class="flex items-end justify-between gap-3">
-          <div class="min-w-0 space-y-1">
+        <div class="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
+          <div class="min-w-0 flex-1 space-y-1">
             <UiMetaLabel>
               Fecha
             </UiMetaLabel>
-            <p class="inline-flex items-center gap-2 text-sm font-medium text-muted/90 transition-colors duration-200 group-hover:text-toned group-focus-within:text-toned">
+            <p class="flex min-w-0 items-center gap-2 text-sm font-medium text-muted/90 transition-colors duration-200 group-hover:text-toned group-focus-within:text-toned">
               <UIcon name="i-lucide-calendar-days" class="size-3.5 text-secondary/80 transition-colors duration-200 group-hover:text-primary/80 group-focus-within:text-primary/80" />
-              <span class="truncate">{{ eventDate }}</span>
+              <span class="min-w-0 truncate">{{ eventDate }}</span>
             </p>
           </div>
 
@@ -67,7 +67,7 @@ const eventDate = computed(() => {
             :to="`/events/${event.id}`"
             kind="primary"
             size="sm"
-            class="shrink-0 px-3.5"
+            class="shrink-0 self-start px-3.5 sm:self-auto"
           >
             Reservar
           </BaseButton>

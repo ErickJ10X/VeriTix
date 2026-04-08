@@ -67,9 +67,9 @@ async function onSubmit() {
       <div class="w-full max-w-lg px-4 sm:px-0">
         <section class="space-y-8">
           <header class="text-center">
-            <p class="mb-3 text-xs font-semibold tracking-[0.28em] text-auric-300/90 uppercase">
+            <UiMetaLabel tone="accent" class="mb-3 text-secondary/90">
               VeriTix
-            </p>
+            </UiMetaLabel>
 
             <h1 class="font-display text-3xl text-highlighted md:text-4xl">
               Crea tu cuenta
@@ -81,7 +81,7 @@ async function onSubmit() {
           </header>
 
           <div class="mb-7 flex items-center justify-center">
-            <span class="inline-flex items-center gap-2 rounded-full border border-secondary/30 bg-secondary/10 px-3 py-1 text-[0.7rem] font-semibold tracking-[0.22em] text-secondary uppercase">
+            <span class="inline-flex items-center gap-2 rounded-full border border-secondary/30 bg-secondary/10 px-3 py-1 text-xs font-semibold tracking-wide text-secondary uppercase">
               <UIcon name="i-lucide-sparkles" class="size-3.5" />
               Alta de cuenta
             </span>

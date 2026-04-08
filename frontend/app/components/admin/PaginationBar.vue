@@ -36,9 +36,9 @@ function goToPage(page: number) {
 <template>
   <div class="vtx-admin-pagination">
     <div>
-      <p class="text-[0.68rem] font-semibold tracking-[0.24em] text-dimmed uppercase">
+      <UiMetaLabel>
         Navegación
-      </p>
+      </UiMetaLabel>
       <p class="mt-2 text-sm text-toned">
         {{ itemRangeLabel }}
       </p>

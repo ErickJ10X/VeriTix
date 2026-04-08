@@ -73,12 +73,12 @@ const toneClasses = computed(() => {
         <header class="grid gap-8 border-b pb-8 lg:grid-cols-[minmax(0,1.15fr)_auto] lg:items-end" :class="toneClasses.divider">
           <div class="space-y-5">
             <div class="flex flex-wrap items-center gap-3">
-              <p
+              <UiMetaLabel
                 v-if="eyebrow"
-                class="text-[0.68rem] font-semibold tracking-[0.32em] text-secondary uppercase"
+                tone="accent"
               >
                 {{ eyebrow }}
-              </p>
+              </UiMetaLabel>
 
               <UBadge
                 v-if="badge"
@@ -87,7 +87,7 @@ const toneClasses = computed(() => {
                 size="xs"
                 icon="i-lucide-sparkles"
                 leading
-                class="rounded-full px-3 py-1 text-[0.68rem] font-semibold tracking-[0.2em] uppercase"
+                class="rounded-full px-3 py-1 text-xs font-semibold tracking-wide uppercase"
               >
                 {{ badge }}
               </UBadge>
