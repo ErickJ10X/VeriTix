@@ -81,6 +81,85 @@ const recentArtists = computed(() => {
     .slice(0, 5)
 })
 
+const attentionQueue = computed(() => {
+  const scheduledEvents = events.value.filter(event => new Date(event.eventDate).getTime() >= Date.now()).length
+  const draftEvents = events.value.filter(event => event.status === 'DRAFT').length
+  const inactiveUsers = users.value.filter(user => !user.isActive).length
+  const inactiveArtists = artists.value.filter(artist => !artist.isActive).length
+
+  return [
+    {
+      label: 'Eventos programados',
+      detail: `${scheduledEvents} listos para seguimiento`,
+      tone: 'warning' as const,
+      icon: 'i-lucide-calendar-clock',
+    },
+    {
+      label: 'Eventos en borrador',
+      detail: draftEvents > 0 ? `${draftEvents} pendientes de publicación` : 'No hay borradores bloqueando la agenda',
+      tone: draftEvents > 0 ? 'warning' as const : 'default' as const,
+      icon: 'i-lucide-file-pen-line',
+    },
+    {
+      label: 'Usuarios inactivos',
+      detail: inactiveUsers > 0 ? `${inactiveUsers} requieren revisión` : 'Sin incidencias en cuentas',
+      tone: inactiveUsers > 0 ? 'error' as const : 'success' as const,
+      icon: 'i-lucide-user-x',
+    },
+    {
+      label: 'Artistas inactivos',
+      detail: inactiveArtists > 0 ? `${inactiveArtists} necesitan atención` : 'Catálogo estable hoy',
+      tone: inactiveArtists > 0 ? 'error' as const : 'success' as const,
+      icon: 'i-lucide-mic-off',
+    },
+  ]
+})
+
+const quickActions = [
+  {
+    label: 'Crear evento',
+    to: '/admin/events/new',
+    kind: 'primary' as const,
+    icon: 'i-lucide-calendar-plus',
+  },
+  {
+    label: 'Nuevo usuario',
+    to: '/admin/users/new',
+    kind: 'secondary' as const,
+    icon: 'i-lucide-user-plus',
+  },
+  {
+    label: 'Nuevo artista',
+    to: '/admin/artists/new',
+    kind: 'secondary' as const,
+    icon: 'i-lucide-mic-vocal',
+  },
+] as const
+
+function formatRelativeDate(value: string) {
+  return new Date(value).toLocaleDateString('es-ES', { day: 'numeric', month: 'short' })
+}
+
+function formatDateTime(value: string) {
+  return new Date(value).toLocaleString('es-ES', { dateStyle: 'medium', timeStyle: 'short' })
+}
+
+function getStatusTone(status: string) {
+  if (status === 'PUBLISHED') { return 'success' }
+  if (status === 'DRAFT') { return 'warning' }
+  if (status === 'CANCELLED') { return 'error' }
+
+  return 'neutral'
+}
+
+function getUserInitials(user: AdminUserRecord) {
+  return `${user.name.charAt(0)}${user.lastName.charAt(0)}`.toUpperCase()
+}
+
+function getArtistInitials(artist: AdminArtistRecord) {
+  return artist.name.charAt(0).toUpperCase()
+}
+
 async function loadDashboard() {
   pending.value = true
   errorMessage.value = ''
@@ -127,12 +206,11 @@ onMounted(() => {
 <template>
   <AdminPageShell
     title="Dashboard"
-    description="Resumen operativo del sistema. Accede rápidamente a eventos, usuarios y artistas."
+    description="Supervisa agenda, personas y catálogo desde una vista clara, más útil y menos saturada visualmente."
     primary-action-to="/admin/events/new"
     primary-action-label="Nuevo evento"
   >
-    <div class="max-w-7xl mx-auto space-y-6">
-      <!-- Error -->
+    <div class="mx-auto max-w-7xl space-y-8">
       <UAlert
         v-if="errorMessage"
         color="error"
@@ -141,200 +219,255 @@ onMounted(() => {
         icon="i-lucide-alert-circle"
       />
 
-      <!-- Metrics Grid -->
-      <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
+      <div class="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
         <template v-if="pending">
-          <div v-for="i in 4" :key="i" class="p-6 rounded-2xl border border-default bg-default shadow-sm">
-            <USkeleton class="size-10 rounded-lg mb-4" />
-            <USkeleton class="h-8 w-16 mb-2" />
+          <UiGlassPanel v-for="index in 4" :key="index" tone="subtle" radius="md" padding="md">
+            <USkeleton class="mb-4 size-10 rounded-lg" />
+            <USkeleton class="mb-2 h-8 w-16" />
             <USkeleton class="h-4 w-24" />
-          </div>
+          </UiGlassPanel>
         </template>
+
         <template v-else>
-          <AdminMetric
+          <AdminStatCard
             v-for="metric in metrics"
             :key="metric.label"
             :label="metric.label"
             :value="metric.value"
             :hint="metric.hint"
             :icon="metric.icon"
-            :variant="metric.variant"
+            :tone="metric.variant"
           />
         </template>
       </div>
 
-      <!-- Main Content Grid -->
-      <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <!-- Upcoming Events -->
-        <div class="lg:col-span-2 space-y-4">
-          <div class="flex items-center justify-between">
-            <h2 class="text-xl font-semibold tracking-tight text-default">
-              Próximos eventos
-            </h2>
-            <UButton to="/admin/events" variant="ghost" size="sm" color="neutral">
+      <div class="grid gap-6 xl:grid-cols-[minmax(0,1.6fr)_minmax(320px,0.95fr)]">
+        <AdminOverviewPanel
+          eyebrow="Agenda"
+          title="Próximos eventos"
+          description="Lo siguiente que entra en operación. Prioriza aquí la revisión diaria y los eventos que van a salir primero."
+        >
+          <template #actions>
+            <BaseButton kind="tertiary" size="sm" to="/admin/events" trailing-icon="i-lucide-arrow-right">
               Ver todos
-              <UIcon name="i-lucide-arrow-right" class="size-4 ml-1" />
-            </UButton>
-          </div>
+            </BaseButton>
+          </template>
 
           <div v-if="pending" class="space-y-3">
-            <USkeleton v-for="i in 4" :key="i" class="h-20 rounded-2xl" />
+            <USkeleton v-for="index in 4" :key="index" class="h-24 rounded-xl" />
           </div>
 
-          <AdminCard v-else-if="upcomingEvents.length === 0" padding="default">
-            <div class="flex flex-col items-center justify-center py-8">
-              <div class="p-3 rounded-full bg-elevated mb-3">
-                <UIcon name="i-lucide-calendar-x" class="size-6 text-muted" />
-              </div>
-              <p class="text-sm font-medium text-default">
-                No hay próximos eventos
-              </p>
-              <p class="text-xs text-muted mt-1">
-                Crea un evento para verlo aquí.
-              </p>
-            </div>
-          </AdminCard>
+          <AdminEmptyState
+            v-else-if="upcomingEvents.length === 0"
+            icon="i-lucide-calendar-x"
+            title="No hay próximos eventos"
+            description="Crea un evento nuevo para empezar a poblar la agenda operativa del dashboard."
+            action-label="Crear evento"
+            action-to="/admin/events/new"
+          />
 
-          <div v-else class="flex flex-col gap-3">
+          <div v-else class="divide-y divide-default/55">
             <NuxtLink
               v-for="event in upcomingEvents"
               :key="event.id"
               :to="`/admin/events/${event.id}/edit`"
-              class="group"
+              class="group flex flex-col gap-4 py-4 first:pt-0 last:pb-0 sm:flex-row sm:items-center sm:justify-between"
             >
-              <AdminCard hover>
-                <div class="flex items-center justify-between gap-4">
-                  <div class="min-w-0 flex items-center gap-4">
-                    <div class="hidden sm:flex size-12 rounded-xl bg-warning/10 border border-warning/20 items-center justify-center text-warning shrink-0">
-                      <UIcon name="i-lucide-calendar" class="size-5" />
-                    </div>
-                    <div class="min-w-0">
-                      <p class="font-medium text-default truncate group-hover:text-warning transition-colors">
-                        {{ event.name }}
-                      </p>
-                      <div class="flex items-center gap-2 mt-1 text-sm text-muted">
-                        <UIcon name="i-lucide-map-pin" class="size-3.5" />
-                        <span class="truncate">{{ event.venue.name }} · {{ event.venue.city }}</span>
-                      </div>
-                    </div>
-                  </div>
-                  <div class="text-right shrink-0 flex flex-col items-end gap-2">
-                    <UBadge
-                      :color="event.status === 'PUBLISHED' ? 'success' : 'neutral'"
-                      variant="subtle"
-                      size="sm"
-                      class="rounded-full px-2.5 font-medium"
-                    >
-                      {{ event.status }}
-                    </UBadge>
-                    <div class="flex items-center gap-1.5 text-xs font-medium text-muted">
-                      <UIcon name="i-lucide-clock" class="size-3.5" />
-                      {{ new Date(event.eventDate).toLocaleDateString('es-ES', { day: 'numeric', month: 'short' }) }}
-                    </div>
+              <div class="flex min-w-0 items-start gap-4">
+                <div class="flex size-11 shrink-0 items-center justify-center rounded-xl border border-warning/20 bg-warning/10 text-warning">
+                  <UIcon name="i-lucide-calendar-range" class="size-5" />
+                </div>
+
+                <div class="min-w-0 space-y-2">
+                  <p class="truncate text-base font-semibold text-highlighted transition-colors group-hover:text-warning">
+                    {{ event.name }}
+                  </p>
+
+                  <div class="flex flex-wrap items-center gap-x-4 gap-y-2 text-sm text-toned">
+                    <span class="inline-flex min-w-0 items-center gap-2">
+                      <UIcon name="i-lucide-map-pin" class="size-3.5 text-muted" />
+                      <span class="truncate">{{ event.venue.name }} · {{ event.venue.city }}</span>
+                    </span>
+
+                    <span class="inline-flex items-center gap-2">
+                      <UIcon name="i-lucide-clock-3" class="size-3.5 text-muted" />
+                      {{ formatDateTime(event.eventDate) }}
+                    </span>
                   </div>
                 </div>
-              </AdminCard>
+              </div>
+
+              <div class="flex shrink-0 items-center gap-3 self-start sm:self-center">
+                <UBadge :color="getStatusTone(event.status)" variant="subtle" size="sm" class="rounded-full px-2.5 font-medium">
+                  {{ event.status }}
+                </UBadge>
+
+                <UIcon name="i-lucide-chevron-right" class="size-4 text-muted transition-colors group-hover:text-highlighted" />
+              </div>
             </NuxtLink>
           </div>
-        </div>
+        </AdminOverviewPanel>
 
-        <!-- Sidebar -->
-        <div class="space-y-6">
-          <!-- Recent Users -->
-          <AdminSection title="Usuarios recientes">
-            <template #header-actions>
-              <UButton to="/admin/users" variant="ghost" size="xs" color="neutral">
-                Ver todos
-              </UButton>
-            </template>
-
-            <div v-if="pending" class="space-y-3">
-              <USkeleton v-for="i in 3" :key="i" class="h-12 w-full" />
-            </div>
-
-            <div v-else-if="recentUsers.length === 0" class="text-sm text-muted py-4 text-center">
-              Sin usuarios recientes.
-            </div>
-
-            <div v-else class="space-y-1">
-              <NuxtLink
-                v-for="user in recentUsers.slice(0, 4)"
-                :key="user.id"
-                :to="`/admin/users/${user.id}/edit`"
-                class="group flex items-center gap-3 p-2 rounded-lg hover:bg-elevated transition-colors"
+        <AdminOverviewPanel
+          eyebrow="Operación"
+          title="Foco del día"
+          description="Un resumen corto de lo que merece atención y de las acciones más probables dentro del flujo admin."
+          tone="subtle"
+        >
+          <div class="space-y-4">
+            <div class="space-y-3">
+              <div
+                v-for="item in attentionQueue"
+                :key="item.label"
+                class="flex items-start gap-3 rounded-xl border border-default/60 bg-default/25 px-4 py-3"
               >
-                <div class="size-9 rounded-full bg-primary/10 border border-primary/20 flex items-center justify-center text-xs font-semibold text-primary">
-                  {{ user.name.charAt(0) }}{{ user.lastName.charAt(0) }}
+                <div
+                  class="mt-0.5 flex size-9 shrink-0 items-center justify-center rounded-lg border"
+                  :class="[
+                    item.tone === 'warning' && 'border-warning/20 bg-warning/10 text-warning',
+                    item.tone === 'success' && 'border-success/20 bg-success/10 text-success',
+                    item.tone === 'error' && 'border-error/20 bg-error/10 text-error',
+                    item.tone === 'default' && 'border-default bg-elevated text-muted',
+                  ]"
+                >
+                  <UIcon :name="item.icon" class="size-4" />
                 </div>
-                <div class="min-w-0 flex-1">
-                  <p class="text-sm font-medium text-default truncate group-hover:text-primary transition-colors">
-                    {{ user.name }} {{ user.lastName }}
+
+                <div class="space-y-1">
+                  <p class="text-sm font-semibold text-highlighted">
+                    {{ item.label }}
                   </p>
-                  <p class="text-xs text-muted truncate">
-                    {{ user.email }}
-                  </p>
-                </div>
-                <div class="size-2 rounded-full" :class="user.isActive ? 'bg-success' : 'bg-muted'" />
-              </NuxtLink>
-            </div>
-          </AdminSection>
-
-          <!-- Recent Artists -->
-          <AdminSection title="Artistas recientes">
-            <template #header-actions>
-              <UButton to="/admin/artists" variant="ghost" size="xs" color="neutral">
-                Ver todos
-              </UButton>
-            </template>
-
-            <div v-if="pending" class="space-y-3">
-              <USkeleton v-for="i in 3" :key="i" class="h-12 w-full" />
-            </div>
-
-            <div v-else-if="recentArtists.length === 0" class="text-sm text-muted py-4 text-center">
-              Sin artistas recientes.
-            </div>
-
-            <div v-else class="space-y-1">
-              <NuxtLink
-                v-for="artist in recentArtists.slice(0, 4)"
-                :key="artist.id"
-                :to="`/admin/artists/${artist.id}/edit`"
-                class="group flex items-center gap-3 p-2 rounded-lg hover:bg-elevated transition-colors"
-              >
-                <div class="size-9 rounded-full bg-success/10 border border-success/20 flex items-center justify-center text-xs font-semibold text-success">
-                  {{ artist.name.charAt(0) }}
-                </div>
-                <div class="min-w-0 flex-1">
-                  <p class="text-sm font-medium text-default truncate group-hover:text-success transition-colors">
-                    {{ artist.name }}
-                  </p>
-                  <p class="text-xs text-muted truncate">
-                    {{ artist.country || 'País pendiente' }}
+                  <p class="text-sm leading-relaxed text-toned">
+                    {{ item.detail }}
                   </p>
                 </div>
-              </NuxtLink>
+              </div>
             </div>
-          </AdminSection>
 
-          <!-- Quick Actions -->
-          <AdminSection title="Acciones rápidas">
-            <div class="space-y-2">
-              <UButton to="/admin/events/new" color="warning" variant="soft" class="w-full justify-start font-medium">
-                <UIcon name="i-lucide-calendar-plus" class="size-4 mr-2" />
-                Crear evento
-              </UButton>
-              <UButton to="/admin/users/new" color="neutral" variant="ghost" class="w-full justify-start font-medium">
-                <UIcon name="i-lucide-user-plus" class="size-4 mr-2" />
-                Crear usuario
-              </UButton>
-              <UButton to="/admin/artists/new" color="neutral" variant="ghost" class="w-full justify-start font-medium">
-                <UIcon name="i-lucide-mic" class="size-4 mr-2" />
-                Crear artista
-              </UButton>
+            <div class="border-t border-default/55 pt-4">
+              <UiMetaLabel tone="accent">
+                Acciones rápidas
+              </UiMetaLabel>
+
+              <div class="mt-3 space-y-2.5">
+                <BaseButton
+                  v-for="action in quickActions"
+                  :key="action.to"
+                  :to="action.to"
+                  :kind="action.kind"
+                  size="sm"
+                  block
+                  :leading-icon="action.icon"
+                  class="justify-start"
+                >
+                  {{ action.label }}
+                </BaseButton>
+              </div>
             </div>
-          </AdminSection>
-        </div>
+          </div>
+        </AdminOverviewPanel>
+      </div>
+
+      <div class="grid gap-6 xl:grid-cols-2">
+        <AdminOverviewPanel
+          eyebrow="Personas"
+          title="Usuarios recientes"
+          description="Últimos accesos creados o actualizados para revisar actividad y estado general."
+          tone="subtle"
+        >
+          <template #actions>
+            <BaseButton kind="tertiary" size="sm" to="/admin/users" trailing-icon="i-lucide-arrow-right">
+              Ver todos
+            </BaseButton>
+          </template>
+
+          <div v-if="pending" class="space-y-3">
+            <USkeleton v-for="index in 4" :key="index" class="h-16 rounded-xl" />
+          </div>
+
+          <AdminEmptyState
+            v-else-if="recentUsers.length === 0"
+            icon="i-lucide-users"
+            title="Sin usuarios recientes"
+            description="Cuando entren nuevas cuentas o cambios recientes aparecerán aquí para seguimiento rápido."
+          />
+
+          <div v-else class="divide-y divide-default/55">
+            <NuxtLink
+              v-for="user in recentUsers.slice(0, 4)"
+              :key="user.id"
+              :to="`/admin/users/${user.id}/edit`"
+              class="group flex items-center gap-3 py-4 first:pt-0 last:pb-0"
+            >
+              <div class="flex size-10 shrink-0 items-center justify-center rounded-full border border-primary/20 bg-primary/10 text-xs font-semibold text-primary">
+                {{ getUserInitials(user) }}
+              </div>
+
+              <div class="min-w-0 flex-1 space-y-1">
+                <p class="truncate text-sm font-semibold text-highlighted transition-colors group-hover:text-primary">
+                  {{ user.name }} {{ user.lastName }}
+                </p>
+                <p class="truncate text-sm text-toned">
+                  {{ user.email }}
+                </p>
+              </div>
+
+              <UBadge :color="user.isActive ? 'success' : 'neutral'" variant="subtle" size="xs" class="rounded-full px-2.5 font-medium">
+                {{ user.isActive ? 'Activo' : 'Inactivo' }}
+              </UBadge>
+            </NuxtLink>
+          </div>
+        </AdminOverviewPanel>
+
+        <AdminOverviewPanel
+          eyebrow="Catálogo"
+          title="Artistas recientes"
+          description="Altas o cambios recientes del catálogo para verificar consistencia y preparación editorial."
+          tone="subtle"
+        >
+          <template #actions>
+            <BaseButton kind="tertiary" size="sm" to="/admin/artists" trailing-icon="i-lucide-arrow-right">
+              Ver todos
+            </BaseButton>
+          </template>
+
+          <div v-if="pending" class="space-y-3">
+            <USkeleton v-for="index in 4" :key="index" class="h-16 rounded-xl" />
+          </div>
+
+          <AdminEmptyState
+            v-else-if="recentArtists.length === 0"
+            icon="i-lucide-mic-vocal"
+            title="Sin artistas recientes"
+            description="El catálogo aún no tiene movimientos recientes. Cuando los haya, aparecerán aquí."
+          />
+
+          <div v-else class="divide-y divide-default/55">
+            <NuxtLink
+              v-for="artist in recentArtists.slice(0, 4)"
+              :key="artist.id"
+              :to="`/admin/artists/${artist.id}/edit`"
+              class="group flex items-center gap-3 py-4 first:pt-0 last:pb-0"
+            >
+              <div class="flex size-10 shrink-0 items-center justify-center rounded-full border border-success/20 bg-success/10 text-xs font-semibold text-success">
+                {{ getArtistInitials(artist) }}
+              </div>
+
+              <div class="min-w-0 flex-1 space-y-1">
+                <p class="truncate text-sm font-semibold text-highlighted transition-colors group-hover:text-success">
+                  {{ artist.name }}
+                </p>
+                <p class="truncate text-sm text-toned">
+                  {{ artist.country || 'País pendiente' }}
+                </p>
+              </div>
+
+              <span class="text-xs text-dimmed">
+                {{ formatRelativeDate(artist.updatedAt) }}
+              </span>
+            </NuxtLink>
+          </div>
+        </AdminOverviewPanel>
       </div>
     </div>
   </AdminPageShell>

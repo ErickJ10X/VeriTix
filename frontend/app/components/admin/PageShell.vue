@@ -27,49 +27,56 @@ function isActive(path: string): boolean {
 </script>
 
 <template>
-  <section class="py-8 sm:py-10">
+  <section class="py-8 sm:py-10 lg:py-12">
     <UContainer>
-      <div class="max-w-7xl mx-auto space-y-6">
+      <div class="mx-auto max-w-7xl space-y-8">
         <!-- Header -->
-        <header class="border-b border-default pb-6">
+        <header class="space-y-5 border-b border-default/55 pb-7">
           <div class="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
-            <div>
-              <h1 class="text-2xl font-semibold">
+            <div class="space-y-3">
+              <UiMetaLabel tone="accent">
+                Control center
+              </UiMetaLabel>
+
+              <div class="space-y-1.5">
+                <h1 class="text-3xl font-semibold tracking-tight text-highlighted sm:text-4xl">
                 {{ title }}
-              </h1>
-              <p class="text-muted mt-1">
-                {{ description }}
-              </p>
+                </h1>
+                <p class="max-w-3xl text-sm leading-relaxed text-toned sm:text-base">
+                  {{ description }}
+                </p>
+              </div>
             </div>
 
             <div class="flex items-center gap-3">
               <slot name="actions" />
-              <UButton
+              <BaseButton
                 v-if="primaryActionTo && primaryActionLabel"
                 :to="primaryActionTo"
-                color="primary"
+                kind="primary"
+                size="sm"
+                leading-icon="i-lucide-plus"
               >
-                <UIcon name="i-lucide-plus" class="size-4 mr-1" />
                 {{ primaryActionLabel }}
-              </UButton>
+              </BaseButton>
             </div>
           </div>
 
           <!-- Navigation -->
-          <nav class="flex flex-wrap gap-2 mt-6" aria-label="Navegación admin">
-            <NuxtLink
+          <nav class="flex flex-wrap gap-2" aria-label="Navegación admin">
+            <UButton
               v-for="item in navigationItems"
               :key="item.to"
               :to="item.to"
-              class="inline-flex items-center gap-2 px-3 py-1.5 text-sm font-medium rounded-md transition-colors"
-              :class="isActive(item.to)
-                ? 'bg-default text-default border border-default'
-                : 'text-muted hover:text-default hover:bg-elevated'"
+              size="sm"
+              :icon="item.icon"
+              color="neutral"
+              :variant="isActive(item.to) ? 'soft' : 'ghost'"
+              class="rounded-lg px-3"
               :data-testid="`admin-nav-${item.label.toLowerCase()}`"
             >
-              <UIcon :name="item.icon" class="size-4" />
-              <span>{{ item.label }}</span>
-            </NuxtLink>
+              {{ item.label }}
+            </UButton>
           </nav>
         </header>
 
