@@ -6,18 +6,31 @@ function readQueryValue(value: unknown): string {
   return typeof value === 'string' ? value : ''
 }
 
+function readQueryPage(value: unknown): number {
+  const page = Number(value)
+
+  if (Number.isInteger(page) && page > 0) {
+    return page
+  }
+
+  return 1
+}
+
 useSeoMeta({
   title: 'Eventos | VeriTix',
   description: 'Explora conciertos y experiencias en vivo con filtros por género y ciudad.',
 })
 
 const searchDraft = ref(readQueryValue(route.query.search))
+const artistNameDraft = ref('')
+const showAllGenres = ref(false)
 
 const filters = computed(() => {
   return {
     search: readQueryValue(route.query.search),
     genreId: readQueryValue(route.query.genreId),
     city: readQueryValue(route.query.city),
+    page: readQueryPage(route.query.page),
   }
 })
 
@@ -32,11 +45,48 @@ const cityOptions = computed(() => {
   return cities.value
 })
 
+const visibleGenres = computed(() => {
+  if (showAllGenres.value || genreOptions.value.length <= 8) {
+    return genreOptions.value
+  }
+
+  const selectedGenre = genreOptions.value.find(genre => genre.id === filters.value.genreId)
+  const leadingGenres = genreOptions.value.slice(0, 8)
+
+  if (selectedGenre && !leadingGenres.some(genre => genre.id === selectedGenre.id)) {
+    return [...leadingGenres.slice(0, 7), selectedGenre]
+  }
+
+  return leadingGenres
+})
+
+const hiddenGenresCount = computed(() => {
+  return Math.max(genreOptions.value.length - visibleGenres.value.length, 0)
+})
+
 watch(() => filters.value.search, (value) => {
   searchDraft.value = value
 })
 
+watch(() => filters.value.genreId, (value) => {
+  if (!value) {
+    showAllGenres.value = false
+  }
+})
+
 const events = computed(() => eventsResponse.value?.data ?? [])
+const meta = computed(() => {
+  return eventsResponse.value?.meta ?? {
+    total: 0,
+    page: 1,
+    limit: 24,
+    totalPages: 0,
+  }
+})
+
+const activeFilterCount = computed(() => {
+  return [filters.value.search, filters.value.genreId, filters.value.city].filter(Boolean).length
+})
 const isPending = computed(() => status.value === 'pending')
 const eventsErrorMessage = computed(() => {
   if (!error.value) {
@@ -50,11 +100,17 @@ const hasActiveFilters = computed(() => {
   return Boolean(filters.value.search || filters.value.genreId || filters.value.city)
 })
 
+const filterButtonUi = {
+  base: 'border border-default/70 bg-default/65 text-toned shadow-none transition-all duration-150 hover:border-primary/18 hover:bg-elevated hover:text-default focus-visible:border-primary/35 focus-visible:bg-elevated focus-visible:text-default',
+} as const
+
 async function updateFilters(next: Partial<typeof filters.value>) {
+  const shouldResetPage = next.search !== undefined || next.genreId !== undefined || next.city !== undefined
   const query = {
     search: next.search ?? filters.value.search,
     genreId: next.genreId ?? filters.value.genreId,
     city: next.city ?? filters.value.city,
+    page: shouldResetPage ? 1 : (next.page ?? filters.value.page),
   }
 
   await navigateTo({
@@ -63,11 +119,14 @@ async function updateFilters(next: Partial<typeof filters.value>) {
       search: query.search || undefined,
       genreId: query.genreId || undefined,
       city: query.city || undefined,
+      page: query.page > 1 ? String(query.page) : undefined,
     },
   })
 }
 
 async function submitSearch() {
+  // TODO(backend): include `artistName: artistNameDraft.value.trim()` in the public events
+  // query once the API supports artist-name filtering end-to-end.
   await updateFilters({ search: searchDraft.value.trim() })
 }
 
@@ -75,12 +134,20 @@ async function clearFilters() {
   searchDraft.value = ''
   await navigateTo('/events')
 }
+
+async function handlePageChange(page: number) {
+  if (page === filters.value.page || isPending.value) {
+    return
+  }
+
+  await updateFilters({ page })
+}
 </script>
 
 <template>
   <UiEventsPageShell variant="index" container-class="relative">
-    <div class="mx-auto max-w-7xl space-y-10">
-      <header class="space-y-5 border-b border-default/55 pb-8">
+    <div class="mx-auto max-w-7xl space-y-7">
+      <header class="space-y-4 border-b border-default/55 pb-7">
         <div class="flex flex-wrap items-center gap-3">
           <p class="text-[0.68rem] font-semibold tracking-[0.3em] text-secondary uppercase">
             Cartelera
@@ -96,128 +163,188 @@ async function clearFilters() {
           </UBadge>
         </div>
 
-        <div class="grid gap-4 lg:grid-cols-[minmax(0,1fr)_auto] lg:items-end">
-          <div>
-            <h1 class="font-display text-3xl text-highlighted sm:text-4xl lg:text-[3.1rem]">
-              Eventos en vivo
-            </h1>
-            <p class="mt-3 max-w-2xl text-sm leading-relaxed text-toned sm:text-base">
-              Filtra por ciudad, género o búsqueda directa.
-            </p>
-          </div>
-
-          <form class="flex flex-col gap-3 sm:flex-row" @submit.prevent="submitSearch">
-            <BaseFormInput
-              v-model="searchDraft"
-              placeholder="Buscar por evento"
-              icon="i-lucide-search"
-              :disabled="isPending"
-              class="min-w-0 sm:w-72"
-            />
-
-            <BasePrimaryButton type="submit" size="lg" :loading="isPending" :disabled="isPending" class="px-5">
-              Buscar
-            </BasePrimaryButton>
-          </form>
+        <div>
+          <h1 class="font-display text-3xl text-highlighted sm:text-4xl lg:text-[2.85rem]">
+            Eventos en vivo
+          </h1>
+          <p class="mt-2.5 max-w-2xl text-sm leading-relaxed text-toned sm:text-base">
+            Descubre la cartelera y encuentra rápido lo que quieres ver.
+          </p>
         </div>
       </header>
 
-      <div class="grid gap-8 xl:grid-cols-[280px_minmax(0,1fr)]">
-        <aside class="space-y-8 border-t border-default/55 pt-8 xl:border-t-0 xl:border-r xl:border-default/55 xl:pr-8 xl:pt-0">
-          <section class="space-y-4">
-            <div class="flex items-center justify-between gap-3">
-              <h2 class="text-sm font-semibold tracking-[0.16em] text-highlighted uppercase">
-                Géneros
-              </h2>
+      <section class="grid gap-7 xl:grid-cols-[292px_minmax(0,1fr)] xl:items-start xl:gap-8">
+        <aside class="xl:sticky xl:top-24">
+          <div class="rounded-[2rem] border border-default/65 bg-[linear-gradient(180deg,rgba(255,255,255,0.05),rgba(255,255,255,0.02)),linear-gradient(145deg,rgba(11,17,31,0.68),rgba(16,23,40,0.6))] p-5 shadow-[0_24px_48px_-34px_rgba(0,0,0,0.82)] backdrop-blur-xl sm:p-6">
+            <div class="border-b border-default/55 pb-5">
+              <div class="flex items-center justify-between gap-3">
+                <div>
+                  <p class="text-[0.68rem] font-semibold tracking-[0.22em] text-secondary uppercase">
+                    Filtros
+                  </p>
+                  <h2 class="mt-1.5 text-xl font-semibold text-highlighted">
+                    Filtrar eventos
+                  </h2>
+                </div>
 
-              <BaseTertiaryButton
-                v-if="hasActiveFilters"
-                size="xs"
-                :disabled="isPending"
-                class="px-3"
-                @click="clearFilters"
-              >
-                Limpiar
-              </BaseTertiaryButton>
+                <UBadge color="neutral" variant="subtle" size="xs" class="rounded-full px-2.5 py-1 font-semibold tracking-[0.14em] uppercase">
+                  {{ meta.total }}
+                </UBadge>
+              </div>
+
+              <div class="mt-4 flex flex-wrap items-center gap-2">
+                <UBadge v-if="hasActiveFilters" color="primary" variant="soft" size="xs" class="rounded-full px-2.5 py-1 font-semibold tracking-[0.14em] uppercase">
+                  {{ activeFilterCount }} activo{{ activeFilterCount > 1 ? 's' : '' }}
+                </UBadge>
+
+                <BaseTertiaryButton
+                  v-if="hasActiveFilters"
+                  size="xs"
+                  :disabled="isPending"
+                  class="px-2.5"
+                  @click="clearFilters"
+                >
+                  Limpiar todo
+                </BaseTertiaryButton>
+              </div>
             </div>
 
-            <div class="flex flex-wrap gap-2">
-              <UButton
-                type="button"
-                size="xs"
-                class="rounded-full px-3 text-[0.72rem] font-semibold tracking-[0.08em]"
-                :disabled="isPending"
-                :color="!filters.genreId ? 'primary' : 'neutral'"
-                :variant="!filters.genreId ? 'soft' : 'ghost'"
-                @click="updateFilters({ genreId: '' })"
-              >
-                Todos
-              </UButton>
+            <div class="mt-5 space-y-4.5">
+              <section class="rounded-[1.5rem] border border-default/60 bg-default/30 p-4.5">
+                <p class="text-[0.68rem] font-semibold tracking-[0.18em] text-dimmed uppercase">
+                  Búsqueda
+                </p>
 
-              <UButton
-                v-for="genre in genreOptions"
-                :key="genre.id"
-                type="button"
-                size="xs"
-                class="rounded-full px-3 text-[0.72rem] font-semibold tracking-[0.08em]"
-                :disabled="isPending"
-                :color="filters.genreId === genre.id ? 'primary' : 'neutral'"
-                :variant="filters.genreId === genre.id ? 'soft' : 'ghost'"
-                @click="updateFilters({ genreId: genre.id })"
-              >
-                {{ genre.name }}
-              </UButton>
+                <form class="mt-3.5 space-y-3" @submit.prevent="submitSearch">
+                  <BaseFormInput
+                    v-model="searchDraft"
+                    placeholder="Buscar por evento"
+                    icon="i-lucide-search"
+                    :disabled="isPending"
+                    class="min-w-0"
+                  />
+
+                  <BaseFormInput
+                    v-model="artistNameDraft"
+                    placeholder="Buscar por artista"
+                    icon="i-lucide-mic-vocal"
+                    class="min-w-0"
+                  />
+
+                  <BasePrimaryButton type="submit" size="sm" :loading="isPending" :disabled="isPending" block>
+                    Buscar
+                  </BasePrimaryButton>
+                </form>
+              </section>
+
+              <section class="rounded-[1.5rem] border border-default/60 bg-default/30 p-4.5">
+                <div class="flex items-center justify-between gap-3">
+                  <h3 class="text-[0.74rem] font-semibold tracking-[0.16em] text-highlighted uppercase">
+                    Géneros
+                  </h3>
+                  <span class="text-[0.65rem] font-medium text-dimmed uppercase tracking-[0.14em]">
+                    {{ filters.genreId ? '1 seleccionado' : 'Top' }}
+                  </span>
+                </div>
+
+                <div class="mt-3.5 flex flex-wrap gap-2.5">
+                  <UButton
+                    type="button"
+                    size="sm"
+                    :ui="filterButtonUi"
+                    class="rounded-full px-3 py-1.5 text-[0.72rem] font-semibold tracking-[0.05em]"
+                    :disabled="isPending"
+                    :color="!filters.genreId ? 'primary' : 'neutral'"
+                    :variant="!filters.genreId ? 'soft' : 'outline'"
+                    @click="updateFilters({ genreId: '' })"
+                  >
+                    Todos
+                  </UButton>
+
+                  <UButton
+                    v-for="genre in visibleGenres"
+                    :key="genre.id"
+                    type="button"
+                    size="sm"
+                    :ui="filterButtonUi"
+                    class="rounded-full px-3 py-1.5 text-[0.72rem] font-semibold tracking-[0.05em]"
+                    :disabled="isPending"
+                    :color="filters.genreId === genre.id ? 'primary' : 'neutral'"
+                    :variant="filters.genreId === genre.id ? 'soft' : 'outline'"
+                    @click="updateFilters({ genreId: genre.id })"
+                  >
+                    {{ genre.name }}
+                  </UButton>
+                </div>
+
+                <BaseTertiaryButton
+                  v-if="hiddenGenresCount > 0"
+                  size="xs"
+                  class="mt-3 px-0"
+                  :disabled="isPending"
+                  @click="showAllGenres = !showAllGenres"
+                >
+                  {{ showAllGenres ? 'Mostrar menos' : `Ver ${hiddenGenresCount} más` }}
+                </BaseTertiaryButton>
+              </section>
+
+              <section class="rounded-[1.5rem] border border-default/60 bg-default/30 p-4.5">
+                <div class="flex items-center justify-between gap-3">
+                  <h3 class="text-[0.74rem] font-semibold tracking-[0.16em] text-highlighted uppercase">
+                    Ubicación
+                  </h3>
+                  <span class="text-[0.65rem] font-medium text-dimmed uppercase tracking-[0.14em]">
+                    {{ filters.city ? '1' : 'Todas' }}
+                  </span>
+                </div>
+
+                <div class="mt-3.5 flex flex-wrap gap-2.5">
+                  <UButton
+                    type="button"
+                    size="sm"
+                    :ui="filterButtonUi"
+                    class="rounded-full px-3 py-1.5 text-[0.72rem] font-semibold tracking-[0.05em]"
+                    :disabled="isPending"
+                    :color="!filters.city ? 'primary' : 'neutral'"
+                    :variant="!filters.city ? 'soft' : 'outline'"
+                    @click="updateFilters({ city: '' })"
+                  >
+                    Todas
+                  </UButton>
+
+                  <UButton
+                    v-for="city in cityOptions"
+                    :key="city"
+                    type="button"
+                    size="sm"
+                    :ui="filterButtonUi"
+                    class="rounded-full px-3 py-1.5 text-[0.72rem] font-semibold tracking-[0.05em]"
+                    :disabled="isPending"
+                    :color="filters.city === city ? 'primary' : 'neutral'"
+                    :variant="filters.city === city ? 'soft' : 'outline'"
+                    @click="updateFilters({ city })"
+                  >
+                    {{ city }}
+                  </UButton>
+                </div>
+              </section>
             </div>
-          </section>
-
-          <section class="space-y-4">
-            <h2 class="text-sm font-semibold tracking-[0.16em] text-highlighted uppercase">
-              Ubicación
-            </h2>
-
-            <div class="flex flex-wrap gap-2">
-              <UButton
-                type="button"
-                size="xs"
-                class="rounded-full px-3 text-[0.72rem] font-semibold tracking-[0.08em]"
-                :disabled="isPending"
-                :color="!filters.city ? 'primary' : 'neutral'"
-                :variant="!filters.city ? 'soft' : 'ghost'"
-                @click="updateFilters({ city: '' })"
-              >
-                Todas
-              </UButton>
-
-              <UButton
-                v-for="city in cityOptions"
-                :key="city"
-                type="button"
-                size="xs"
-                class="rounded-full px-3 text-[0.72rem] font-semibold tracking-[0.08em]"
-                :disabled="isPending"
-                :color="filters.city === city ? 'primary' : 'neutral'"
-                :variant="filters.city === city ? 'soft' : 'ghost'"
-                @click="updateFilters({ city })"
-              >
-                {{ city }}
-              </UButton>
-            </div>
-          </section>
+          </div>
         </aside>
 
         <section class="space-y-6">
           <div class="flex items-center justify-between gap-3">
             <p class="text-sm text-toned">
-              {{ eventsResponse?.meta.total ?? 0 }} resultados
+              {{ meta.total ?? 0 }} resultados
             </p>
 
-            <p v-if="filters.city || filters.genreId || filters.search" class="text-sm text-dimmed">
+            <p v-if="hasActiveFilters" class="text-sm text-dimmed">
               Filtros activos
             </p>
           </div>
 
           <div v-if="isPending" class="grid gap-5 md:grid-cols-2 2xl:grid-cols-3">
-            <USkeleton v-for="index in 6" :key="index" class="h-116 rounded-3xl" />
+            <USkeleton v-for="index in 6" :key="index" class="h-104 rounded-[1.6rem]" />
           </div>
 
           <div v-else-if="eventsErrorMessage" class="rounded-3xl border border-error/30 bg-error/8 px-6 py-14 text-center">
@@ -247,8 +374,25 @@ async function clearFilters() {
               :event="event"
             />
           </div>
+
+          <div v-if="meta.totalPages > 1" class="flex justify-center border-t border-default/55 pt-5">
+            <UPagination
+              :page="filters.page"
+              :total="meta.total"
+              :items-per-page="meta.limit"
+              :disabled="isPending"
+              :sibling-count="1"
+              size="sm"
+              color="neutral"
+              variant="ghost"
+              active-color="primary"
+              active-variant="soft"
+              show-edges
+              @update:page="handlePageChange"
+            />
+          </div>
         </section>
-      </div>
+      </section>
     </div>
   </UiEventsPageShell>
 </template>
