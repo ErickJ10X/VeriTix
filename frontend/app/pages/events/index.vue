@@ -84,6 +84,28 @@ const meta = computed(() => {
   }
 })
 
+const selectedGenreLabel = computed(() => {
+  return genreOptions.value.find(genre => genre.id === filters.value.genreId)?.name ?? ''
+})
+
+const resultsHeading = computed(() => {
+  return `${meta.value.total} resultado${meta.value.total === 1 ? '' : 's'}`
+})
+
+const resultsContext = computed(() => {
+  const segments = [
+    filters.value.search ? `búsqueda: “${filters.value.search}”` : '',
+    selectedGenreLabel.value ? `género: ${selectedGenreLabel.value}` : '',
+    filters.value.city ? `ciudad: ${filters.value.city}` : '',
+  ].filter(Boolean)
+
+  if (segments.length === 0) {
+    return 'Explora la cartelera disponible y encuentra el plan adecuado.'
+  }
+
+  return segments.join(' · ')
+})
+
 const activeFilterCount = computed(() => {
   return [filters.value.search, filters.value.genreId, filters.value.city].filter(Boolean).length
 })
@@ -148,20 +170,9 @@ async function handlePageChange(page: number) {
   <UiEventsPageShell variant="index" container-class="relative">
     <div class="mx-auto max-w-7xl space-y-7">
       <header class="space-y-4 border-b border-default/55 pb-7">
-        <div class="flex flex-wrap items-center gap-3">
-          <p class="text-[0.68rem] font-semibold tracking-[0.3em] text-secondary uppercase">
-            Cartelera
-          </p>
-
-          <UBadge
-            color="neutral"
-            variant="subtle"
-            size="xs"
-            class="rounded-full px-3 py-1 text-[0.68rem] font-semibold tracking-[0.16em] uppercase"
-          >
-            {{ eventsResponse?.meta.total ?? 0 }} eventos
-          </UBadge>
-        </div>
+        <p class="text-[0.68rem] font-semibold tracking-[0.3em] text-secondary uppercase">
+          Cartelera
+        </p>
 
         <div>
           <h1 class="font-display text-3xl text-highlighted sm:text-4xl lg:text-[2.85rem]">
@@ -177,28 +188,21 @@ async function handlePageChange(page: number) {
         <aside class="xl:sticky xl:top-24">
           <div class="rounded-[2rem] border border-default/65 bg-[linear-gradient(180deg,rgba(255,255,255,0.05),rgba(255,255,255,0.02)),linear-gradient(145deg,rgba(11,17,31,0.68),rgba(16,23,40,0.6))] p-5 shadow-[0_24px_48px_-34px_rgba(0,0,0,0.82)] backdrop-blur-xl sm:p-6">
             <div class="border-b border-default/55 pb-5">
-              <div class="flex items-center justify-between gap-3">
-                <div>
-                  <p class="text-[0.68rem] font-semibold tracking-[0.22em] text-secondary uppercase">
-                    Filtros
-                  </p>
-                  <h2 class="mt-1.5 text-xl font-semibold text-highlighted">
-                    Filtrar eventos
-                  </h2>
-                </div>
-
-                <UBadge color="neutral" variant="subtle" size="xs" class="rounded-full px-2.5 py-1 font-semibold tracking-[0.14em] uppercase">
-                  {{ meta.total }}
-                </UBadge>
+              <div>
+                <p class="text-[0.68rem] font-semibold tracking-[0.22em] text-secondary uppercase">
+                  Filtros
+                </p>
+                <h2 class="mt-1.5 text-xl font-semibold text-highlighted">
+                  Filtrar eventos
+                </h2>
               </div>
 
-              <div class="mt-4 flex flex-wrap items-center gap-2">
-                <UBadge v-if="hasActiveFilters" color="primary" variant="soft" size="xs" class="rounded-full px-2.5 py-1 font-semibold tracking-[0.14em] uppercase">
-                  {{ activeFilterCount }} activo{{ activeFilterCount > 1 ? 's' : '' }}
-                </UBadge>
+              <div v-if="hasActiveFilters" class="mt-4 flex flex-wrap items-center gap-2">
+                <p class="text-[0.72rem] font-medium tracking-[0.14em] text-dimmed uppercase">
+                  {{ activeFilterCount }} filtro{{ activeFilterCount > 1 ? 's' : '' }} activo{{ activeFilterCount > 1 ? 's' : '' }}
+                </p>
 
                 <BaseTertiaryButton
-                  v-if="hasActiveFilters"
                   size="xs"
                   :disabled="isPending"
                   class="px-2.5"
@@ -333,14 +337,19 @@ async function handlePageChange(page: number) {
         </aside>
 
         <section class="space-y-6">
-          <div class="flex items-center justify-between gap-3">
-            <p class="text-sm text-toned">
-              {{ meta.total ?? 0 }} resultados
+          <div class="space-y-1 border-b border-default/55 pb-4">
+            <p class="text-[0.68rem] font-semibold tracking-[0.22em] text-secondary uppercase">
+              Resultados
             </p>
+            <div class="flex flex-col gap-1 sm:flex-row sm:items-end sm:justify-between sm:gap-4">
+              <h2 class="text-2xl font-semibold text-highlighted">
+                {{ resultsHeading }}
+              </h2>
 
-            <p v-if="hasActiveFilters" class="text-sm text-dimmed">
-              Filtros activos
-            </p>
+              <p class="text-sm text-toned sm:text-right">
+                {{ resultsContext }}
+              </p>
+            </div>
           </div>
 
           <div v-if="isPending" class="grid gap-5 md:grid-cols-2 2xl:grid-cols-3">
