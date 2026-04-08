@@ -70,7 +70,7 @@ const formatOptions = computed(() => {
   <div class="flex flex-col gap-4 w-full">
     <!-- Top Row: Search, City, Page Size -->
     <div class="grid grid-cols-1 md:grid-cols-12 gap-4 items-end">
-      <UFormField label="Search Events" class="md:col-span-5">
+      <UFormField name="search" label="Search Events" class="md:col-span-5">
         <UInput
           :model-value="search"
           icon="i-heroicons-magnifying-glass"
@@ -81,7 +81,7 @@ const formatOptions = computed(() => {
         />
       </UFormField>
 
-      <UFormField label="City" class="md:col-span-5">
+      <UFormField name="city" label="City" class="md:col-span-5">
         <UInput
           :model-value="city"
           icon="i-heroicons-map-pin"
@@ -92,40 +92,40 @@ const formatOptions = computed(() => {
         />
       </UFormField>
 
-      <UFormField label="Per Page" class="md:col-span-2">
+      <UFormField name="pageSize" label="Per Page" class="md:col-span-2">
         <USelect
           :model-value="pageSize"
-          :options="pageSizeOptions"
+          :items="pageSizeOptions"
           class="w-full"
           :disabled="loading"
-          @update:model-value="$emit('update:pageSize', Number($event))"
+          @update:model-value="$emit('update:pageSize', $event)"
         />
       </UFormField>
     </div>
 
     <!-- Filter Row: Genre, Format, Date Range, Actions -->
     <div class="grid grid-cols-1 md:grid-cols-12 gap-4 items-end">
-      <UFormField label="Genre" class="md:col-span-3">
+      <UFormField name="genreId" label="Genre" class="md:col-span-3">
         <USelect
           :model-value="genreId"
-          :options="genreOptions"
+          :items="genreOptions"
           class="w-full"
           :disabled="loading"
           @update:model-value="$emit('update:genreId', $event)"
         />
       </UFormField>
 
-      <UFormField label="Format" class="md:col-span-3">
+      <UFormField name="formatId" label="Format" class="md:col-span-3">
         <USelect
           :model-value="formatId"
-          :options="formatOptions"
+          :items="formatOptions"
           class="w-full"
           :disabled="loading"
           @update:model-value="$emit('update:formatId', $event)"
         />
       </UFormField>
 
-      <UFormField label="Date From" class="md:col-span-2">
+      <UFormField name="dateFrom" label="Date From" class="md:col-span-2">
         <UInput
           type="date"
           :model-value="dateFrom"
@@ -135,7 +135,7 @@ const formatOptions = computed(() => {
         />
       </UFormField>
 
-      <UFormField label="Date To" class="md:col-span-2">
+      <UFormField name="dateTo" label="Date To" class="md:col-span-2">
         <UInput
           type="date"
           :model-value="dateTo"

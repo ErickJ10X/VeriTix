@@ -15,6 +15,12 @@ const deletingArtistId = ref('')
 const search = ref('')
 const filterStatus = ref<'all' | 'active' | 'inactive'>('all')
 
+const statusOptions = [
+  { value: 'all', label: 'Todos' },
+  { value: 'active', label: 'Activos' },
+  { value: 'inactive', label: 'Inactivos' },
+] as const
+
 const filteredArtists = computed(() => {
   let result = artists.value
 
@@ -108,6 +114,10 @@ function getInitials(name: string) {
   return name.charAt(0).toUpperCase()
 }
 
+function setFilterStatus(value: 'all' | 'active' | 'inactive') {
+  filterStatus.value = value
+}
+
 onMounted(() => {
   void loadArtists()
 })
@@ -167,22 +177,17 @@ onMounted(() => {
             />
           </div>
           <div class="flex items-center gap-1.5 p-1 rounded-lg bg-elevated border border-default self-start sm:self-auto">
-            <button
-              v-for="option in [
-                { value: 'all', label: 'Todos' },
-                { value: 'active', label: 'Activos' },
-                { value: 'inactive', label: 'Inactivos' },
-              ]"
+            <UButton
+              v-for="option in statusOptions"
               :key="option.value"
-              class="px-3 py-1.5 text-sm font-medium rounded-md transition-all duration-200" :class="[
-                filterStatus === option.value
-                  ? 'bg-default text-default shadow-sm ring-1 ring-default'
-                  : 'text-muted hover:text-default hover:bg-elevated',
-              ]"
-              @click="filterStatus = option.value as any"
+              size="xs"
+              class="rounded-md"
+              :color="filterStatus === option.value ? 'primary' : 'neutral'"
+              :variant="filterStatus === option.value ? 'soft' : 'ghost'"
+              @click="setFilterStatus(option.value)"
             >
               {{ option.label }}
-            </button>
+            </UButton>
           </div>
         </div>
 
@@ -216,7 +221,7 @@ onMounted(() => {
 
           <!-- Empty State -->
           <div v-else-if="filteredArtists.length === 0" class="flex flex-col items-center justify-center h-full py-24 text-center">
-            <div class="p-4 rounded-full bg-elevated mb-4 ring-1 ring-slate-200 dark:ring-slate-700">
+            <div class="p-4 rounded-full bg-elevated mb-4 ring-1 ring-default">
               <UIcon name="i-lucide-mic-off" class="size-8 text-muted" />
             </div>
             <h3 class="text-lg font-semibold text-default mb-1">
@@ -239,7 +244,7 @@ onMounted(() => {
               class="group relative flex flex-col h-full !p-6"
             >
               <div class="flex items-start justify-between mb-5">
-                <div class="size-16 rounded-full bg-emerald-50 dark:bg-emerald-500/10 border border-emerald-200 dark:border-emerald-500/20 text-emerald-600 dark:text-emerald-400 flex items-center justify-center text-xl font-bold shrink-0 group-hover:scale-105 transition-transform duration-300">
+                <div class="size-16 rounded-full bg-success/10 border border-success/20 text-success flex items-center justify-center text-xl font-bold shrink-0 group-hover:scale-105 transition-transform duration-300">
                   {{ getInitials(artist.name) }}
                 </div>
                 <div class="flex items-center gap-1.5 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity duration-200 bg-white/80 dark:bg-slate-900/80 backdrop-blur-sm p-1 rounded-lg">
@@ -259,8 +264,8 @@ onMounted(() => {
                 </div>
               </div>
 
-              <h3 class="font-semibold text-lg text-default mb-1.5 truncate group-hover:text-emerald-600 dark:group-hover:text-emerald-400 transition-colors">
-                <NuxtLink :to="`/admin/artists/${artist.id}/edit`" class="focus:outline-none focus:ring-2 focus:ring-emerald-500/50 rounded-sm">
+              <h3 class="font-semibold text-lg text-default mb-1.5 truncate group-hover:text-success transition-colors">
+                <NuxtLink :to="`/admin/artists/${artist.id}/edit`" class="focus:outline-none focus:ring-2 focus:ring-success/40 rounded-sm">
                   <span class="absolute inset-0" aria-hidden="true" />
                   {{ artist.name }}
                 </NuxtLink>
@@ -272,26 +277,37 @@ onMounted(() => {
               </div>
 
               <div class="flex flex-wrap gap-2 mb-6">
-                <span
+                <UBadge
                   v-for="genre in artist.genres.slice(0, 3)"
                   :key="genre.id"
-                  class="px-2.5 py-1 text-xs font-semibold rounded-md bg-elevated border border-default text-slate-600 dark:text-slate-300 relative z-10"
+                  color="neutral"
+                  variant="subtle"
+                  size="xs"
+                  class="relative z-10 rounded-md px-2.5 py-1 text-xs font-semibold"
                 >
                   {{ genre.name }}
-                </span>
-                <span v-if="artist.genres.length > 3" class="px-2.5 py-1 text-xs font-semibold rounded-md bg-slate-50 dark:bg-slate-800/50 border border-default/50 text-muted relative z-10">
+                </UBadge>
+                <UBadge
+                  v-if="artist.genres.length > 3"
+                  color="neutral"
+                  variant="outline"
+                  size="xs"
+                  class="relative z-10 rounded-md px-2.5 py-1 text-xs font-semibold"
+                >
                   +{{ artist.genres.length - 3 }}
-                </span>
+                </UBadge>
               </div>
 
-              <div class="mt-auto flex items-center justify-between pt-4 border-t border-slate-100 dark:border-slate-800/50 relative z-10">
-                <div class="flex items-center gap-1.5">
-                  <div class="size-2 rounded-full" :class="artist.isActive ? 'bg-success' : 'bg-muted'" />
-                  <span class="text-xs font-bold tracking-wider uppercase" :class="artist.isActive ? 'text-success' : 'text-muted'">
-                    {{ artist.isActive ? 'Activo' : 'Inactivo' }}
-                  </span>
-                </div>
-                <span class="text-xs font-medium text-muted dark:text-muted truncate max-w-[100px] hover:text-slate-600 dark:hover:text-slate-300 transition-colors" :title="artist.slug">
+              <div class="mt-auto flex items-center justify-between pt-4 border-t border-default relative z-10">
+                <UBadge
+                  :color="artist.isActive ? 'success' : 'neutral'"
+                  variant="soft"
+                  size="xs"
+                  class="text-[0.62rem] font-bold tracking-wider uppercase"
+                >
+                  {{ artist.isActive ? 'Activo' : 'Inactivo' }}
+                </UBadge>
+                <span class="text-xs font-medium text-muted truncate max-w-[100px] hover:text-toned transition-colors" :title="artist.slug">
                   {{ artist.slug }}
                 </span>
               </div>

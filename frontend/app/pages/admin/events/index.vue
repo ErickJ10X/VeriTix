@@ -344,14 +344,16 @@ onMounted(() => {
                 v-for="event in highlightedEvents"
                 :key="event.id"
                 :to="`/admin/events/${event.id}/edit`"
-                class="group flex flex-col p-3 rounded-lg hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors border border-transparent hover:border-slate-200 dark:hover:border-slate-700"
+                class="group flex flex-col rounded-lg border border-transparent p-3 transition-colors hover:border-default hover:bg-elevated"
               >
-                <p class="text-sm font-semibold text-default truncate group-hover:text-amber-600 dark:group-hover:text-amber-400 transition-colors">
+                <p class="text-sm font-semibold text-default truncate transition-colors group-hover:text-warning">
                   {{ event.name }}
                 </p>
                 <div class="flex items-center justify-between mt-1">
                   <span class="text-xs text-muted">{{ event.venue.city }}</span>
-                  <span class="text-xs font-medium text-amber-600 dark:text-warning bg-amber-50 dark:bg-warning/5 px-2 py-0.5 rounded-full">{{ formatDateShort(event.eventDate) }}</span>
+                  <UBadge color="warning" variant="soft" size="xs" class="rounded-full px-2 py-0.5 font-medium">
+                    {{ formatDateShort(event.eventDate) }}
+                  </UBadge>
                 </div>
               </NuxtLink>
             </div>
@@ -404,13 +406,13 @@ onMounted(() => {
                 <template #default="{ item: event }">
                   <AdminCard hover padding="none" class="group flex flex-col sm:flex-row sm:items-center gap-5 p-5 relative">
                     <!-- Image -->
-                    <div class="relative overflow-hidden rounded-lg shrink-0 w-full sm:w-24 h-48 sm:h-24 bg-slate-100 dark:bg-slate-800">
+                    <div class="relative h-48 w-full shrink-0 overflow-hidden rounded-lg bg-elevated sm:h-24 sm:w-24">
                       <img
                         :src="getEventImage(event)"
                         :alt="event.name"
                         class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 ease-out"
                       >
-                      <div class="absolute inset-0 ring-1 ring-inset ring-slate-900/10 dark:ring-white/10 rounded-lg" />
+                      <div class="absolute inset-0 rounded-lg ring-1 ring-inset ring-default" />
                     </div>
 
                     <!-- Content -->
@@ -419,13 +421,13 @@ onMounted(() => {
                         <UBadge :color="getEventStatusColor(event.status)" variant="subtle" size="sm" class="font-bold tracking-wider rounded-full px-2">
                           {{ event.status }}
                         </UBadge>
-                        <span v-if="event.format" class="text-xs font-semibold px-2 py-0.5 rounded-md bg-slate-50 dark:bg-slate-800/50 text-slate-600 dark:text-slate-300 border border-default">
+                        <UBadge v-if="event.format" color="neutral" variant="outline" size="xs" class="rounded-md px-2 py-0.5 font-semibold">
                           {{ event.format.name }}
-                        </span>
+                        </UBadge>
                       </div>
 
-                      <h3 class="font-bold text-lg text-default mb-1.5 truncate group-hover:text-amber-600 dark:group-hover:text-amber-400 transition-colors">
-                        <NuxtLink :to="`/admin/events/${event.id}/edit`" class="focus:outline-none focus:ring-2 focus:ring-amber-500/50 rounded-sm before:absolute before:inset-0 before:z-0">
+                      <h3 class="mb-1.5 truncate text-lg font-bold text-default transition-colors group-hover:text-warning">
+                        <NuxtLink :to="`/admin/events/${event.id}/edit`" class="rounded-sm focus:outline-none focus:ring-2 focus:ring-warning/40 before:absolute before:inset-0 before:z-0">
                           {{ event.name }}
                         </NuxtLink>
                       </h3>

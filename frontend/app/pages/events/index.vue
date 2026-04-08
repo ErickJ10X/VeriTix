@@ -86,9 +86,14 @@ async function clearFilters() {
             Cartelera
           </p>
 
-          <span class="inline-flex items-center gap-2 rounded-full border border-default/60 bg-default/8 px-3 py-1 text-[0.68rem] font-semibold tracking-[0.16em] text-toned uppercase">
+          <UBadge
+            color="neutral"
+            variant="subtle"
+            size="xs"
+            class="rounded-full px-3 py-1 text-[0.68rem] font-semibold tracking-[0.16em] uppercase"
+          >
             {{ eventsResponse?.meta.total ?? 0 }} eventos
-          </span>
+          </UBadge>
         </div>
 
         <div class="grid gap-4 lg:grid-cols-[minmax(0,1fr)_auto] lg:items-end">
@@ -137,27 +142,31 @@ async function clearFilters() {
             </div>
 
             <div class="flex flex-wrap gap-2">
-              <button
+              <UButton
                 type="button"
-                class="vtx-filter-chip"
+                size="xs"
+                class="rounded-full px-3 text-[0.72rem] font-semibold tracking-[0.08em]"
                 :disabled="isPending"
-                :class="!filters.genreId && 'vtx-filter-chip--active'"
+                :color="!filters.genreId ? 'primary' : 'neutral'"
+                :variant="!filters.genreId ? 'soft' : 'ghost'"
                 @click="updateFilters({ genreId: '' })"
               >
                 Todos
-              </button>
+              </UButton>
 
-              <button
+              <UButton
                 v-for="genre in genreOptions"
                 :key="genre.id"
                 type="button"
-                class="vtx-filter-chip"
+                size="xs"
+                class="rounded-full px-3 text-[0.72rem] font-semibold tracking-[0.08em]"
                 :disabled="isPending"
-                :class="filters.genreId === genre.id && 'vtx-filter-chip--active'"
+                :color="filters.genreId === genre.id ? 'primary' : 'neutral'"
+                :variant="filters.genreId === genre.id ? 'soft' : 'ghost'"
                 @click="updateFilters({ genreId: genre.id })"
               >
                 {{ genre.name }}
-              </button>
+              </UButton>
             </div>
           </section>
 
@@ -167,27 +176,31 @@ async function clearFilters() {
             </h2>
 
             <div class="flex flex-wrap gap-2">
-              <button
+              <UButton
                 type="button"
-                class="vtx-filter-chip"
+                size="xs"
+                class="rounded-full px-3 text-[0.72rem] font-semibold tracking-[0.08em]"
                 :disabled="isPending"
-                :class="!filters.city && 'vtx-filter-chip--active'"
+                :color="!filters.city ? 'primary' : 'neutral'"
+                :variant="!filters.city ? 'soft' : 'ghost'"
                 @click="updateFilters({ city: '' })"
               >
                 Todas
-              </button>
+              </UButton>
 
-              <button
+              <UButton
                 v-for="city in cityOptions"
                 :key="city"
                 type="button"
-                class="vtx-filter-chip"
+                size="xs"
+                class="rounded-full px-3 text-[0.72rem] font-semibold tracking-[0.08em]"
                 :disabled="isPending"
-                :class="filters.city === city && 'vtx-filter-chip--active'"
+                :color="filters.city === city ? 'primary' : 'neutral'"
+                :variant="filters.city === city ? 'soft' : 'ghost'"
                 @click="updateFilters({ city })"
               >
                 {{ city }}
-              </button>
+              </UButton>
             </div>
           </section>
         </aside>
@@ -239,42 +252,3 @@ async function clearFilters() {
     </div>
   </UiEventsPageShell>
 </template>
-
-<style scoped>
-@reference "@/assets/css/main.css";
-
-.vtx-filter-chip {
-  @apply inline-flex cursor-pointer items-center rounded-full border px-3 py-2 text-[0.72rem] font-semibold tracking-[0.08em] transition-colors duration-150;
-  border-color: rgb(145 161 190 / 0.22);
-  background: rgb(255 255 255 / 0.04);
-  color: var(--ui-text-toned);
-  box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.02);
-}
-
-.vtx-filter-chip:disabled {
-  cursor: wait;
-  opacity: 0.55;
-}
-
-.vtx-filter-chip:hover {
-  border-color: rgb(239 170 71 / 0.35);
-  background: rgb(255 255 255 / 0.06);
-  color: rgb(246 248 255);
-}
-
-.vtx-filter-chip:disabled:hover {
-  border-color: rgb(145 161 190 / 0.22);
-  background: rgb(255 255 255 / 0.04);
-  color: var(--ui-text-toned);
-}
-
-.vtx-filter-chip:active {
-  transform: translateY(1px);
-}
-
-.vtx-filter-chip--active {
-  border-color: rgb(239 170 71 / 0.42);
-  background: rgb(239 170 71 / 0.14);
-  color: rgb(248 194 103);
-}
-</style>

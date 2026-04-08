@@ -15,6 +15,12 @@ const deletingUserId = ref('')
 const search = ref('')
 const filterStatus = ref<'all' | 'active' | 'inactive'>('all')
 
+const statusOptions = [
+  { value: 'all', label: 'Todos' },
+  { value: 'active', label: 'Activos' },
+  { value: 'inactive', label: 'Inactivos' },
+] as const
+
 const filteredUsers = computed(() => {
   let result = users.value
 
@@ -108,9 +114,17 @@ function getInitials(user: AdminUserRecord) {
 }
 
 function getAvatarColor(user: AdminUserRecord) {
-  if (user.role === 'ADMIN') { return 'bg-primary/10 text-primary border-primary/20' }
-  if (user.isActive) { return 'bg-success/10 text-success border-success/20' }
+  if (user.role === 'ADMIN') {
+    return 'bg-primary/10 text-primary border-primary/20'
+  }
+  if (user.isActive) {
+    return 'bg-success/10 text-success border-success/20'
+  }
   return 'bg-default text-muted border-default'
+}
+
+function setFilterStatus(value: 'all' | 'active' | 'inactive') {
+  filterStatus.value = value
 }
 
 onMounted(() => {
@@ -171,22 +185,17 @@ onMounted(() => {
             />
           </div>
           <div class="flex items-center gap-1.5 p-1 rounded-lg bg-elevated border border-default self-start sm:self-auto">
-            <button
-              v-for="option in [
-                { value: 'all', label: 'Todos' },
-                { value: 'active', label: 'Activos' },
-                { value: 'inactive', label: 'Inactivos' },
-              ]"
+            <UButton
+              v-for="option in statusOptions"
               :key="option.value"
-              class="px-3 py-1.5 text-sm font-medium rounded-md transition-all duration-200" :class="[
-                filterStatus === option.value
-                  ? 'bg-default text-default shadow-sm ring-1 ring-default'
-                  : 'text-muted hover:text-default hover:bg-elevated',
-              ]"
-              @click="filterStatus = option.value as any"
+              size="xs"
+              :color="filterStatus === option.value ? 'primary' : 'neutral'"
+              :variant="filterStatus === option.value ? 'soft' : 'ghost'"
+              class="rounded-md"
+              @click="setFilterStatus(option.value)"
             >
               {{ option.label }}
-            </button>
+            </UButton>
           </div>
         </div>
 
@@ -202,7 +211,7 @@ onMounted(() => {
         </div>
 
         <!-- List Area -->
-        <div class="bg-elevated min-h-[400px] p-4 sm:p-5 rounded-b-2xl">
+        <div class="bg-elevated min-h-100 p-4 sm:p-5 rounded-b-2xl">
           <!-- Loading State -->
           <div v-if="pending" class="space-y-3">
             <USkeleton v-for="i in 5" :key="i" class="h-20 w-full rounded-2xl" />
@@ -261,12 +270,14 @@ onMounted(() => {
 
               <!-- Status & Actions -->
               <div class="flex items-center justify-between sm:justify-end gap-6 sm:w-64 mt-3 sm:mt-0 pt-3 sm:pt-0 border-t border-default sm:border-t-0">
-                <div class="flex items-center gap-2">
-                  <div class="size-2 rounded-full" :class="user.isActive ? 'bg-success' : 'bg-muted'" />
-                  <span class="text-xs font-medium" :class="user.isActive ? 'text-success' : 'text-muted'">
-                    {{ user.isActive ? 'Activo' : 'Inactivo' }}
-                  </span>
-                </div>
+                <UBadge
+                  :color="user.isActive ? 'success' : 'neutral'"
+                  variant="subtle"
+                  size="xs"
+                  class="rounded-full px-2.5"
+                >
+                  {{ user.isActive ? 'Activo' : 'Inactivo' }}
+                </UBadge>
 
                 <div class="flex items-center gap-2 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity duration-200">
                   <UButton
