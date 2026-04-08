@@ -21,7 +21,7 @@ const isEventsRoute = computed(() => {
       <div class="vtx-header-minimal grid grid-cols-[auto_1fr_auto] items-center gap-3 px-3 py-2.5 sm:px-4">
         <NuxtLink
           to="/"
-          class="flex min-w-0 cursor-pointer items-center gap-2.5 rounded-lg pr-1.5 outline-none focus-visible:shadow-[0_0_0_2px_rgb(239_170_71/0.45)]"
+          class="flex min-w-0 cursor-pointer items-center gap-2.5 rounded-lg pr-1.5 outline-none focus-visible:ring-2 focus-visible:ring-primary/35"
         >
           <span class="vtx-header-brand-mark" aria-hidden="true" />
 
@@ -29,9 +29,9 @@ const isEventsRoute = computed(() => {
             <p class="truncate font-display text-[1.45rem] leading-none tracking-wide text-highlighted">
               Veritix
             </p>
-            <p class="truncate text-[0.56rem] tracking-[0.3em] text-dimmed uppercase">
+            <UiMetaLabel as="p" class="truncate text-dimmed/90">
               progressive live atlas
-            </p>
+            </UiMetaLabel>
           </div>
         </NuxtLink>
 
@@ -49,19 +49,23 @@ const isEventsRoute = computed(() => {
           <!-- Auth buttons -->
           <div class="flex shrink-0 items-center gap-2">
             <template v-if="showGuestActions">
-              <NuxtLink
+              <BaseButton
                 to="/login"
-                class="vtx-auth-link vtx-auth-link--ghost"
+                kind="secondary"
+                size="xs"
+                class="px-3.5 text-xs tracking-wide uppercase"
               >
                 Iniciar sesión
-              </NuxtLink>
+              </BaseButton>
 
-              <NuxtLink
+              <BaseButton
                 to="/register"
-                class="vtx-auth-link vtx-auth-link--primary"
+                kind="primary"
+                size="xs"
+                class="px-3.5 text-xs tracking-wide uppercase"
               >
                 Registrarse
-              </NuxtLink>
+              </BaseButton>
             </template>
 
             <template v-else-if="showAccountAction">
@@ -122,35 +126,15 @@ const isEventsRoute = computed(() => {
 }
 
 .vtx-nav-link {
-  @apply inline-flex cursor-pointer items-center justify-center no-underline focus-visible:outline-none focus-visible:ring-2;
-  min-height: 2.25rem;
-  padding: 0.25rem 0.5rem;
-  border-bottom: 1px solid transparent;
-  background: transparent;
-  color: rgb(170 180 205);
-  font-size: 0.72rem;
-  font-weight: 600;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  transition:
-    color 0.12s ease-out,
-    border-color 0.12s ease-out,
-    background-color 0.12s ease-out,
-    transform 0.08s ease-out;
+  @apply inline-flex min-h-9 cursor-pointer items-center justify-center border-b border-transparent bg-transparent px-2 py-1 text-xs font-semibold tracking-wide text-dimmed uppercase no-underline transition-colors duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/35;
 }
 
 .vtx-nav-link:hover {
-  border-bottom-color: rgb(239 170 71 / 0.28);
-  color: rgb(246 248 255);
+  @apply border-primary/30 text-highlighted;
 }
 
 .vtx-nav-link--active {
-  border-bottom-color: rgb(239 170 71 / 0.42);
-  color: rgb(248 194 103);
-}
-
-.vtx-nav-link:active {
-  transform: translateY(1px);
+  @apply border-primary/45 text-primary;
 }
 
 @media (max-width: 639px) {
@@ -166,54 +150,4 @@ const isEventsRoute = computed(() => {
   }
 }
 
-.vtx-auth-link {
-  @apply inline-flex cursor-pointer items-center justify-center no-underline focus-visible:outline-none focus-visible:ring-2;
-  position: relative;
-  padding: 0.375rem 0.875rem;
-  font-size: 0.72rem;
-  font-weight: 600;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  border-radius: 9999px;
-  border: 1px solid transparent;
-  transition:
-    color 0.12s ease-out,
-    background-color 0.12s ease-out,
-    border-color 0.12s ease-out,
-    transform 0.08s ease-out,
-    box-shadow 0.12s ease-out;
-}
-
-.vtx-auth-link--ghost {
-  color: rgb(170 180 205);
-  background: transparent;
-  border-color: rgb(170 180 205 / 0.28);
-}
-
-.vtx-auth-link--ghost:hover {
-  color: rgb(246 248 255);
-  background: rgb(255 255 255 / 0.05);
-  border-color: rgb(246 248 255 / 0.36);
-}
-
-.vtx-auth-link--primary {
-  color: rgb(248 194 103);
-  background: rgb(239 170 71 / 0.14);
-  border-color: rgb(239 170 71 / 0.42);
-  box-shadow:
-    inset 0 1px 0 rgb(255 255 255 / 0.08),
-    0 8px 18px -16px rgb(239 170 71 / 0.9);
-}
-
-.vtx-auth-link--primary:hover {
-  color: rgb(255 248 234);
-  background: rgb(239 170 71 / 0.24);
-  border-color: rgb(253 217 152 / 0.7);
-  transform: translateY(-1px);
-  box-shadow: 0 10px 24px -16px rgb(239 170 71 / 0.95);
-}
-
-.vtx-auth-link:active {
-  transform: translateY(1px);
-}
 </style>
