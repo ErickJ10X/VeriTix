@@ -95,13 +95,16 @@ const eventErrorMessage = computed(() => {
         <div class="space-y-8">
           <div class="space-y-5 border-b border-default/55 pb-7">
             <div class="flex flex-wrap gap-2">
-              <span
+              <UBadge
                 v-for="genre in event.genres"
                 :key="genre.id"
-                class="inline-flex items-center rounded-full border border-default/60 bg-default/8 px-3 py-1 text-[0.68rem] font-semibold tracking-[0.16em] text-toned uppercase"
+                color="neutral"
+                variant="subtle"
+                size="xs"
+                class="rounded-full px-3 py-1 text-[0.68rem] font-semibold tracking-[0.16em] uppercase"
               >
                 {{ genre.name }}
-              </span>
+              </UBadge>
             </div>
 
             <div class="space-y-3">

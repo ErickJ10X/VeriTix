@@ -59,7 +59,7 @@
 </template>
 
 <style scoped>
-@reference "tailwindcss";
+@reference "@/assets/css/main.css";
 
 .vtx-recovery-note {
   @apply flex items-start gap-3 rounded-2xl border px-4 py-4 text-left text-sm leading-relaxed;

@@ -57,13 +57,6 @@ const showConfirmPassword = ref(false)
 const { user, fetchProfile, updateProfile, changePassword } = useProfile()
 const { getApiErrorMessage } = useApiErrorMessage()
 
-const roleLabels: Record<UserRole, string> = {
-  BUYER: 'Comprador',
-  CREATOR: 'Creador',
-  VALIDATOR: 'Validador',
-  ADMIN: 'Administrador',
-}
-
 const roleViews: Record<UserRole, { title: string, capabilities: string[] }> = {
   BUYER: {
     title: 'Acceso de comprador',
@@ -99,14 +92,6 @@ const roleViews: Record<UserRole, { title: string, capabilities: string[] }> = {
   },
 }
 
-const roleLabel = computed(() => {
-  if (!user.value?.role) {
-    return 'Sin rol'
-  }
-
-  return roleLabels[user.value.role]
-})
-
 const roleView = computed(() => {
   if (!user.value?.role) {
     return null
@@ -123,37 +108,6 @@ const profileInitials = computed(() => {
     .join('')
 
   return initials || 'VT'
-})
-
-const profileCompletion = computed(() => {
-  const entries = [
-    profileState.name.trim(),
-    profileState.lastName.trim(),
-    profileState.phone.trim(),
-    profileState.avatarUrl.trim(),
-  ]
-
-  return Math.round((entries.filter(Boolean).length / entries.length) * 100)
-})
-
-const profileMetrics = computed(() => {
-  return [
-    {
-      label: 'Email',
-      value: user.value?.email ?? 'Pendiente',
-      tone: 'text-highlighted',
-    },
-    {
-      label: 'Rol',
-      value: roleLabel.value,
-      tone: 'text-secondary',
-    },
-    {
-      label: 'Perfil',
-      value: `${profileCompletion.value}%`,
-      tone: 'text-auric-200',
-    },
-  ]
 })
 
 const hasProfileChanges = computed(() => {
@@ -250,38 +204,11 @@ onMounted(() => {
 
 <template>
   <UsersSettingsShell
-    eyebrow="Mi cuenta"
-    badge="Perfil activo"
-    title="Ajustes de cuenta"
-    description="Perfil, contacto y seguridad en una sola vista."
-    tone="vivid"
+    title="Perfil y seguridad"
+    description="Actualiza tus datos personales y protege el acceso a tu cuenta desde un único espacio más claro."
+    tone="minimal"
   >
-    <template #hero>
-      <div v-if="!initialized" class="grid gap-4 md:grid-cols-3">
-        <USkeleton class="h-24 rounded-2xl" />
-        <USkeleton class="h-24 rounded-2xl" />
-        <USkeleton class="h-24 rounded-2xl" />
-      </div>
-
-      <UsersMetrics v-else :metrics="profileMetrics" />
-    </template>
-
-    <section class="space-y-10">
-      <div class="flex items-end justify-between gap-4 border-b border-default/55 pb-6">
-        <div>
-          <p class="text-[0.68rem] font-semibold tracking-[0.26em] text-dimmed uppercase">
-            Ajustes
-          </p>
-          <h2 class="mt-3 text-2xl font-semibold text-highlighted sm:text-[1.9rem]">
-            Perfil
-          </h2>
-        </div>
-
-        <span class="hidden text-[0.72rem] font-medium tracking-[0.14em] text-toned uppercase sm:inline-flex">
-          Cuenta · Contacto · Seguridad
-        </span>
-      </div>
-
+    <section class="space-y-6">
       <div v-if="!initialized" class="space-y-4">
         <USkeleton class="h-11 rounded-2xl" />
         <USkeleton class="h-11 rounded-2xl" />
@@ -290,48 +217,73 @@ onMounted(() => {
         <USkeleton class="h-11 rounded-2xl" />
       </div>
 
-      <div v-else class="space-y-8">
-        <UForm
-          :state="profileState"
-          :schema="profileSchema"
-          :validate-on="[]"
-          class="space-y-6"
-          @submit="submitProfile"
-        >
-          <BaseStatusMessage v-if="profileErrorMessage" :message="profileErrorMessage" />
-          <BaseStatusMessage v-if="profileSuccessMessage" tone="success" :message="profileSuccessMessage" />
-
-          <UsersProfileFields
-            v-model:name="profileState.name"
-            v-model:last-name="profileState.lastName"
-            v-model:phone="profileState.phone"
-            v-model:avatar-url="profileState.avatarUrl"
-            :role-label="roleLabel"
-          />
-
-          <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between pt-2">
-            <span class="text-sm text-toned">
-              Datos visibles y de contacto.
-            </span>
-
-            <BasePrimaryButton
-              type="submit"
-              size="lg"
-              class="vtx-profile-submit px-6"
-              :loading="profileSubmitting"
-              :disabled="!hasProfileChanges"
-            >
-              Guardar perfil
-            </BasePrimaryButton>
+      <div v-else class="space-y-6">
+        <article class="rounded-[1.8rem] border border-default bg-elevated/40 p-5 sm:p-7">
+          <div class="space-y-2 border-b border-default/55 pb-5">
+            <p class="text-[0.68rem] font-semibold tracking-[0.26em] text-dimmed uppercase">
+              Perfil
+            </p>
+            <h2 class="text-2xl font-semibold text-highlighted sm:text-[1.9rem]">
+              Datos personales
+            </h2>
+            <p class="max-w-2xl text-sm leading-relaxed text-toned">
+              Revisa la información visible de tu cuenta y mantén al día tus datos de contacto.
+            </p>
           </div>
-        </UForm>
 
-        <section id="seguridad" class="scroll-mt-28 space-y-6 border-t border-default/55 pt-8">
+          <UForm
+            :state="profileState"
+            :schema="profileSchema"
+            :validate-on="[]"
+            class="space-y-6 pt-6"
+            @submit="submitProfile"
+          >
+            <BaseStatusMessage v-if="profileErrorMessage" :message="profileErrorMessage" />
+            <BaseStatusMessage v-if="profileSuccessMessage" tone="success" :message="profileSuccessMessage" />
+
+            <UsersProfileFields
+              v-model:name="profileState.name"
+              v-model:last-name="profileState.lastName"
+              v-model:phone="profileState.phone"
+              v-model:avatar-url="profileState.avatarUrl"
+            />
+
+            <div class="flex flex-col gap-3 pt-2 sm:flex-row sm:items-center sm:justify-between">
+              <span class="text-sm text-toned">
+                Datos visibles y de contacto.
+              </span>
+
+              <BasePrimaryButton
+                type="submit"
+                size="lg"
+                class="vtx-profile-submit px-6"
+                :loading="profileSubmitting"
+                :disabled="!hasProfileChanges"
+              >
+                Guardar perfil
+              </BasePrimaryButton>
+            </div>
+          </UForm>
+        </article>
+
+        <article id="seguridad" class="scroll-mt-28 rounded-[1.8rem] border border-default bg-elevated/40 p-5 sm:p-7">
+          <div class="space-y-2 border-b border-default/55 pb-5">
+            <p class="text-[0.68rem] font-semibold tracking-[0.26em] text-dimmed uppercase">
+              Seguridad
+            </p>
+            <h2 class="text-2xl font-semibold text-highlighted sm:text-[1.9rem]">
+              Acceso a la cuenta
+            </h2>
+            <p class="max-w-2xl text-sm leading-relaxed text-toned">
+              Cambia tu contrasena y gestiona el cierre de sesion desde el mismo bloque de seguridad.
+            </p>
+          </div>
+
           <UForm
             :state="passwordState"
             :schema="passwordSchema"
             :validate-on="[]"
-            class="space-y-6"
+            class="space-y-6 pt-6"
             @submit="submitPassword"
           >
             <BaseStatusMessage v-if="securityErrorMessage" :message="securityErrorMessage" />
@@ -371,7 +323,7 @@ onMounted(() => {
               </div>
             </div>
           </UForm>
-        </section>
+        </article>
       </div>
     </section>
 
@@ -388,32 +340,3 @@ onMounted(() => {
     </template>
   </UsersSettingsShell>
 </template>
-
-<style scoped>
-.vtx-profile-submit {
-  border: 1px solid rgb(239 170 71 / 0.14);
-  background: linear-gradient(180deg, rgb(239 170 71 / 0.1), rgb(239 170 71 / 0.06));
-  color: rgb(247 249 255);
-  box-shadow:
-    inset 0 1px 0 rgb(255 255 255 / 0.05),
-    0 14px 28px -24px rgb(239 170 71 / 0.42);
-  transition:
-    transform 0.15s ease-out,
-    border-color 0.15s ease-out,
-    background-color 0.15s ease-out,
-    box-shadow 0.15s ease-out,
-    color 0.15s ease-out;
-}
-
-.vtx-profile-submit:hover {
-  border-color: rgb(239 170 71 / 0.22);
-  background: linear-gradient(180deg, rgb(239 170 71 / 0.12), rgb(239 170 71 / 0.08));
-  color: rgb(255 255 255);
-  transform: translateY(-1px);
-  box-shadow: 0 18px 30px -24px rgb(239 170 71 / 0.5);
-}
-
-.vtx-profile-submit:active {
-  transform: translateY(1px);
-}
-</style>

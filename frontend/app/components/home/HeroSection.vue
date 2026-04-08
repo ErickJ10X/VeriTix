@@ -94,7 +94,7 @@ function onSearch() {
 </template>
 
 <style scoped>
-@reference "tailwindcss";
+@reference "@/assets/css/main.css";
 
 .animate-hero-reveal {
   animation: hero-reveal 920ms cubic-bezier(0.22, 1, 0.36, 1) both;

@@ -16,7 +16,7 @@ defineProps<{
 </template>
 
 <style scoped>
-@reference "tailwindcss";
+@reference "@/assets/css/main.css";
 
 .vtx-section-fade::before {
   @apply absolute left-0 right-0 top-0 h-px pointer-events-none;

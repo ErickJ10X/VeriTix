@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { PaginatedResponse, createPaginatedResponse } from '@common/dto';
-import { EventStatus } from '../../generated/prisma/enums';
+import { EventStatus, OrderStatus } from '../../generated/prisma/enums';
 import type { EventWhereInput } from '../../generated/prisma/models';
 import { PrismaService } from '../../prisma/prisma.service';
 
@@ -150,6 +150,61 @@ export type FindAllEventsParams = {
   search?: string;
 };
 
+// ── Analytics types ───────────────────────────────────────────────────────────
+
+export type UpcomingEventRow = {
+  id: string;
+  name: string;
+  eventDate: Date;
+  maxCapacity: number;
+  venue: { name: string; city: string };
+  // Calculado en el service desde los orderItems
+  ticketsSold: number;
+};
+
+export type RequiresAttentionRow = {
+  id: string;
+  name: string;
+  status: EventStatus;
+  eventDate: Date;
+  imageUrl: string | null;
+  formatId: string | null;
+  // Conteos para detectar issues
+  _count: { artists: number; ticketTypes: number };
+  // Para el issue "Sin entradas disponibles"
+  ticketTypes: { availableQuantity: number }[];
+};
+
+export type TopEventRow = {
+  id: string;
+  name: string;
+  eventDate: Date;
+  maxCapacity: number;
+  venue: { name: string; city: string };
+  ticketsSold: number;
+  revenue: number;
+};
+
+export type EventMetricsRaw = {
+  id: string;
+  name: string;
+  status: EventStatus;
+  creatorId: string;
+  maxCapacity: number;
+  ticketTypes: {
+    id: string;
+    name: string;
+    totalQuantity: number;
+    availableQuantity: number;
+    orderItems: {
+      quantity: number;
+      subtotal: unknown; // Prisma Decimal
+      order: { status: string };
+    }[];
+  }[];
+  orders: { status: string }[];
+};
+
 // ── Repository ────────────────────────────────────────────────────────────────
 
 @Injectable()
@@ -268,5 +323,140 @@ export class EventsRepository {
       data: { status },
       select: EVENT_DETAIL_SELECT,
     }) as Promise<EventDetail>;
+  }
+
+  // ── Analytics queries ────────────────────────────────────────────────────
+
+  async findUpcoming(
+    limit: number,
+    creatorId?: string,
+  ): Promise<UpcomingEventRow[]> {
+    const events = await this.prisma.event.findMany({
+      where: {
+        status: EventStatus.PUBLISHED,
+        eventDate: { gte: new Date() },
+        ...(creatorId !== undefined ? { creatorId } : {}),
+      },
+      select: {
+        id: true,
+        name: true,
+        eventDate: true,
+        maxCapacity: true,
+        venue: { select: { name: true, city: true } },
+        orders: {
+          where: { status: OrderStatus.COMPLETED },
+          select: {
+            items: { select: { quantity: true } },
+          },
+        },
+      },
+      orderBy: { eventDate: 'asc' },
+      take: limit,
+    });
+
+    return events.map((e) => ({
+      id: e.id,
+      name: e.name,
+      eventDate: e.eventDate,
+      maxCapacity: e.maxCapacity,
+      venue: e.venue,
+      ticketsSold: e.orders.reduce(
+        (sum, o) => sum + o.items.reduce((s, i) => s + i.quantity, 0),
+        0,
+      ),
+    }));
+  }
+
+  async findRequiresAttention(
+    creatorId?: string,
+  ): Promise<RequiresAttentionRow[]> {
+    return this.prisma.event.findMany({
+      where: {
+        status: { in: [EventStatus.PUBLISHED, EventStatus.DRAFT] },
+        ...(creatorId !== undefined ? { creatorId } : {}),
+      },
+      select: {
+        id: true,
+        name: true,
+        status: true,
+        eventDate: true,
+        imageUrl: true,
+        formatId: true,
+        _count: { select: { artists: true, ticketTypes: true } },
+        ticketTypes: { select: { availableQuantity: true } },
+      },
+      orderBy: { eventDate: 'asc' },
+      take: 50,
+    }) as Promise<RequiresAttentionRow[]>;
+  }
+
+  async findTopEvents(limit: number): Promise<TopEventRow[]> {
+    // Prisma no soporta ORDER BY sobre un campo agregado de relación,
+    // así que traemos los datos y ordenamos en memoria.
+    // El take(limit * 4) garantiza margen para eventos sin ventas.
+    const events = await this.prisma.event.findMany({
+      select: {
+        id: true,
+        name: true,
+        eventDate: true,
+        maxCapacity: true,
+        venue: { select: { name: true, city: true } },
+        orders: {
+          where: { status: OrderStatus.COMPLETED },
+          select: {
+            items: {
+              select: { quantity: true, subtotal: true },
+            },
+          },
+        },
+      },
+      orderBy: { eventDate: 'desc' },
+      take: limit * 4,
+    });
+
+    const mapped = events.map((e) => {
+      let ticketsSold = 0;
+      let revenue = 0;
+      for (const order of e.orders) {
+        for (const item of order.items) {
+          ticketsSold += item.quantity;
+          revenue += Number(item.subtotal);
+        }
+      }
+      return { id: e.id, name: e.name, eventDate: e.eventDate, maxCapacity: e.maxCapacity, venue: e.venue, ticketsSold, revenue };
+    });
+
+    return mapped
+      .sort((a, b) => b.ticketsSold - a.ticketsSold)
+      .slice(0, limit);
+  }
+
+  findMetricsById(id: string): Promise<EventMetricsRaw | null> {
+    return this.prisma.event.findUnique({
+      where: { id },
+      select: {
+        id: true,
+        name: true,
+        status: true,
+        creatorId: true,
+        maxCapacity: true,
+        ticketTypes: {
+          select: {
+            id: true,
+            name: true,
+            totalQuantity: true,
+            availableQuantity: true,
+            orderItems: {
+              select: {
+                quantity: true,
+                subtotal: true,
+                order: { select: { status: true } },
+              },
+            },
+          },
+        },
+        orders: { select: { status: true } },
+      },
+    }) as Promise<EventMetricsRaw | null>;
   }
 }

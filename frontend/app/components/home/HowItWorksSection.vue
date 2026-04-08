@@ -75,7 +75,7 @@ const steps = [
 </template>
 
 <style scoped>
-@reference "tailwindcss";
+@reference "@/assets/css/main.css";
 
 .vtx-flow-grid {
   @apply relative;

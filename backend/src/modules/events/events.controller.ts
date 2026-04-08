@@ -30,7 +30,13 @@ import {
   CreateEventDto,
   EventDetailResponseDto,
   EventListResponseDto,
+  EventMetricsResponseDto,
   EventQueryDto,
+  RequiresAttentionResponseDto,
+  TopEventResponseDto,
+  TopEventsQueryDto,
+  UpcomingEventResponseDto,
+  UpcomingQueryDto,
   UpdateEventDto,
 } from './dto';
 import { EventsService } from './events.service';
@@ -65,7 +71,8 @@ export class EventsController {
     return this.eventsService.findAll(query);
   }
 
-  // IMPORTANT: my-events MUST be defined before :id to avoid route conflict
+  // IMPORTANT: static routes MUST be defined before :id to avoid route conflict
+
   @Get('my-events')
   @ApiBearerAuth('access-token')
   @ApiOperation({ summary: 'Listar mis eventos (todos los estados, autenticado)' })
@@ -75,6 +82,44 @@ export class EventsController {
     @Query() query: PaginationQueryDto,
   ) {
     return this.eventsService.findMyEvents(user.sub, query.page, query.limit);
+  }
+
+  @Get('upcoming')
+  @Roles(Role.ADMIN, Role.CREATOR)
+  @ApiBearerAuth('access-token')
+  @ApiOperation({
+    summary: 'Próximos eventos publicados (admin: todos, creator: los suyos)',
+  })
+  @ApiOkResponse({ type: [UpcomingEventResponseDto] })
+  getUpcoming(
+    @CurrentUser() user: JwtPayload,
+    @Query() query: UpcomingQueryDto,
+  ): Promise<UpcomingEventResponseDto[]> {
+    return this.eventsService.getUpcoming(user, query);
+  }
+
+  @Get('requires-attention')
+  @Roles(Role.ADMIN, Role.CREATOR)
+  @ApiBearerAuth('access-token')
+  @ApiOperation({
+    summary: 'Eventos con problemas (sin imagen, artistas, ticket types, etc.)',
+  })
+  @ApiOkResponse({ type: [RequiresAttentionResponseDto] })
+  getRequiresAttention(
+    @CurrentUser() user: JwtPayload,
+  ): Promise<RequiresAttentionResponseDto[]> {
+    return this.eventsService.getRequiresAttention(user);
+  }
+
+  @Get('top-events')
+  @Roles(Role.ADMIN)
+  @ApiBearerAuth('access-token')
+  @ApiOperation({ summary: 'Eventos más populares por tickets vendidos (solo admin)' })
+  @ApiOkResponse({ type: [TopEventResponseDto] })
+  getTopEvents(
+    @Query() query: TopEventsQueryDto,
+  ): Promise<TopEventResponseDto[]> {
+    return this.eventsService.getTopEvents(query);
   }
 
   @Get(':id')
@@ -120,6 +165,22 @@ export class EventsController {
   @ApiForbiddenResponse({ description: 'Acceso restringido a administradores.' })
   cancel(@Param('id', ParseUUIDPipe) id: string): Promise<void> {
     return this.eventsService.cancel(id);
+  }
+
+  @Get(':id/metrics')
+  @Roles(Role.ADMIN, Role.CREATOR)
+  @ApiBearerAuth('access-token')
+  @ApiOperation({
+    summary: 'Métricas de un evento (admin: cualquiera, creator: el suyo)',
+  })
+  @ApiOkResponse({ type: EventMetricsResponseDto })
+  @ApiNotFoundResponse({ description: 'Evento no encontrado.' })
+  @ApiForbiddenResponse({ description: 'No tenés permiso para ver las métricas de este evento.' })
+  getEventMetrics(
+    @Param('id', ParseUUIDPipe) id: string,
+    @CurrentUser() user: JwtPayload,
+  ): Promise<EventMetricsResponseDto> {
+    return this.eventsService.getEventMetrics(id, user);
   }
 
   @Post(':id/publish')
