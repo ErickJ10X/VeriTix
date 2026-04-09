@@ -1,9 +1,17 @@
 import { ConflictException, NotFoundException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
+import { CacheService } from '../../cache';
 import { VenueType } from '../../generated/prisma/enums';
 import { CreateVenueDto, UpdateVenueDto, VenueQueryDto } from './dto';
 import { VenuesRepository } from './venues.repository';
 import { VenuesService } from './venues.service';
+
+const mockCacheService = {
+  getOrSet: jest.fn((_k: string, fn: () => any) => fn()),
+  get: jest.fn(),
+  set: jest.fn(),
+  del: jest.fn(),
+};
 
 // ── Mock data ────────────────────────────────────────────────────────────────
 
@@ -44,6 +52,7 @@ describe('VenuesService', () => {
       providers: [
         VenuesService,
         { provide: VenuesRepository, useValue: mockRepo },
+        { provide: CacheService, useValue: mockCacheService },
       ],
     }).compile();
 

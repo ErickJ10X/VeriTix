@@ -1,8 +1,9 @@
-import { ConflictException, UnauthorizedException } from '@nestjs/common';
+import { ConflictException, ForbiddenException, UnauthorizedException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import * as bcrypt from 'bcryptjs';
 import { User } from '../../generated/prisma/client';
 import { Role } from '../../generated/prisma/enums';
+import { NotificationsService } from '../notifications/notifications.service';
 import { AuthRepository } from './auth.repository';
 import { AuthService } from './auth.service';
 import { LoginDto } from './dto/login.dto';
@@ -24,9 +25,11 @@ const mockUser: User = {
   role: Role.BUYER,
   avatarUrl: null,
   isActive: true,
-  emailVerified: false,
+  emailVerified: true,
   resetToken: null,
   resetTokenExp: null,
+  verificationToken: null,
+  verificationTokenExp: null,
   createdAt: new Date(),
   updatedAt: new Date(),
 };
@@ -42,6 +45,7 @@ describe('AuthService', () => {
   let service: AuthService;
   let authRepository: jest.Mocked<AuthRepository>;
   let jwtTokenService: jest.Mocked<JwtTokenService>;
+  let notificationsService: jest.Mocked<NotificationsService>;
 
   beforeEach(async () => {
     const mockAuthRepository: jest.Mocked<AuthRepository> = {
@@ -53,6 +57,9 @@ describe('AuthService', () => {
       findRefreshToken: jest.fn(),
       deleteRefreshToken: jest.fn(),
       deleteAllUserRefreshTokens: jest.fn(),
+      saveVerificationToken: jest.fn().mockResolvedValue(undefined),
+      findByVerificationToken: jest.fn(),
+      markEmailVerified: jest.fn().mockResolvedValue(undefined),
     } as any;
 
     const mockJwtTokenService = {
@@ -64,17 +71,26 @@ describe('AuthService', () => {
       },
     };
 
+    const mockNotificationsService: jest.Mocked<NotificationsService> = {
+      sendVerificationEmail: jest.fn().mockResolvedValue(undefined),
+      sendOrderConfirmation: jest.fn().mockResolvedValue(undefined),
+      sendRefundNotification: jest.fn().mockResolvedValue(undefined),
+      sendEventReminder: jest.fn().mockResolvedValue(undefined),
+    } as any;
+
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         AuthService,
         { provide: AuthRepository, useValue: mockAuthRepository },
         { provide: JwtTokenService, useValue: mockJwtTokenService },
+        { provide: NotificationsService, useValue: mockNotificationsService },
       ],
     }).compile();
 
     service = module.get<AuthService>(AuthService);
     authRepository = module.get(AuthRepository);
     jwtTokenService = module.get(JwtTokenService);
+    notificationsService = module.get(NotificationsService);
   });
 
   afterEach(() => {
@@ -90,13 +106,10 @@ describe('AuthService', () => {
       phone: '+525512345678',
     };
 
-    it('registers successfully — hashes password, creates user, returns tokens', async () => {
+    it('registers successfully — hashes password, saves token, sends email, returns message', async () => {
       authRepository.emailExists.mockResolvedValue(false);
       (bcrypt.hash as jest.Mock).mockResolvedValue('hashed-password');
       authRepository.create.mockResolvedValue(mockUser);
-      authRepository.createRefreshToken.mockResolvedValue(
-        mockStoredToken as any,
-      );
 
       const result = await service.register(dto);
 
@@ -111,18 +124,17 @@ describe('AuthService', () => {
           phone: dto.phone,
         }),
       );
-      expect(result).toMatchObject({
-        accessToken: 'access-token',
-        refreshToken: 'refresh-token',
-        user: {
-          id: mockUser.id,
-          email: mockUser.email,
-          name: mockUser.name,
-          lastName: mockUser.lastName,
-          role: mockUser.role,
-          avatarUrl: mockUser.avatarUrl,
-        },
-      });
+      expect(authRepository.saveVerificationToken).toHaveBeenCalledWith(
+        mockUser.id,
+        expect.any(String),
+        expect.any(Date),
+      );
+      expect(notificationsService.sendVerificationEmail).toHaveBeenCalledWith(
+        mockUser.email,
+        mockUser.name,
+        expect.any(String),
+      );
+      expect(result).toEqual({ message: 'Revisá tu email para verificar tu cuenta' });
     });
 
     it('throws ConflictException if email already exists', async () => {
@@ -180,6 +192,14 @@ describe('AuthService', () => {
       (bcrypt.compare as jest.Mock).mockResolvedValue(true);
 
       await expect(service.login(dto)).rejects.toThrow(UnauthorizedException);
+    });
+
+    it('throws ForbiddenException if emailVerified is false', async () => {
+      const unverifiedUser: User = { ...mockUser, emailVerified: false };
+      authRepository.findByEmail.mockResolvedValue(unverifiedUser);
+      (bcrypt.compare as jest.Mock).mockResolvedValue(true);
+
+      await expect(service.login(dto)).rejects.toThrow(ForbiddenException);
     });
   });
 
@@ -263,6 +283,44 @@ describe('AuthService', () => {
       await expect(service.refresh(refreshToken)).rejects.toThrow(
         UnauthorizedException,
       );
+    });
+  });
+
+  describe('verifyEmail()', () => {
+    const token = 'valid-uuid-token';
+    const userWithToken: User = {
+      ...mockUser,
+      emailVerified: false,
+      verificationToken: token,
+      verificationTokenExp: new Date(Date.now() + 60_000),
+    };
+
+    it('verifies email — marks user as verified and returns message', async () => {
+      authRepository.findByVerificationToken.mockResolvedValue(userWithToken);
+
+      const result = await service.verifyEmail(token);
+
+      expect(authRepository.findByVerificationToken).toHaveBeenCalledWith(token);
+      expect(authRepository.markEmailVerified).toHaveBeenCalledWith(mockUser.id);
+      expect(result).toEqual({ message: 'Email verificado correctamente' });
+    });
+
+    it('throws UnauthorizedException if token not found', async () => {
+      authRepository.findByVerificationToken.mockResolvedValue(null);
+
+      await expect(service.verifyEmail(token)).rejects.toThrow(UnauthorizedException);
+      expect(authRepository.markEmailVerified).not.toHaveBeenCalled();
+    });
+
+    it('throws UnauthorizedException if token is expired', async () => {
+      const expiredUser: User = {
+        ...userWithToken,
+        verificationTokenExp: new Date(Date.now() - 1_000),
+      };
+      authRepository.findByVerificationToken.mockResolvedValue(expiredUser);
+
+      await expect(service.verifyEmail(token)).rejects.toThrow(UnauthorizedException);
+      expect(authRepository.markEmailVerified).not.toHaveBeenCalled();
     });
   });
 

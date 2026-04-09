@@ -3,12 +3,20 @@ import {
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
+import {
+  CACHE_KEYS,
+  CACHE_TTL_LONG,
+  CacheService,
+} from '../../cache';
 import { CreateGenreDto, GenreResponseDto, UpdateGenreDto } from './dto';
 import { GenresRepository } from './genres.repository';
 
 @Injectable()
 export class GenresService {
-  constructor(private readonly genresRepository: GenresRepository) {}
+  constructor(
+    private readonly genresRepository: GenresRepository,
+    private readonly cache: CacheService,
+  ) {}
 
   async create(dto: CreateGenreDto): Promise<GenreResponseDto> {
     const existingSlug = await this.genresRepository.findBySlug(dto.slug);
@@ -22,12 +30,16 @@ export class GenresService {
     }
 
     const created = await this.genresRepository.create(dto);
+    await this.cache.del(CACHE_KEYS.GENRES_LIST);
     return created as GenreResponseDto;
   }
 
   async findAll(): Promise<GenreResponseDto[]> {
-    const genres = await this.genresRepository.findAll();
-    return genres as GenreResponseDto[];
+    return this.cache.getOrSet(
+      CACHE_KEYS.GENRES_LIST,
+      () => this.genresRepository.findAll(),
+      CACHE_TTL_LONG,
+    ) as Promise<GenreResponseDto[]>;
   }
 
   async findOne(id: string): Promise<GenreResponseDto> {
@@ -55,6 +67,7 @@ export class GenresService {
     }
 
     const updated = await this.genresRepository.update(id, dto);
+    await this.cache.del(CACHE_KEYS.GENRES_LIST);
     return updated as GenreResponseDto;
   }
 
@@ -63,5 +76,6 @@ export class GenresService {
     if (!genre) throw new NotFoundException('Género no encontrado');
 
     await this.genresRepository.delete(id);
+    await this.cache.del(CACHE_KEYS.GENRES_LIST);
   }
 }

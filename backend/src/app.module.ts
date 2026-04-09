@@ -3,6 +3,7 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { APP_GUARD } from '@nestjs/core';
 import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
 import { LoggerModule } from 'nestjs-pino';
+import { AppCacheModule } from './cache';
 import { envValidationSchema } from './config/env.validation';
 import { AuthModule } from './modules/auth/auth.module';
 import { UsersModule } from './modules/users/users.module';
@@ -11,6 +12,11 @@ import { ConcertFormatsModule } from './modules/concert-formats/concert-formats.
 import { GenresModule } from './modules/genres/genres.module';
 import { VenuesModule } from './modules/venues/venues.module';
 import { EventsModule } from './modules/events/events.module';
+import { OrdersModule } from './modules/orders/orders.module';
+import { TicketsModule } from './modules/tickets/tickets.module';
+import { WebhooksModule } from './modules/webhooks/webhooks.module';
+import { NotificationsModule } from './modules/notifications/notifications.module';
+import { QueuesModule } from './modules/queues/queues.module';
 import { PrismaModule } from './prisma/prisma.module';
 
 @Module({
@@ -40,11 +46,17 @@ import { PrismaModule } from './prisma/prisma.module';
         },
       ],
     }),
+    AppCacheModule,
     PrismaModule,
+    NotificationsModule,
+    QueuesModule,
     AuthModule,
     UsersModule,
     VenuesModule,
     EventsModule,
+    OrdersModule,
+    TicketsModule,
+    WebhooksModule,
     GenresModule,
     ConcertFormatsModule,
     ArtistsModule,
