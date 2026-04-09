@@ -16,7 +16,7 @@ export class NotificationsService implements OnModuleInit {
 
   onModuleInit() {
     const apiKey = this.config.get<string>('RESEND_API_KEY');
-    this.fromEmail = this.config.get<string>('RESEND_FROM_EMAIL') ?? '';
+    this.fromEmail = this.config.get<string>('EMAIL_FROM') ?? '';
     this.resend = new Resend(apiKey);
   }
 
