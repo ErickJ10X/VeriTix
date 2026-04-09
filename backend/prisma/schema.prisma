@@ -27,6 +27,7 @@ enum TicketStatus {
   ACTIVE
   USED
   CANCELLED
+  REFUNDED
 }
 
 enum OrderStatus {

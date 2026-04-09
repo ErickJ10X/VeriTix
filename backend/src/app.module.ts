@@ -12,6 +12,7 @@ import { GenresModule } from './modules/genres/genres.module';
 import { VenuesModule } from './modules/venues/venues.module';
 import { EventsModule } from './modules/events/events.module';
 import { OrdersModule } from './modules/orders/orders.module';
+import { TicketsModule } from './modules/tickets/tickets.module';
 import { WebhooksModule } from './modules/webhooks/webhooks.module';
 import { PrismaModule } from './prisma/prisma.module';
 
@@ -48,6 +49,7 @@ import { PrismaModule } from './prisma/prisma.module';
     VenuesModule,
     EventsModule,
     OrdersModule,
+    TicketsModule,
     WebhooksModule,
     GenresModule,
     ConcertFormatsModule,

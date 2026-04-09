@@ -32,6 +32,9 @@ const mockPrismaService = {
   ticketType: {
     update: jest.fn(),
   },
+  ticket: {
+    updateMany: jest.fn(),
+  },
   $transaction: jest.fn(),
 };
 
@@ -331,6 +334,7 @@ describe('StripeWebhookService', () => {
           ticketType: { update: jest.fn() },
           payment: { update: jest.fn() },
           order: { update: jest.fn() },
+          ticket: { updateMany: jest.fn() },
         };
         return cb(tx);
       });
@@ -363,6 +367,7 @@ describe('StripeWebhookService', () => {
           ticketType: { update: txTicketUpdate },
           payment: { update: jest.fn() },
           order: { update: jest.fn() },
+          ticket: { updateMany: jest.fn() },
         };
         return cb(tx);
       });
@@ -386,6 +391,7 @@ describe('StripeWebhookService', () => {
           ticketType: { update: jest.fn() },
           payment: { update: jest.fn() },
           order: { update: txOrderUpdate },
+          ticket: { updateMany: jest.fn() },
         };
         return cb(tx);
       });
@@ -395,6 +401,26 @@ describe('StripeWebhookService', () => {
       expect(txOrderUpdate).toHaveBeenCalledWith({
         where: { id: 'uuid-order-1' },
         data: { status: OrderStatus.REFUNDED },
+      });
+    });
+
+    it('should mark all tickets of the order as REFUNDED inside transaction', async () => {
+      const txTicketUpdateMany = jest.fn();
+      prisma.$transaction.mockImplementation(async (cb: any) => {
+        const tx = {
+          ticketType: { update: jest.fn() },
+          payment: { update: jest.fn() },
+          order: { update: jest.fn() },
+          ticket: { updateMany: txTicketUpdateMany },
+        };
+        return cb(tx);
+      });
+
+      await service.handleChargeRefunded(chargeData);
+
+      expect(txTicketUpdateMany).toHaveBeenCalledWith({
+        where: { orderId: 'uuid-order-1' },
+        data: { status: 'REFUNDED' },
       });
     });
 
