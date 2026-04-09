@@ -15,6 +15,8 @@ import { EventsModule } from './modules/events/events.module';
 import { OrdersModule } from './modules/orders/orders.module';
 import { TicketsModule } from './modules/tickets/tickets.module';
 import { WebhooksModule } from './modules/webhooks/webhooks.module';
+import { NotificationsModule } from './modules/notifications/notifications.module';
+import { QueuesModule } from './modules/queues/queues.module';
 import { PrismaModule } from './prisma/prisma.module';
 
 @Module({
@@ -46,6 +48,8 @@ import { PrismaModule } from './prisma/prisma.module';
     }),
     AppCacheModule,
     PrismaModule,
+    NotificationsModule,
+    QueuesModule,
     AuthModule,
     UsersModule,
     VenuesModule,

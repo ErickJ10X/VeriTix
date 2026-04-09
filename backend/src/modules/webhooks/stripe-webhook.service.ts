@@ -1,6 +1,8 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { OrderStatus, PaymentStatus, TicketStatus } from '../../generated/prisma/enums';
 import { PrismaService } from '../../prisma/prisma.service';
+import { NotificationsService } from '../notifications/notifications.service';
+import { ReminderScheduler } from '../queues/reminder.scheduler';
 import { TicketsGenerator } from '../tickets/tickets.generator';
 
 // ── Tipos internos ────────────────────────────────────────────────────────────
@@ -34,6 +36,8 @@ export class StripeWebhookService {
   constructor(
     private readonly prisma: PrismaService,
     private readonly ticketsGenerator: TicketsGenerator,
+    private readonly notificationsService: NotificationsService,
+    private readonly reminderScheduler: ReminderScheduler,
   ) {}
 
   // ── checkout.session.completed ───────────────────────────────────────────
@@ -78,6 +82,50 @@ export class StripeWebhookService {
     this.logger.log(
       `Order ${payment.orderId} COMPLETED — tickets generados (session ${data.id})`,
     );
+
+    // Notificaciones fuera de la transacción — no deben hacer fallar el webhook
+    try {
+      const order = await this.prisma.order.findUnique({
+        where: { id: payment.orderId },
+        select: {
+          totalAmount: true,
+          buyer: { select: { email: true, name: true } },
+          event: {
+            select: {
+              name: true,
+              eventDate: true,
+              venue: { select: { name: true } },
+            },
+          },
+          _count: { select: { tickets: true } },
+        },
+      });
+
+      if (order) {
+        const { buyer, event, totalAmount, _count } = order;
+        await this.notificationsService.sendOrderConfirmation(
+          buyer.email,
+          buyer.name,
+          payment.orderId,
+          event.name,
+          totalAmount.toNumber(),
+          _count.tickets,
+        );
+        await this.reminderScheduler.scheduleReminders(
+          payment.orderId,
+          buyer.email,
+          buyer.name,
+          event.name,
+          event.eventDate,
+          event.venue.name,
+        );
+      }
+    } catch (error) {
+      this.logger.error(
+        `Error enviando notificaciones para order ${payment.orderId}`,
+        error,
+      );
+    }
   }
 
   // ── checkout.session.expired ─────────────────────────────────────────────

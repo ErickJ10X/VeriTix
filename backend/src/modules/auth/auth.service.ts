@@ -1,11 +1,13 @@
 import {
   ConflictException,
+  ForbiddenException,
   Injectable,
   UnauthorizedException,
 } from '@nestjs/common';
 import * as bcrypt from 'bcryptjs';
 import { randomUUID } from 'crypto';
 import { User } from '../../generated/prisma/client';
+import { NotificationsService } from '../notifications/notifications.service';
 import { AuthRepository } from './auth.repository';
 import { AuthResponseDto, AuthUserDto } from './dto/auth-response.dto';
 import { LoginDto } from './dto/login.dto';
@@ -22,9 +24,10 @@ export class AuthService {
   constructor(
     private readonly authRepository: AuthRepository,
     private readonly jwtTokenService: JwtTokenService,
+    private readonly notificationsService: NotificationsService,
   ) {}
 
-  async register(dto: RegisterDto): Promise<AuthResponseDto & TokenPair> {
+  async register(dto: RegisterDto): Promise<{ message: string }> {
     const exists = await this.authRepository.emailExists(dto.email);
     if (exists) {
       throw new ConflictException('El correo electrónico ya está registrado');
@@ -39,7 +42,12 @@ export class AuthService {
       phone: dto.phone,
     });
 
-    return this.buildTokenPair(user);
+    const token = randomUUID();
+    const exp = new Date(Date.now() + 24 * 60 * 60 * 1000);
+    await this.authRepository.saveVerificationToken(user.id, token, exp);
+    await this.notificationsService.sendVerificationEmail(user.email, user.name, token);
+
+    return { message: 'Revisá tu email para verificar tu cuenta' };
   }
 
   async login(dto: LoginDto): Promise<AuthResponseDto & TokenPair> {
@@ -53,7 +61,23 @@ export class AuthService {
       throw new UnauthorizedException('La cuenta está inactiva');
     }
 
+    if (!user.emailVerified) {
+      throw new ForbiddenException('Debés verificar tu email antes de iniciar sesión');
+    }
+
     return this.buildTokenPair(user);
+  }
+
+  async verifyEmail(token: string): Promise<{ message: string }> {
+    const user = await this.authRepository.findByVerificationToken(token);
+
+    if (!user || !user.verificationTokenExp || user.verificationTokenExp < new Date()) {
+      throw new UnauthorizedException('El token de verificación es inválido o expiró');
+    }
+
+    await this.authRepository.markEmailVerified(user.id);
+
+    return { message: 'Email verificado correctamente' };
   }
 
   async refresh(refreshToken: string): Promise<AuthResponseDto & TokenPair> {

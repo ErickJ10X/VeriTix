@@ -66,4 +66,32 @@ export class AuthRepository {
   deleteAllUserRefreshTokens(userId: string): Promise<{ count: number }> {
     return this.prisma.refreshToken.deleteMany({ where: { userId } });
   }
+
+  // ── Verificación de email ─────────────────────────────────────────────────
+
+  saveVerificationToken(userId: string, token: string, exp: Date): Promise<void> {
+    return this.prisma.user
+      .update({
+        where: { id: userId },
+        data: { verificationToken: token, verificationTokenExp: exp },
+      })
+      .then(() => undefined);
+  }
+
+  findByVerificationToken(token: string): Promise<User | null> {
+    return this.prisma.user.findFirst({ where: { verificationToken: token } });
+  }
+
+  markEmailVerified(userId: string): Promise<void> {
+    return this.prisma.user
+      .update({
+        where: { id: userId },
+        data: {
+          emailVerified: true,
+          verificationToken: null,
+          verificationTokenExp: null,
+        },
+      })
+      .then(() => undefined);
+  }
 }
