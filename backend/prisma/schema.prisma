@@ -68,8 +68,10 @@ model User {
   isActive      Boolean   @default(true) @map("is_active")
   emailVerified Boolean   @default(false) @map("email_verified")
   resetToken    String?   @map("reset_token")
-  resetTokenExp DateTime? @map("reset_token_exp")
-  createdAt     DateTime  @default(now()) @map("created_at")
+  resetTokenExp        DateTime? @map("reset_token_exp")
+  verificationToken    String?   @map("verification_token")
+  verificationTokenExp DateTime? @map("verification_token_exp")
+  createdAt            DateTime  @default(now()) @map("created_at")
   updatedAt     DateTime  @updatedAt @map("updated_at")
 
   events           Event[]         @relation("CreatorEvents")
