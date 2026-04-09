@@ -263,5 +263,32 @@ export class StripeWebhookService {
     this.logger.log(
       `Order ${payment.orderId} marcada REFUNDED — tickets invalidados (intent ${data.payment_intent})`,
     );
+
+    // Notificaciones fuera de la transacción — no deben hacer fallar el webhook
+    try {
+      const order = await this.prisma.order.findUnique({
+        where: { id: payment.orderId },
+        select: {
+          totalAmount: true,
+          buyer: { select: { email: true, name: true } },
+          event: { select: { name: true } },
+        },
+      });
+
+      if (order) {
+        await this.notificationsService.sendRefundNotification(
+          order.buyer.email,
+          order.buyer.name,
+          payment.orderId,
+          order.event.name,
+          order.totalAmount.toNumber(),
+        );
+      }
+    } catch (error) {
+      this.logger.error(
+        `Error enviando notificación de reembolso para order ${payment.orderId}`,
+        error,
+      );
+    }
   }
 }

@@ -1,6 +1,8 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { OrderStatus, PaymentStatus } from '../../generated/prisma/enums';
 import { PrismaService } from '../../prisma/prisma.service';
+import { NotificationsService } from '../notifications/notifications.service';
+import { ReminderScheduler } from '../queues/reminder.scheduler';
 import { TicketsGenerator } from '../tickets/tickets.generator';
 import { StripeWebhookService } from './stripe-webhook.service';
 
@@ -9,6 +11,23 @@ import { StripeWebhookService } from './stripe-webhook.service';
 const mockPayment = {
   id: 'uuid-payment-1',
   orderId: 'uuid-order-1',
+};
+
+const mockOrderForConfirmation = {
+  totalAmount: { toNumber: () => 5000 },
+  buyer: { email: 'buyer@test.com', name: 'Test Buyer' },
+  event: {
+    name: 'Test Event',
+    eventDate: new Date('2026-12-01T20:00:00Z'),
+    venue: { name: 'Test Venue' },
+  },
+  _count: { tickets: 2 },
+};
+
+const mockOrderForRefund = {
+  totalAmount: { toNumber: () => 5000 },
+  buyer: { email: 'buyer@test.com', name: 'Test Buyer' },
+  event: { name: 'Test Event' },
 };
 
 const mockOrderItems = [
@@ -24,6 +43,7 @@ const mockPrismaService = {
     update: jest.fn(),
   },
   order: {
+    findUnique: jest.fn(),
     update: jest.fn(),
   },
   orderItem: {
@@ -42,6 +62,15 @@ const mockTicketsGenerator = {
   generateForOrder: jest.fn(),
 };
 
+const mockNotificationsService = {
+  sendOrderConfirmation: jest.fn(),
+  sendRefundNotification: jest.fn(),
+};
+
+const mockReminderScheduler = {
+  scheduleReminders: jest.fn(),
+};
+
 // ── Suite ─────────────────────────────────────────────────────────────────────
 
 describe('StripeWebhookService', () => {
@@ -55,6 +84,8 @@ describe('StripeWebhookService', () => {
         StripeWebhookService,
         { provide: PrismaService, useValue: mockPrismaService },
         { provide: TicketsGenerator, useValue: mockTicketsGenerator },
+        { provide: NotificationsService, useValue: mockNotificationsService },
+        { provide: ReminderScheduler, useValue: mockReminderScheduler },
       ],
     }).compile();
 
@@ -80,7 +111,10 @@ describe('StripeWebhookService', () => {
       prisma.payment.findUnique.mockResolvedValue(mockPayment);
       prisma.payment.update.mockResolvedValue({});
       prisma.order.update.mockResolvedValue({});
+      prisma.order.findUnique.mockResolvedValue(mockOrderForConfirmation);
       mockTicketsGenerator.generateForOrder.mockResolvedValue(undefined);
+      mockNotificationsService.sendOrderConfirmation.mockResolvedValue(undefined);
+      mockReminderScheduler.scheduleReminders.mockResolvedValue(undefined);
       // $transaction callback — ejecuta con tx mock
       prisma.$transaction.mockImplementation(async (cb: any) => {
         const tx = {
@@ -131,6 +165,49 @@ describe('StripeWebhookService', () => {
         where: { id: 'uuid-order-1' },
         data: { status: OrderStatus.COMPLETED },
       });
+    });
+
+    it('should send order confirmation email after transaction', async () => {
+      await service.handleCheckoutSessionCompleted(sessionData);
+
+      expect(prisma.order.findUnique).toHaveBeenCalledWith({
+        where: { id: 'uuid-order-1' },
+        select: expect.objectContaining({
+          buyer: expect.any(Object),
+          event: expect.any(Object),
+          _count: expect.any(Object),
+        }),
+      });
+      expect(mockNotificationsService.sendOrderConfirmation).toHaveBeenCalledWith(
+        'buyer@test.com',
+        'Test Buyer',
+        'uuid-order-1',
+        'Test Event',
+        5000,
+        2,
+      );
+    });
+
+    it('should schedule reminders after transaction', async () => {
+      await service.handleCheckoutSessionCompleted(sessionData);
+
+      expect(mockReminderScheduler.scheduleReminders).toHaveBeenCalledWith(
+        'uuid-order-1',
+        'buyer@test.com',
+        'Test Buyer',
+        'Test Event',
+        mockOrderForConfirmation.event.eventDate,
+        'Test Venue',
+      );
+    });
+
+    it('should not fail webhook if notification throws', async () => {
+      mockNotificationsService.sendOrderConfirmation.mockRejectedValue(
+        new Error('Resend error'),
+      );
+
+      await expect(service.handleCheckoutSessionCompleted(sessionData)).resolves.toBeUndefined();
+      expect(prisma.$transaction).toHaveBeenCalled();
     });
 
     it('should do nothing if Payment not found (idempotent)', async () => {
@@ -329,6 +406,8 @@ describe('StripeWebhookService', () => {
     beforeEach(() => {
       prisma.payment.findUnique.mockResolvedValue(mockPayment);
       prisma.orderItem.findMany.mockResolvedValue(mockOrderItems);
+      prisma.order.findUnique.mockResolvedValue(mockOrderForRefund);
+      mockNotificationsService.sendRefundNotification.mockResolvedValue(undefined);
       prisma.$transaction.mockImplementation(async (cb: any) => {
         const tx = {
           ticketType: { update: jest.fn() },
@@ -422,6 +501,34 @@ describe('StripeWebhookService', () => {
         where: { orderId: 'uuid-order-1' },
         data: { status: 'REFUNDED' },
       });
+    });
+
+    it('should send refund notification email after transaction', async () => {
+      await service.handleChargeRefunded(chargeData);
+
+      expect(prisma.order.findUnique).toHaveBeenCalledWith({
+        where: { id: 'uuid-order-1' },
+        select: expect.objectContaining({
+          buyer: expect.any(Object),
+          event: expect.any(Object),
+        }),
+      });
+      expect(mockNotificationsService.sendRefundNotification).toHaveBeenCalledWith(
+        'buyer@test.com',
+        'Test Buyer',
+        'uuid-order-1',
+        'Test Event',
+        5000,
+      );
+    });
+
+    it('should not fail webhook if refund notification throws', async () => {
+      mockNotificationsService.sendRefundNotification.mockRejectedValue(
+        new Error('Resend error'),
+      );
+
+      await expect(service.handleChargeRefunded(chargeData)).resolves.toBeUndefined();
+      expect(prisma.$transaction).toHaveBeenCalled();
     });
 
     it('should do nothing when payment_intent is null', async () => {
