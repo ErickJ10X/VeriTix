@@ -40,8 +40,13 @@ async function bootstrap() {
   const apiPrefix = config.get<string>('API_PREFIX', 'api/v1');
   app.setGlobalPrefix(apiPrefix);
 
+  const allowedOrigins = [
+    config.get<string>('FRONTEND_URL'),
+    config.get<string>('CORS_EXTRA_ORIGIN'),
+  ].filter(Boolean) as string[];
+
   app.enableCors({
-    origin: config.get<string>('FRONTEND_URL'),
+    origin: allowedOrigins,
     credentials: true, // necesario para que el navegador envíe las cookies HTTP-only
   });
 
