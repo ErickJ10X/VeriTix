@@ -4,6 +4,11 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import {
+  CACHE_KEYS,
+  CACHE_TTL_LONG,
+  CacheService,
+} from '../../cache';
+import {
   ConcertFormatResponseDto,
   CreateConcertFormatDto,
   UpdateConcertFormatDto,
@@ -14,6 +19,7 @@ import { ConcertFormatsRepository } from './concert-formats.repository';
 export class ConcertFormatsService {
   constructor(
     private readonly concertFormatsRepository: ConcertFormatsRepository,
+    private readonly cache: CacheService,
   ) {}
 
   async create(dto: CreateConcertFormatDto): Promise<ConcertFormatResponseDto> {
@@ -36,12 +42,16 @@ export class ConcertFormatsService {
     }
 
     const created = await this.concertFormatsRepository.create(dto);
+    await this.cache.del(CACHE_KEYS.FORMATS_LIST);
     return created as ConcertFormatResponseDto;
   }
 
   async findAll(): Promise<ConcertFormatResponseDto[]> {
-    const formats = await this.concertFormatsRepository.findAll();
-    return formats as ConcertFormatResponseDto[];
+    return this.cache.getOrSet(
+      CACHE_KEYS.FORMATS_LIST,
+      () => this.concertFormatsRepository.findAll(),
+      CACHE_TTL_LONG,
+    ) as Promise<ConcertFormatResponseDto[]>;
   }
 
   async findOne(id: string): Promise<ConcertFormatResponseDto> {
@@ -84,6 +94,7 @@ export class ConcertFormatsService {
     }
 
     const updated = await this.concertFormatsRepository.update(id, dto);
+    await this.cache.del(CACHE_KEYS.FORMATS_LIST);
     return updated as ConcertFormatResponseDto;
   }
 
@@ -94,5 +105,6 @@ export class ConcertFormatsService {
     }
 
     await this.concertFormatsRepository.delete(id);
+    await this.cache.del(CACHE_KEYS.FORMATS_LIST);
   }
 }
