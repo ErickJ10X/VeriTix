@@ -22,7 +22,9 @@
     "migrate:deploy": "bunx prisma migrate deploy",
     "db:seed": "bunx prisma db seed",
     "db:studio": "bunx prisma studio",
-    "db:generate": "bunx prisma generate"
+    "db:generate": "bunx prisma generate",
+    "prisma:reset": "bunx prisma migrate reset",
+    "backend:reset": "bun run prisma:reset && bun run migrate:deploy && bun run db:generate && bun run db:seed"
   },
   "dependencies": {
     "@keyv/redis": "^5.1.6",
