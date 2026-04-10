@@ -55,13 +55,14 @@ function onSearch() {
             />
 
             <!-- Submit Button - Subtle outline variant -->
-            <BasePrimaryButton
+            <BaseButton
+              kind="primary"
               type="submit"
               size="md"
               class="shrink-0 px-6"
             >
               Buscar
-            </BasePrimaryButton>
+            </BaseButton>
           </div>
 
           <!-- Hint Text -->
@@ -76,13 +77,14 @@ function onSearch() {
             {{ pending ? 'Actualizando cartel...' : `Eventos visibles: ${results.length}` }}
           </p>
 
-          <BaseSecondaryButton
+          <BaseButton
+            kind="secondary"
             to="#generos"
             size="sm"
             class="px-4"
           >
             Explorar géneros
-          </BaseSecondaryButton>
+          </BaseButton>
         </div>
       </div>
 
@@ -94,7 +96,7 @@ function onSearch() {
 </template>
 
 <style scoped>
-@reference "tailwindcss";
+@reference "@/assets/css/main.css";
 
 .animate-hero-reveal {
   animation: hero-reveal 920ms cubic-bezier(0.22, 1, 0.36, 1) both;

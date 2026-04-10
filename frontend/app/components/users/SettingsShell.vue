@@ -27,7 +27,8 @@ const toneClasses = computed(() => {
       rightGlow: 'bg-white/5',
       bottomGlow: 'bg-white/4',
       divider: 'border-default/45',
-      badge: 'border-default/55 bg-default/8 text-toned',
+      badgeColor: 'neutral',
+      badgeVariant: 'subtle',
       action: 'border-default/60 bg-default/6',
       aside: 'border-default/45',
       title: 'text-highlighted',
@@ -41,7 +42,8 @@ const toneClasses = computed(() => {
     rightGlow: 'bg-auric-500/14',
     bottomGlow: 'bg-primary/10',
     divider: 'border-default/60',
-    badge: 'border-auric-300/25 bg-auric-400/8 text-auric-200',
+    badgeColor: 'warning',
+    badgeVariant: 'soft',
     action: 'border-default/70 bg-default/10',
     aside: 'border-default/55',
     title: 'bg-gradient-to-r from-white to-white/80 bg-clip-text text-transparent drop-shadow-sm',
@@ -71,21 +73,24 @@ const toneClasses = computed(() => {
         <header class="grid gap-8 border-b pb-8 lg:grid-cols-[minmax(0,1.15fr)_auto] lg:items-end" :class="toneClasses.divider">
           <div class="space-y-5">
             <div class="flex flex-wrap items-center gap-3">
-              <p
+              <UiMetaLabel
                 v-if="eyebrow"
-                class="text-[0.68rem] font-semibold tracking-[0.32em] text-secondary uppercase"
+                tone="accent"
               >
                 {{ eyebrow }}
-              </p>
+              </UiMetaLabel>
 
-              <span
+              <UBadge
                 v-if="badge"
-                class="inline-flex items-center gap-2 rounded-full px-3 py-1 text-[0.68rem] font-semibold tracking-[0.2em] uppercase"
-                :class="toneClasses.badge"
+                :color="toneClasses.badgeColor"
+                :variant="toneClasses.badgeVariant"
+                size="xs"
+                icon="i-lucide-sparkles"
+                leading
+                class="rounded-full px-3 py-1 text-xs font-semibold tracking-wide uppercase"
               >
-                <UIcon name="i-lucide-sparkles" class="size-3.5" />
                 {{ badge }}
-              </span>
+              </UBadge>
             </div>
 
             <div class="space-y-3">
@@ -100,7 +105,8 @@ const toneClasses = computed(() => {
           </div>
 
           <div class="flex items-end lg:justify-end">
-            <BaseSecondaryButton
+            <BaseButton
+              kind="secondary"
               v-if="actionTo && actionLabel"
               :to="actionTo"
               size="lg"
@@ -108,7 +114,7 @@ const toneClasses = computed(() => {
               :class="toneClasses.action"
             >
               {{ actionLabel }}
-            </BaseSecondaryButton>
+            </BaseButton>
           </div>
         </header>
 

@@ -52,9 +52,9 @@ async function onSubmit() {
       <div class="w-full max-w-lg px-4 sm:px-0">
         <section class="space-y-8">
           <header class="text-center">
-            <p class="mb-3 text-xs font-semibold tracking-[0.28em] text-auric-300/90 uppercase">
+            <UiMetaLabel tone="accent" class="mb-3 text-secondary/90">
               VeriTix
-            </p>
+            </UiMetaLabel>
 
             <h1 class="font-display text-3xl text-highlighted md:text-4xl">
               Bienvenido de nuevo
@@ -66,7 +66,7 @@ async function onSubmit() {
           </header>
 
           <div class="mb-7 flex items-center justify-center">
-            <span class="inline-flex items-center gap-2 rounded-full border border-auric-300/30 bg-auric-400/10 px-3 py-1 text-[0.7rem] font-semibold tracking-[0.22em] text-auric-200 uppercase">
+            <span class="inline-flex items-center gap-2 rounded-full border border-auric-300/30 bg-auric-400/10 px-3 py-1 text-xs font-semibold tracking-wide text-auric-200 uppercase">
               <UIcon name="i-lucide-shield-check" class="size-3.5" />
               Acceso seguro
             </span>
@@ -127,7 +127,8 @@ async function onSubmit() {
             </div>
 
             <!-- Submit button -->
-            <BasePrimaryButton
+            <BaseButton
+              kind="primary"
               type="submit"
               size="lg"
               block
@@ -135,7 +136,7 @@ async function onSubmit() {
               class="mt-2"
             >
               Iniciar sesion
-            </BasePrimaryButton>
+            </BaseButton>
 
             <p class="text-center text-xs text-toned">
               Protegido con sesion segura y renovacion automatica de credenciales.

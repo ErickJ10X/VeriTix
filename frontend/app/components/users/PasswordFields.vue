@@ -6,30 +6,23 @@ const showCurrentPasswordModel = defineModel<boolean>('showCurrentPassword', { d
 const showNewPasswordModel = defineModel<boolean>('showNewPassword', { default: false })
 const showConfirmPasswordModel = defineModel<boolean>('showConfirmPassword', { default: false })
 
-const passwordRules = ['8+ caracteres', '1 mayuscula', '1 numero', 'Clave nueva'] as const
 </script>
 
 <template>
   <div class="space-y-6">
-    <div class="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+    <div class="space-y-2">
       <div>
-        <p class="text-[0.68rem] font-semibold tracking-[0.24em] text-dimmed uppercase">
+        <UiMetaLabel>
           Seguridad
-        </p>
+        </UiMetaLabel>
         <h3 class="mt-3 text-2xl font-semibold text-highlighted">
           Cambiar contrasena
         </h3>
       </div>
 
-      <div class="flex flex-wrap gap-2">
-        <span
-          v-for="rule in passwordRules"
-          :key="rule"
-          class="inline-flex items-center rounded-full border border-default/60 bg-default/8 px-3 py-1.5 text-[0.68rem] font-semibold tracking-[0.12em] text-toned uppercase"
-        >
-          {{ rule }}
-        </span>
-      </div>
+      <p class="text-sm leading-relaxed text-toned">
+        Usa una clave nueva con al menos 8 caracteres, una mayuscula y un numero.
+      </p>
     </div>
 
     <BasePasswordField

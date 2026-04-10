@@ -33,15 +33,32 @@ async function bootstrap() {
   app.use(bodyParser.urlencoded({ extended: true }));
 
   // Seguridad: headers HTTP (X-Content-Type-Options, Strict-Transport-Security, etc.)
-  app.use(helmet());
+  // CSP configurada para permitir los assets inline que usa Swagger UI
+  app.use(
+    helmet({
+      contentSecurityPolicy: {
+        directives: {
+          defaultSrc: [`'self'`],
+          styleSrc: [`'self'`, `'unsafe-inline'`],
+          scriptSrc: [`'self'`, `'unsafe-inline'`],
+          imgSrc: [`'self'`, 'data:', 'validator.swagger.io'],
+        },
+      },
+    }),
+  );
   app.use(cookieParser());
 
   // Prefijo global de la API
   const apiPrefix = config.get<string>('API_PREFIX', 'api/v1');
   app.setGlobalPrefix(apiPrefix);
 
+  const allowedOrigins = [
+    config.get<string>('FRONTEND_URL'),
+    config.get<string>('CORS_EXTRA_ORIGIN'),
+  ].filter(Boolean) as string[];
+
   app.enableCors({
-    origin: config.get<string>('FRONTEND_URL'),
+    origin: allowedOrigins,
     credentials: true, // necesario para que el navegador envíe las cookies HTTP-only
   });
 

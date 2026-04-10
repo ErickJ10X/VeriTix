@@ -43,10 +43,10 @@ const steps = [
         class="vtx-flow-node"
         :class="step.toneClass"
       >
-        <div class="space-y-3">
-          <p class="text-[0.62rem] tracking-[0.22em] text-toned uppercase">
-            {{ step.cue }}
-          </p>
+          <div class="space-y-3">
+            <UiMetaLabel>
+              {{ step.cue }}
+            </UiMetaLabel>
 
           <div class="flex items-center justify-between gap-3">
             <span class="vtx-flow-index">
@@ -63,9 +63,9 @@ const steps = [
           </p>
 
           <div class="vtx-flow-runes">
-            <span class="text-[0.64rem] tracking-[0.22em] text-muted uppercase">
+            <UiMetaLabel as="span">
               {{ step.motif }}
-            </span>
+            </UiMetaLabel>
             <UIcon name="i-lucide-sparkles" class="h-3.5 w-3.5 text-primary" />
           </div>
         </div>
@@ -75,7 +75,7 @@ const steps = [
 </template>
 
 <style scoped>
-@reference "tailwindcss";
+@reference "@/assets/css/main.css";
 
 .vtx-flow-grid {
   @apply relative;

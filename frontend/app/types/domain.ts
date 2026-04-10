@@ -89,6 +89,7 @@ export interface EventCatalogFilters {
   search: string
   genreId: string
   city: string
+  page: number
 }
 
 export interface GenreOption {

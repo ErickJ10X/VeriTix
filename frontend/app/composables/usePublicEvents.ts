@@ -77,6 +77,7 @@ function normalizeFilters(raw?: Partial<EventCatalogFilters>): EventCatalogFilte
     search: raw?.search?.trim() ?? '',
     genreId: raw?.genreId?.trim() ?? '',
     city: raw?.city?.trim() ?? '',
+    page: raw?.page && raw.page > 0 ? raw.page : 1,
   }
 }
 
@@ -141,10 +142,10 @@ export function usePublicEvents(filters?: MaybeRef<Partial<EventCatalogFilters> 
   return useAsyncData<PaginatedResponse<EventCatalogItem>>(
     cacheKey,
     async () => {
-      const response = await apiRequest<PaginatedResponse<EventListApiItem>>('/events', {
-        method: 'GET',
-        query: {
-          page: 1,
+        const response = await apiRequest<PaginatedResponse<EventListApiItem>>('/events', {
+          method: 'GET',
+          query: {
+          page: normalizedFilters.value.page,
           limit: 24,
           city: normalizedFilters.value.city || undefined,
           genreId: normalizedFilters.value.genreId || undefined,

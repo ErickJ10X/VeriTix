@@ -4,9 +4,9 @@
       <div class="w-full max-w-lg px-4 sm:px-0">
         <section class="space-y-8">
           <header class="text-center">
-            <p class="mb-3 text-xs font-semibold tracking-[0.28em] text-auric-300/90 uppercase">
+            <UiMetaLabel tone="accent" class="mb-3 text-secondary/90">
               VeriTix
-            </p>
+            </UiMetaLabel>
 
             <h1 class="font-display text-3xl text-highlighted md:text-4xl">
               Recupera tu acceso
@@ -18,7 +18,7 @@
           </header>
 
           <div class="mb-7 flex items-center justify-center">
-            <span class="inline-flex items-center gap-2 rounded-full border border-auric-300/30 bg-auric-400/10 px-3 py-1 text-[0.7rem] font-semibold tracking-[0.22em] text-auric-200 uppercase">
+            <span class="inline-flex items-center gap-2 rounded-full border border-auric-300/30 bg-auric-400/10 px-3 py-1 text-xs font-semibold tracking-wide text-auric-200 uppercase">
               <UIcon name="i-lucide-key-round" class="size-3.5" />
               Recuperación no disponible
             </span>
@@ -38,13 +38,13 @@
           </div>
 
           <div class="flex flex-col gap-3">
-            <BasePrimaryButton to="/login" size="lg" block>
+            <BaseButton kind="primary" to="/login" size="lg" block>
               Volver a iniciar sesión
-            </BasePrimaryButton>
+            </BaseButton>
 
-            <BaseSecondaryButton to="/" size="lg" block>
+            <BaseButton kind="secondary" to="/" size="lg" block>
               Ir al inicio
-            </BaseSecondaryButton>
+            </BaseButton>
           </div>
 
           <footer class="pt-1">
@@ -59,7 +59,7 @@
 </template>
 
 <style scoped>
-@reference "tailwindcss";
+@reference "@/assets/css/main.css";
 
 .vtx-recovery-note {
   @apply flex items-start gap-3 rounded-2xl border px-4 py-4 text-left text-sm leading-relaxed;

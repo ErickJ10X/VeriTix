@@ -1,8 +1,4 @@
 <script setup lang="ts">
-defineProps<{
-  roleLabel: string
-}>()
-
 const nameModel = defineModel<string>('name', { default: '' })
 const lastNameModel = defineModel<string>('lastName', { default: '' })
 const phoneModel = defineModel<string>('phone', { default: '' })
@@ -12,13 +8,13 @@ const avatarUrlModel = defineModel<string>('avatarUrl', { default: '' })
 <template>
   <div class="space-y-6">
     <section class="space-y-4 border-b border-default/55 pb-6">
-      <div class="flex items-center justify-between gap-3">
+      <div class="space-y-2">
         <h3 class="text-lg font-semibold text-highlighted">
           Identidad
         </h3>
-        <UBadge color="neutral" variant="soft">
-          {{ roleLabel }}
-        </UBadge>
+        <p class="text-sm leading-relaxed text-toned">
+          Nombre y datos visibles en tu cuenta.
+        </p>
       </div>
 
       <div class="grid gap-4 sm:grid-cols-2">
@@ -43,9 +39,14 @@ const avatarUrlModel = defineModel<string>('avatarUrl', { default: '' })
     </section>
 
     <section class="space-y-4 border-b border-default/55 pb-6">
-      <h3 class="text-lg font-semibold text-highlighted">
-        Contacto
-      </h3>
+      <div class="space-y-2">
+        <h3 class="text-lg font-semibold text-highlighted">
+          Contacto
+        </h3>
+        <p class="text-sm leading-relaxed text-toned">
+          Canales que usamos para identificarte y mantener tu perfil al día.
+        </p>
+      </div>
 
       <div class="grid gap-4">
         <BaseFormField

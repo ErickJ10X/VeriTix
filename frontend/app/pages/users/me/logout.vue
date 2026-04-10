@@ -53,12 +53,13 @@ onMounted(async () => {
         <p class="mt-2 text-sm text-toned">
           {{ errorMessage }}
         </p>
-        <BasePrimaryButton
+        <BaseButton
+          kind="primary"
           class="mt-8"
           @click="() => { router.push('/') }"
         >
           Volver al inicio
-        </BasePrimaryButton>
+        </BaseButton>
       </template>
     </div>
   </UsersSettingsShell>

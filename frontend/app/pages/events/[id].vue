@@ -56,10 +56,10 @@ const eventErrorMessage = computed(() => {
   <UiEventsPageShell variant="detail">
     <div v-if="status === 'pending'" class="space-y-6">
       <USkeleton class="h-16 rounded-2xl" />
-      <USkeleton class="h-120 rounded-3xl" />
+      <USkeleton class="h-120 rounded-2xl" />
     </div>
 
-    <div v-else-if="eventErrorMessage" class="rounded-3xl px-6 py-16 text-center" :class="eventErrorStatus === 404 ? 'border border-default/65 bg-default/8' : 'border border-error/30 bg-error/8'">
+    <div v-else-if="eventErrorMessage" class="rounded-2xl px-6 py-16 text-center" :class="eventErrorStatus === 404 ? 'border border-default/65 bg-default/8' : 'border border-error/30 bg-error/8'">
       <div class="mx-auto flex max-w-md flex-col items-center gap-4">
         <UIcon :name="eventErrorStatus === 404 ? 'i-lucide-search-x' : 'i-lucide-cloud-off'" class="size-8" :class="eventErrorStatus === 404 ? 'text-dimmed' : 'text-error'" />
         <div class="space-y-2">
@@ -80,36 +80,39 @@ const eventErrorMessage = computed(() => {
       </NuxtLink>
 
       <div class="grid gap-8 lg:grid-cols-[minmax(0,1.1fr)_minmax(320px,0.9fr)] lg:items-start">
-        <div class="overflow-hidden rounded-[1.6rem] border border-default/65 bg-default/8 p-3 shadow-[0_20px_60px_-48px_rgba(0,0,0,0.82)]">
+        <UiGlassPanel class="overflow-hidden" radius="lg">
           <NuxtImg
             :src="event.imageUrl ?? undefined"
             :alt="`Imagen de ${event.name}`"
-            class="min-h-88 w-full rounded-[1.05rem] object-cover lg:min-h-136"
+            class="min-h-88 w-full rounded-xl object-cover lg:min-h-136"
             width="1200"
             height="1600"
             sizes="(max-width: 1023px) 100vw, 58vw"
             placeholder
           />
-        </div>
+        </UiGlassPanel>
 
         <div class="space-y-8">
           <div class="space-y-5 border-b border-default/55 pb-7">
             <div class="flex flex-wrap gap-2">
-              <span
+              <UBadge
                 v-for="genre in event.genres"
                 :key="genre.id"
-                class="inline-flex items-center rounded-full border border-default/60 bg-default/8 px-3 py-1 text-[0.68rem] font-semibold tracking-[0.16em] text-toned uppercase"
+                color="neutral"
+                variant="subtle"
+                size="xs"
+                class="rounded-full px-3 py-1 text-xs font-semibold tracking-wide uppercase"
               >
                 {{ genre.name }}
-              </span>
+              </UBadge>
             </div>
 
             <div class="space-y-3">
-              <h1 class="font-display text-3xl leading-tight text-highlighted sm:text-4xl lg:text-[3rem]">
+              <h1 class="font-display text-3xl leading-tight text-highlighted sm:text-4xl lg:text-5xl">
                 {{ event.name }}
               </h1>
 
-              <p v-if="genreLabels" class="text-sm tracking-[0.08em] text-dimmed uppercase">
+              <p v-if="genreLabels" class="text-sm font-medium tracking-wide text-dimmed uppercase">
                 {{ genreLabels }}
               </p>
             </div>
@@ -117,27 +120,27 @@ const eventErrorMessage = computed(() => {
 
           <div class="grid gap-8 border-b border-default/55 pb-8 sm:grid-cols-2">
             <div class="space-y-2">
-              <p class="text-[0.68rem] font-semibold tracking-[0.2em] text-dimmed uppercase">
+              <UiMetaLabel>
                 Fecha
-              </p>
+              </UiMetaLabel>
               <p class="text-base font-semibold text-highlighted">
                 {{ eventDate }}
               </p>
             </div>
 
             <div class="space-y-2">
-              <p class="text-[0.68rem] font-semibold tracking-[0.2em] text-dimmed uppercase">
+              <UiMetaLabel>
                 Puertas
-              </p>
+              </UiMetaLabel>
               <p class="text-base font-semibold text-highlighted">
                 {{ doorsOpen }}
               </p>
             </div>
 
             <div class="space-y-2 sm:col-span-2">
-              <p class="text-[0.68rem] font-semibold tracking-[0.2em] text-dimmed uppercase">
+              <UiMetaLabel>
                 Ubicación
-              </p>
+              </UiMetaLabel>
               <p class="text-base font-semibold text-highlighted">
                 {{ eventLocation }}
               </p>
@@ -150,24 +153,24 @@ const eventErrorMessage = computed(() => {
           <div class="space-y-5 border-b border-default/55 pb-8">
             <div class="flex flex-wrap items-center justify-between gap-4">
               <div>
-                <p class="text-[0.68rem] font-semibold tracking-[0.2em] text-dimmed uppercase">
+                <UiMetaLabel>
                   Reserva
-                </p>
+                </UiMetaLabel>
                 <p class="mt-2 text-sm text-toned">
                   {{ event.venue.name }}
                 </p>
               </div>
 
-              <BasePrimaryButton size="lg" class="px-6">
+              <BaseButton kind="primary" size="lg" class="px-6">
                 Reservar
-              </BasePrimaryButton>
+              </BaseButton>
             </div>
           </div>
 
           <div v-if="event.description" class="space-y-3">
-            <p class="text-[0.68rem] font-semibold tracking-[0.2em] text-dimmed uppercase">
+            <UiMetaLabel>
               Detalle
-            </p>
+            </UiMetaLabel>
             <p class="max-w-2xl text-sm leading-relaxed text-toned sm:text-base">
               {{ event.description }}
             </p>
@@ -176,7 +179,7 @@ const eventErrorMessage = computed(() => {
       </div>
     </div>
 
-    <div v-else class="rounded-3xl border border-error/30 bg-error/8 px-6 py-16 text-center">
+    <div v-else class="rounded-2xl border border-error/30 bg-error/8 px-6 py-16 text-center">
       <div class="mx-auto flex max-w-md flex-col items-center gap-4">
         <UIcon name="i-lucide-cloud-off" class="size-8 text-error" />
         <div class="space-y-2">
