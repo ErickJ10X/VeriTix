@@ -52,4 +52,13 @@ export class EventQueryDto extends PaginationQueryDto {
   @IsOptional()
   @IsString()
   search?: string;
+
+  @ApiPropertyOptional({
+    example: 'The Killers',
+    description:
+      'Filtrar por nombre de artista (búsqueda parcial, insensible a mayúsculas).',
+  })
+  @IsOptional()
+  @IsString()
+  artistName?: string;
 }
