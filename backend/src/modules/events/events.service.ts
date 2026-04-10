@@ -6,6 +6,12 @@ import {
 } from '@nestjs/common';
 import { PaginatedResponse } from '@common/dto';
 import { JwtPayload } from '@common/interfaces';
+import {
+  CACHE_KEYS,
+  CACHE_TTL_MEDIUM,
+  CACHE_TTL_SHORT,
+  CacheService,
+} from '../../cache';
 import { EventStatus, OrderStatus, Role } from '../../generated/prisma/enums';
 import { PrismaService } from '../../prisma/prisma.service';
 import {
@@ -32,6 +38,7 @@ export class EventsService {
   constructor(
     private readonly eventsRepository: EventsRepository,
     private readonly prisma: PrismaService,
+    private readonly cache: CacheService,
   ) {}
 
   // ── Private helpers ──────────────────────────────────────────────────────
@@ -58,6 +65,26 @@ export class EventsService {
 
   // ── Public methods ───────────────────────────────────────────────────────
 
+  private buildEventsListCacheKey(query: EventQueryDto): string {
+    return CACHE_KEYS.EVENTS_LIST(
+      JSON.stringify({
+        page: query.page,
+        limit: query.limit,
+        city: query.city,
+        genreId: query.genreId,
+        formatId: query.formatId,
+        dateFrom: query.dateFrom,
+        dateTo: query.dateTo,
+        search: query.search,
+      }),
+    );
+  }
+
+  private async invalidateEventCache(id: string): Promise<void> {
+    await this.cache.del(CACHE_KEYS.EVENTS_DETAIL_STATIC(id));
+    // No invalidamos listas por prefijo: usamos TTL corto para evitar complejidad.
+  }
+
   async create(
     creatorId: string,
     dto: CreateEventDto,
@@ -69,22 +96,31 @@ export class EventsService {
       creatorId,
     });
 
+    await this.invalidateEventCache(created.id);
+
     return created as unknown as EventDetailResponseDto;
   }
 
   async findAll(
     query: EventQueryDto,
   ): Promise<PaginatedResponse<EventListResponseDto>> {
-    return this.eventsRepository.findAll({
-      page: query.page,
-      limit: query.limit,
-      city: query.city,
-      genreId: query.genreId,
-      formatId: query.formatId,
-      dateFrom: query.dateFrom,
-      dateTo: query.dateTo,
-      search: query.search,
-    }) as Promise<PaginatedResponse<EventListResponseDto>>;
+    const key = this.buildEventsListCacheKey(query);
+
+    return this.cache.getOrSet(
+      key,
+      () =>
+        this.eventsRepository.findAll({
+          page: query.page,
+          limit: query.limit,
+          city: query.city,
+          genreId: query.genreId,
+          formatId: query.formatId,
+          dateFrom: query.dateFrom,
+          dateTo: query.dateTo,
+          search: query.search,
+        }),
+      CACHE_TTL_SHORT,
+    ) as Promise<PaginatedResponse<EventListResponseDto>>;
   }
 
   async findMyEvents(
@@ -103,7 +139,12 @@ export class EventsService {
     id: string,
     requestingUser?: JwtPayload,
   ): Promise<EventDetailResponseDto> {
-    const event = await this.eventsRepository.findById(id);
+    const event = await this.cache.getOrSet(
+      CACHE_KEYS.EVENTS_DETAIL_STATIC(id),
+      () => this.eventsRepository.findById(id),
+      CACHE_TTL_MEDIUM,
+    );
+
     if (!event) throw new NotFoundException('Evento no encontrado');
 
     if (event.status === EventStatus.DRAFT) {
@@ -133,6 +174,7 @@ export class EventsService {
     }
 
     const updated = await this.eventsRepository.update(id, dto);
+    await this.invalidateEventCache(id);
     return updated as unknown as EventDetailResponseDto;
   }
 
@@ -141,6 +183,7 @@ export class EventsService {
     if (!event) throw new NotFoundException('Evento no encontrado');
 
     await this.eventsRepository.updateStatus(id, EventStatus.CANCELLED);
+    await this.invalidateEventCache(id);
   }
 
   async publish(
@@ -163,6 +206,7 @@ export class EventsService {
       id,
       EventStatus.PUBLISHED,
     );
+    await this.invalidateEventCache(id);
     return published as unknown as EventDetailResponseDto;
   }
 
@@ -173,7 +217,11 @@ export class EventsService {
     query: UpcomingQueryDto,
   ): Promise<UpcomingEventResponseDto[]> {
     const creatorId = user.role === Role.ADMIN ? undefined : user.sub;
-    const rows = await this.eventsRepository.findUpcoming(query.limit, creatorId);
+    const rows = await this.cache.getOrSet(
+      CACHE_KEYS.EVENTS_UPCOMING(user.role, creatorId ?? 'all', query.limit),
+      () => this.eventsRepository.findUpcoming(query.limit, creatorId),
+      CACHE_TTL_SHORT,
+    );
 
     return rows.map((r) => ({
       id: r.id,
@@ -221,7 +269,11 @@ export class EventsService {
   async getTopEvents(
     query: TopEventsQueryDto,
   ): Promise<TopEventResponseDto[]> {
-    const rows = await this.eventsRepository.findTopEvents(query.limit);
+    const rows = await this.cache.getOrSet(
+      CACHE_KEYS.EVENTS_TOP(query.limit),
+      () => this.eventsRepository.findTopEvents(query.limit),
+      CACHE_TTL_SHORT,
+    );
 
     return rows.map((r) => ({
       id: r.id,

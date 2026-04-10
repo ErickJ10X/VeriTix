@@ -1,4 +1,5 @@
 import { Module } from '@nestjs/common';
+import { AppCacheModule } from '../../cache';
 import { PrismaModule } from '../../prisma/prisma.module';
 import { EventArtistsController } from './event-artists/event-artists.controller';
 import { EventArtistsRepository } from './event-artists/event-artists.repository';
@@ -11,7 +12,7 @@ import { TicketTypesRepository } from './ticket-types/ticket-types.repository';
 import { TicketTypesService } from './ticket-types/ticket-types.service';
 
 @Module({
-  imports: [PrismaModule],
+  imports: [PrismaModule, AppCacheModule],
   controllers: [EventsController, TicketTypesController, EventArtistsController],
   providers: [
     EventsService,

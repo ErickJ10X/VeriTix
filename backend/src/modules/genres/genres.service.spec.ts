@@ -1,8 +1,16 @@
 import { ConflictException, NotFoundException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
+import { CacheService } from '../../cache';
 import { CreateGenreDto, UpdateGenreDto } from './dto';
 import { GenresRepository } from './genres.repository';
 import { GenresService } from './genres.service';
+
+const mockCacheService = {
+  getOrSet: jest.fn((_k: string, fn: () => any) => fn()),
+  get: jest.fn(),
+  set: jest.fn(),
+  del: jest.fn(),
+};
 
 // ── Mock data ────────────────────────────────────────────────────────────────
 
@@ -35,6 +43,7 @@ describe('GenresService', () => {
       providers: [
         GenresService,
         { provide: GenresRepository, useValue: mockRepo },
+        { provide: CacheService, useValue: mockCacheService },
       ],
     }).compile();
 

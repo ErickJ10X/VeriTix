@@ -65,33 +65,13 @@ describe('AuthController', () => {
       lastName: 'User',
     };
 
-    it('returns auth response and sets refresh cookie', async () => {
-      mockAuthService.register.mockResolvedValue(mockServiceResponse);
+    it('returns message asking user to verify email', async () => {
+      const mockMessage = { message: 'Revisá tu email para verificar tu cuenta' };
+      mockAuthService.register.mockResolvedValue(mockMessage);
 
-      const result = await controller.register(registerDto as any, mockRes);
+      const result = await controller.register(registerDto as any);
 
-      expect(result).toEqual({
-        accessToken: 'mock-access-token',
-        user: mockServiceResponse.user,
-      });
-      expect(mockRes.cookie).toHaveBeenCalledWith(
-        'refresh_token',
-        'mock-refresh-token',
-        expect.objectContaining({
-          httpOnly: true,
-          sameSite: 'lax',
-          path: '/auth',
-          maxAge: 604800000,
-        }),
-      );
-    });
-
-    it('does NOT include refreshToken in response body', async () => {
-      mockAuthService.register.mockResolvedValue(mockServiceResponse);
-
-      const result = await controller.register(registerDto as any, mockRes);
-
-      expect(result).not.toHaveProperty('refreshToken');
+      expect(result).toEqual(mockMessage);
     });
   });
 

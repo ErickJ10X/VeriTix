@@ -1,9 +1,11 @@
 import {
   Body,
   Controller,
+  Get,
   HttpCode,
   HttpStatus,
   Post,
+  Query,
   Req,
   Res,
   UnauthorizedException,
@@ -13,8 +15,10 @@ import {
   ApiConflictResponse,
   ApiCookieAuth,
   ApiCreatedResponse,
+  ApiForbiddenResponse,
   ApiOkResponse,
   ApiOperation,
+  ApiQuery,
   ApiTags,
   ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
@@ -47,20 +51,14 @@ export class AuthController {
       'y establece el refresh token como cookie HTTP-only segura.',
   })
   @ApiCreatedResponse({
-    description:
-      'Usuario registrado exitosamente. Cookie `refresh_token` establecida.',
-    type: AuthResponseDto,
+    description: 'Usuario registrado. Se envió un email de verificación.',
+    schema: { example: { message: 'Revisá tu email para verificar tu cuenta' } },
   })
   @ApiConflictResponse({
     description: 'El correo electrónico ya está registrado.',
   })
-  async register(
-    @Body() dto: RegisterDto,
-    @Res({ passthrough: true }) res: Response,
-  ): Promise<AuthResponseDto> {
-    const { refreshToken, ...response } = await this.authService.register(dto);
-    this.setRefreshCookie(res, refreshToken);
-    return response;
+  async register(@Body() dto: RegisterDto): Promise<{ message: string }> {
+    return this.authService.register(dto);
   }
 
   // ── Login ──────────────────────────────────────────────────────────────────
@@ -82,6 +80,9 @@ export class AuthController {
   @ApiUnauthorizedResponse({
     description: 'Credenciales incorrectas o cuenta inactiva.',
   })
+  @ApiForbiddenResponse({
+    description: 'Email no verificado.',
+  })
   async login(
     @Body() dto: LoginDto,
     @Res({ passthrough: true }) res: Response,
@@ -89,6 +90,27 @@ export class AuthController {
     const { refreshToken, ...response } = await this.authService.login(dto);
     this.setRefreshCookie(res, refreshToken);
     return response;
+  }
+
+  // ── Verificar email ────────────────────────────────────────────────────────
+
+  @Public()
+  @Get('verify-email')
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({
+    summary: 'Verificar email',
+    description: 'Valida el token enviado por email y activa la cuenta del usuario.',
+  })
+  @ApiQuery({ name: 'token', required: true, description: 'Token de verificación' })
+  @ApiOkResponse({
+    description: 'Email verificado correctamente.',
+    schema: { example: { message: 'Email verificado correctamente' } },
+  })
+  @ApiUnauthorizedResponse({
+    description: 'Token inválido o expirado.',
+  })
+  verifyEmail(@Query('token') token: string): Promise<{ message: string }> {
+    return this.authService.verifyEmail(token);
   }
 
   // ── Renovar tokens ─────────────────────────────────────────────────────────

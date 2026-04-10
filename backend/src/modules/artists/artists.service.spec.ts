@@ -1,8 +1,16 @@
 import { ConflictException, NotFoundException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
+import { CacheService } from '../../cache';
 import { ArtistQueryDto, CreateArtistDto, UpdateArtistDto } from './dto';
 import { ArtistsRepository } from './artists.repository';
 import { ArtistsService } from './artists.service';
+
+const mockCacheService = {
+  getOrSet: jest.fn((_k: string, fn: () => any) => fn()),
+  get: jest.fn(),
+  set: jest.fn(),
+  del: jest.fn(),
+};
 
 // ── Mock data ────────────────────────────────────────────────────────────────
 
@@ -40,6 +48,7 @@ describe('ArtistsService', () => {
       providers: [
         ArtistsService,
         { provide: ArtistsRepository, useValue: mockRepo },
+        { provide: CacheService, useValue: mockCacheService },
       ],
     }).compile();
 

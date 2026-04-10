@@ -1,8 +1,16 @@
 import { ConflictException, NotFoundException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
+import { CacheService } from '../../cache';
 import { CreateConcertFormatDto, UpdateConcertFormatDto } from './dto';
 import { ConcertFormatsRepository } from './concert-formats.repository';
 import { ConcertFormatsService } from './concert-formats.service';
+
+const mockCacheService = {
+  getOrSet: jest.fn((_k: string, fn: () => any) => fn()),
+  get: jest.fn(),
+  set: jest.fn(),
+  del: jest.fn(),
+};
 
 // ── Mock data ────────────────────────────────────────────────────────────────
 
@@ -35,6 +43,7 @@ describe('ConcertFormatsService', () => {
       providers: [
         ConcertFormatsService,
         { provide: ConcertFormatsRepository, useValue: mockRepo },
+        { provide: CacheService, useValue: mockCacheService },
       ],
     }).compile();
 

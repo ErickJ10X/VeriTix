@@ -5,6 +5,7 @@ import {
 } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { JwtPayload } from '@common/interfaces';
+import { CacheService } from '../../cache';
 import { EventStatus, Role } from '../../generated/prisma/enums';
 import { PrismaService } from '../../prisma/prisma.service';
 import { CreateEventDto, EventQueryDto, TopEventsQueryDto, UpcomingQueryDto, UpdateEventDto } from './dto';
@@ -83,12 +84,20 @@ const mockPrismaService = {
   },
 };
 
+const mockCacheService = {
+  getOrSet: jest.fn(async (_key: string, fn: () => Promise<unknown>) => fn()),
+  get: jest.fn(),
+  set: jest.fn(),
+  del: jest.fn(),
+};
+
 // ── Suite ────────────────────────────────────────────────────────────────────
 
 describe('EventsService', () => {
   let service: EventsService;
   let repo: jest.Mocked<EventsRepository>;
   let prisma: typeof mockPrismaService;
+  let cache: typeof mockCacheService;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -96,12 +105,14 @@ describe('EventsService', () => {
         EventsService,
         { provide: EventsRepository, useValue: mockEventsRepository },
         { provide: PrismaService, useValue: mockPrismaService },
+        { provide: CacheService, useValue: mockCacheService },
       ],
     }).compile();
 
     service = module.get<EventsService>(EventsService);
     repo = module.get(EventsRepository) as jest.Mocked<EventsRepository>;
     prisma = module.get(PrismaService);
+    cache = module.get(CacheService);
   });
 
   afterEach(() => {
@@ -165,6 +176,7 @@ describe('EventsService', () => {
         dateTo: undefined,
         search: undefined,
       });
+      expect(cache.getOrSet).toHaveBeenCalled();
     });
 
     it('should pass filters to repository', async () => {
@@ -216,6 +228,7 @@ describe('EventsService', () => {
 
       expect(result).toEqual(publishedEvent);
       expect(repo.findById).toHaveBeenCalledWith('uuid-event-1');
+      expect(cache.getOrSet).toHaveBeenCalled();
     });
 
     it('should throw NotFoundException when event does not exist', async () => {
@@ -293,6 +306,7 @@ describe('EventsService', () => {
 
       expect(result).toEqual(updatedEvent);
       expect(repo.update).toHaveBeenCalledWith('uuid-event-1', dto);
+      expect(cache.del).toHaveBeenCalledWith('events:static:uuid-event-1');
     });
 
     it('should throw NotFoundException when event does not exist', async () => {
@@ -354,6 +368,7 @@ describe('EventsService', () => {
         'uuid-event-1',
         EventStatus.CANCELLED,
       );
+      expect(cache.del).toHaveBeenCalledWith('events:static:uuid-event-1');
     });
 
     it('should throw NotFoundException when event does not exist', async () => {
@@ -386,6 +401,7 @@ describe('EventsService', () => {
         'uuid-event-1',
         EventStatus.PUBLISHED,
       );
+      expect(cache.del).toHaveBeenCalledWith('events:static:uuid-event-1');
     });
 
     it('should throw NotFoundException when event does not exist', async () => {
@@ -450,6 +466,7 @@ describe('EventsService', () => {
       expect(repo.findUpcoming).toHaveBeenCalledWith(5, undefined);
       expect(result[0].ticketsSold).toBe(42);
       expect(result[0].totalCapacity).toBe(2000);
+      expect(cache.getOrSet).toHaveBeenCalled();
     });
 
     it('should call findUpcoming with creatorId for CREATOR', async () => {
@@ -625,6 +642,7 @@ describe('EventsService', () => {
 
       expect(repo.findTopEvents).toHaveBeenCalledWith(10);
       expect(result).toHaveLength(1);
+      expect(cache.getOrSet).toHaveBeenCalled();
     });
 
     it('should map rows to TopEventResponseDto', async () => {
