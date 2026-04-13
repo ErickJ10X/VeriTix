@@ -127,6 +127,11 @@ function setFilterStatus(value: 'all' | 'active' | 'inactive') {
   filterStatus.value = value
 }
 
+function clearFilters() {
+  search.value = ''
+  filterStatus.value = 'all'
+}
+
 onMounted(() => {
   void loadUsers()
 })
@@ -174,29 +179,14 @@ onMounted(() => {
       <AdminCard padding="none" class="flex flex-col">
         <!-- Filters Bar -->
         <div class="p-4 sm:p-5 border-b border-default bg-elevated flex flex-col sm:flex-row sm:items-center gap-4 justify-between rounded-t-2xl">
-          <div class="flex-1 max-w-md">
-            <UInput
-              v-model="search"
-              placeholder="Buscar por nombre o email..."
-              icon="i-lucide-search"
-              size="md"
-              class="w-full"
-              :ui="{ icon: { trailing: { pointer: '' } }, wrapper: 'relative w-full' }"
-            />
-          </div>
-          <div class="flex items-center gap-1.5 p-1 rounded-lg bg-elevated border border-default self-start sm:self-auto">
-            <UButton
-              v-for="option in statusOptions"
-              :key="option.value"
-              size="xs"
-              :color="filterStatus === option.value ? 'primary' : 'neutral'"
-              :variant="filterStatus === option.value ? 'soft' : 'ghost'"
-              class="rounded-md"
-              @click="setFilterStatus(option.value)"
-            >
-              {{ option.label }}
-            </UButton>
-          </div>
+          <AdminSearchToolbar
+            :search="search"
+            :status="filterStatus"
+            :status-options="statusOptions"
+            search-placeholder="Buscar por nombre o email..."
+            @update:search="search = $event"
+            @update:status="setFilterStatus($event as 'all' | 'active' | 'inactive')"
+          />
         </div>
 
         <!-- Results Info -->
@@ -228,9 +218,9 @@ onMounted(() => {
             <p class="text-muted text-sm max-w-sm">
               {{ search ? 'Intenta con otros términos de búsqueda o cambia los filtros activos.' : 'Actualmente no hay usuarios registrados en la plataforma.' }}
             </p>
-            <UButton v-if="search || filterStatus !== 'all'" color="neutral" variant="soft" class="mt-6 font-medium" @click="search = ''; filterStatus = 'all'">
+            <BaseButton v-if="search || filterStatus !== 'all'" kind="secondary" size="sm" class="mt-6" @click="clearFilters">
               Limpiar filtros
-            </UButton>
+            </BaseButton>
           </div>
 
           <!-- Users List -->
@@ -280,14 +270,16 @@ onMounted(() => {
                 </UBadge>
 
                 <div class="flex items-center gap-2 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity duration-200">
-                  <UButton
+                  <BaseButton
                     :to="`/admin/users/${user.id}/edit`"
-                    color="neutral"
-                    variant="soft"
+                    kind="secondary"
                     size="sm"
-                    icon="i-lucide-pencil"
-                    class="hover:bg-elevated"
-                  />
+                    leading-icon="i-lucide-pencil"
+                    aria-label="Editar usuario"
+                    class="px-3"
+                  >
+                    Editar
+                  </BaseButton>
                   <AdminDeleteAction
                     :item-label="`${user.name} ${user.lastName}`.trim()"
                     :pending="deletingUserId === user.id"

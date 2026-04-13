@@ -18,6 +18,18 @@ const navigationItems = [
   { label: 'Artistas', to: '/admin/artists', icon: 'i-lucide-mic-vocal' },
 ] as const
 
+const navigationSegments = computed(() => {
+  return navigationItems.map(item => ({
+    ...item,
+    value: item.to,
+    testId: `admin-nav-${item.label.toLowerCase()}`,
+  }))
+})
+
+const activeNavigation = computed(() => {
+  return navigationItems.find(item => isActive(item.to))?.to ?? '/admin'
+})
+
 function isActive(path: string): boolean {
   if (path === '/admin') {
     return route.path === path
@@ -40,7 +52,7 @@ function isActive(path: string): boolean {
 
               <div class="space-y-1.5">
                 <h1 class="text-3xl font-semibold tracking-tight text-highlighted sm:text-4xl">
-                {{ title }}
+                  {{ title }}
                 </h1>
                 <p class="max-w-3xl text-sm leading-relaxed text-toned sm:text-base">
                   {{ description }}
@@ -64,19 +76,11 @@ function isActive(path: string): boolean {
 
           <!-- Navigation -->
           <nav class="flex flex-wrap gap-2" aria-label="Navegación admin">
-            <UButton
-              v-for="item in navigationItems"
-              :key="item.to"
-              :to="item.to"
+            <AdminSegmentedControl
+              :items="navigationSegments"
+              :active-value="activeNavigation"
               size="sm"
-              :icon="item.icon"
-              color="neutral"
-              :variant="isActive(item.to) ? 'soft' : 'ghost'"
-              class="rounded-lg px-3"
-              :data-testid="`admin-nav-${item.label.toLowerCase()}`"
-            >
-              {{ item.label }}
-            </UButton>
+            />
           </nav>
         </header>
 

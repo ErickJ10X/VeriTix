@@ -31,7 +31,7 @@ const props = withDefaults(defineProps<Props>(), {
   quickWindowOptions: () => [],
 })
 
-defineEmits<{
+const emit = defineEmits<{
   (e: 'update:search', value: string): void
   (e: 'update:city', value: string): void
   (e: 'update:genreId', value: string): void
@@ -44,6 +44,8 @@ defineEmits<{
   (e: 'reset'): void
 }>()
 
+const ALL_OPTION_VALUE = '__all__'
+
 const pageSizeOptions = [
   { label: '12', value: 12 },
   { label: '24', value: 24 },
@@ -51,18 +53,35 @@ const pageSizeOptions = [
   { label: '96', value: 96 },
 ]
 
+const quickWindowItems = computed(() => {
+  return props.quickWindowOptions.map(option => ({
+    value: option.value,
+    label: option.label,
+  }))
+})
+
 const genreOptions = computed(() => {
   return [
-    { label: 'All Genres', value: '' },
+    { label: 'Todos los géneros', value: ALL_OPTION_VALUE },
     ...props.genres.map(g => ({ label: g.name, value: g.id })),
   ]
 })
 
 const formatOptions = computed(() => {
   return [
-    { label: 'All Formats', value: '' },
+    { label: 'Todos los formatos', value: ALL_OPTION_VALUE },
     ...props.formats.map(f => ({ label: f.name, value: f.id })),
   ]
+})
+
+const selectedGenreId = computed({
+  get: () => props.genreId || ALL_OPTION_VALUE,
+  set: (value: string) => emit('update:genreId', value === ALL_OPTION_VALUE ? '' : value),
+})
+
+const selectedFormatId = computed({
+  get: () => props.formatId || ALL_OPTION_VALUE,
+  set: (value: string) => emit('update:formatId', value === ALL_OPTION_VALUE ? '' : value),
 })
 </script>
 
@@ -70,29 +89,27 @@ const formatOptions = computed(() => {
   <div class="flex flex-col gap-4 w-full">
     <!-- Top Row: Search, City, Page Size -->
     <div class="grid grid-cols-1 md:grid-cols-12 gap-4 items-end">
-      <UFormField name="search" label="Search Events" class="md:col-span-5">
-        <UInput
-          :model-value="search"
-          icon="i-heroicons-magnifying-glass"
-          placeholder="Search by event name..."
-          class="w-full"
-          :disabled="loading"
-          @update:model-value="$emit('update:search', $event)"
-        />
-      </UFormField>
+      <BaseFormField
+        name="search"
+        label="Buscar evento"
+        class="md:col-span-5"
+        :model-value="search"
+        icon="i-lucide-search"
+        :disabled="loading"
+        @update:model-value="$emit('update:search', String($event ?? ''))"
+      />
 
-      <UFormField name="city" label="City" class="md:col-span-5">
-        <UInput
-          :model-value="city"
-          icon="i-heroicons-map-pin"
-          placeholder="Filter by city..."
-          class="w-full"
-          :disabled="loading"
-          @update:model-value="$emit('update:city', $event)"
-        />
-      </UFormField>
+      <BaseFormField
+        name="city"
+        label="Ciudad"
+        class="md:col-span-5"
+        :model-value="city"
+        icon="i-lucide-map-pin"
+        :disabled="loading"
+        @update:model-value="$emit('update:city', String($event ?? ''))"
+      />
 
-      <UFormField name="pageSize" label="Per Page" class="md:col-span-2">
+      <UFormField name="pageSize" label="Por página" class="md:col-span-2">
         <USelect
           :model-value="pageSize"
           :items="pageSizeOptions"
@@ -105,76 +122,73 @@ const formatOptions = computed(() => {
 
     <!-- Filter Row: Genre, Format, Date Range, Actions -->
     <div class="grid grid-cols-1 md:grid-cols-12 gap-4 items-end">
-      <UFormField name="genreId" label="Genre" class="md:col-span-3">
+      <UFormField name="genreId" label="Género" class="md:col-span-3">
         <USelect
-          :model-value="genreId"
+          :model-value="selectedGenreId"
           :items="genreOptions"
           class="w-full"
           :disabled="loading"
-          @update:model-value="$emit('update:genreId', $event)"
+          @update:model-value="selectedGenreId = String($event ?? ALL_OPTION_VALUE)"
         />
       </UFormField>
 
-      <UFormField name="formatId" label="Format" class="md:col-span-3">
+      <UFormField name="formatId" label="Formato" class="md:col-span-3">
         <USelect
-          :model-value="formatId"
+          :model-value="selectedFormatId"
           :items="formatOptions"
           class="w-full"
           :disabled="loading"
-          @update:model-value="$emit('update:formatId', $event)"
+          @update:model-value="selectedFormatId = String($event ?? ALL_OPTION_VALUE)"
         />
       </UFormField>
 
-      <UFormField name="dateFrom" label="Date From" class="md:col-span-2">
-        <UInput
-          type="date"
-          :model-value="dateFrom"
-          class="w-full"
-          :disabled="loading"
-          @update:model-value="$emit('update:dateFrom', $event)"
-        />
-      </UFormField>
+      <BaseFormField
+        name="dateFrom"
+        label="Desde"
+        type="date"
+        class="md:col-span-2"
+        :model-value="dateFrom"
+        :disabled="loading"
+        @update:model-value="$emit('update:dateFrom', String($event ?? ''))"
+      />
 
-      <UFormField name="dateTo" label="Date To" class="md:col-span-2">
-        <UInput
-          type="date"
-          :model-value="dateTo"
-          class="w-full"
-          :disabled="loading"
-          @update:model-value="$emit('update:dateTo', $event)"
-        />
-      </UFormField>
+      <BaseFormField
+        name="dateTo"
+        label="Hasta"
+        type="date"
+        class="md:col-span-2"
+        :model-value="dateTo"
+        :disabled="loading"
+        @update:model-value="$emit('update:dateTo', String($event ?? ''))"
+      />
 
-      <div class="md:col-span-2 flex items-center justify-end gap-2 h-8">
-        <UButton
-          color="neutral"
-          variant="ghost"
-          label="Reset"
+      <div class="md:col-span-2 flex items-center justify-end gap-2">
+        <BaseButton
+          kind="tertiary"
+          size="sm"
           :disabled="loading"
           @click="$emit('reset')"
-        />
-        <UButton
-          color="primary"
-          label="Apply"
+        >
+          Resetear
+        </BaseButton>
+        <BaseButton
+          kind="primary"
+          size="sm"
           :loading="loading"
           @click="$emit('apply')"
-        />
+        >
+          Aplicar
+        </BaseButton>
       </div>
     </div>
 
     <!-- Quick Filters -->
     <div v-if="quickWindowOptions && quickWindowOptions.length > 0" class="flex flex-wrap gap-2 items-center pt-2 border-t border-default">
-      <span class="text-sm text-muted font-medium mr-2">Quick dates:</span>
-      <UButton
-        v-for="option in quickWindowOptions"
-        :key="option.value"
-        :color="quickWindow === option.value ? 'primary' : 'neutral'"
-        :variant="quickWindow === option.value ? 'soft' : 'ghost'"
+      <AdminSegmentedControl
+        :items="quickWindowItems.map(item => ({ ...item, disabled: loading }))"
+        :active-value="quickWindow ?? ''"
         size="xs"
-        class="rounded-full"
-        :label="option.label"
-        :disabled="loading"
-        @click="$emit('update:quickWindow', option.value)"
+        @select="$emit('update:quickWindow', $event)"
       />
     </div>
   </div>

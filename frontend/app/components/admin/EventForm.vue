@@ -19,6 +19,8 @@ const emit = defineEmits<{
   submit: [payload: AdminEventPayload]
 }>()
 
+const NO_FORMAT_OPTION_VALUE = '__no-format__'
+
 const schema = z.object({
   name: z.string().min(1, 'El nombre es obligatorio'),
   eventDate: z.string().min(1, 'La fecha del evento es obligatoria'),
@@ -60,9 +62,16 @@ const venueOptions = computed(() => {
 
 const formatOptions = computed(() => {
   return [
-    { label: 'Sin formato específico', value: '' },
+    { label: 'Sin formato específico', value: NO_FORMAT_OPTION_VALUE },
     ...props.formats.map(format => ({ label: format.name, value: format.id })),
   ]
+})
+
+const selectedFormatId = computed({
+  get: () => state.formatId || NO_FORMAT_OPTION_VALUE,
+  set: (value: string) => {
+    state.formatId = value === NO_FORMAT_OPTION_VALUE ? '' : value
+  },
 })
 
 const genreOptions = computed(() => {
@@ -168,7 +177,7 @@ watch(() => props.initialValue, applyInitialValue, { immediate: true })
       </UFormField>
 
       <UFormField name="formatId" label="Formato">
-        <USelect v-model="state.formatId" :items="formatOptions" />
+        <USelect v-model="selectedFormatId" :items="formatOptions" />
       </UFormField>
     </div>
 

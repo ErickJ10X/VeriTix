@@ -48,13 +48,14 @@ const accentClasses = computed(() => {
     </div>
 
     <div v-if="actionLabel" class="flex-shrink-0">
-      <UButton
+      <BaseButton
         :to="actionTo"
-        color="primary"
+        kind="primary"
+        size="sm"
         @click="!actionTo && $emit('action')"
       >
         {{ actionLabel }}
-      </UButton>
+      </BaseButton>
     </div>
   </header>
 </template>
