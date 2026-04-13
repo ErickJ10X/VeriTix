@@ -4,8 +4,6 @@ import type {
   AdminEventRecord,
   AdminOption,
   AdminRequiresAttentionRecord,
-  AdminTopEventRecord,
-  AdminUpcomingEventRecord,
   GenreOption,
   PaginatedMeta,
   PaginatedResponse,
@@ -24,10 +22,7 @@ const { getApiErrorMessage } = useApiErrorMessage()
 const catalogEvents = ref<AdminEventRecord[]>([])
 const genres = ref<GenreOption[]>([])
 const formats = ref<AdminOption[]>([])
-const myEvents = ref<PaginatedResponse<AdminEventRecord> | null>(null)
-const upcomingEvents = ref<AdminUpcomingEventRecord[]>([])
 const requiresAttention = ref<AdminRequiresAttentionRecord[]>([])
-const topEvents = ref<AdminTopEventRecord[]>([])
 const focusMetrics = ref<AdminEventMetrics | null>(null)
 
 const selectedEventId = ref('')
@@ -37,7 +32,6 @@ const dashboardPending = ref(true)
 const catalogPending = ref(true)
 const filtersPending = ref(true)
 const metricsPending = ref(false)
-const publishingEventId = ref('')
 const deletingEventId = ref('')
 
 const page = ref(1)
@@ -67,10 +61,6 @@ const quickWindowOptions: Array<{ value: QuickWindow, label: string }> = [
   { value: 'past', label: 'Histórico' },
 ]
 
-const draftEvents = computed(() => {
-  return myEvents.value?.data.filter(event => event.status === 'DRAFT') ?? []
-})
-
 const priorityIssueCount = computed(() => {
   return requiresAttention.value.reduce((total, event) => total + event.issues.length, 0)
 })
@@ -85,25 +75,18 @@ const statCards = computed(() => {
       tone: requiresAttention.value.length > 0 ? 'warning' as const : 'success' as const,
     },
     {
-      label: 'Próximos publicados',
-      value: upcomingEvents.value.length,
-      hint: 'Ventana operativa inmediata',
-      icon: 'i-lucide-calendar-clock',
-      tone: 'success' as const,
+      label: 'Alertas abiertas',
+      value: priorityIssueCount.value,
+      hint: requiresAttention.value.length > 0 ? 'Revisiones pendientes' : 'Sin incidencias activas',
+      icon: 'i-lucide-alert-triangle',
+      tone: priorityIssueCount.value > 0 ? 'warning' as const : 'success' as const,
     },
     {
-      label: 'Borradores propios',
-      value: draftEvents.value.length,
-      hint: `${myEvents.value?.meta.total ?? 0} eventos en tu pipeline`,
-      icon: 'i-lucide-file-pen-line',
-      tone: draftEvents.value.length > 0 ? 'primary' as const : 'default' as const,
-    },
-    {
-      label: 'Top revenue',
-      value: topEvents.value[0] ? formatCurrency(topEvents.value[0].revenue) : '—',
-      hint: topEvents.value[0]?.name ?? 'Sin ranking disponible',
-      icon: 'i-lucide-badge-euro',
-      tone: topEvents.value[0] ? 'primary' as const : 'default' as const,
+      label: 'Catálogo publicado',
+      value: meta.value.total,
+      hint: meta.value.total > 0 ? `${meta.value.totalPages} páginas disponibles` : 'Sin resultados con los filtros actuales',
+      icon: 'i-lucide-store',
+      tone: meta.value.total > 0 ? 'primary' as const : 'default' as const,
     },
   ]
 })
@@ -234,6 +217,13 @@ function formatCurrency(value: number) {
   }).format(value)
 }
 
+function formatEventDate(value: string) {
+  return new Date(value).toLocaleString('es-ES', {
+    dateStyle: 'medium',
+    timeStyle: 'short',
+  })
+}
+
 function getEventStatusColor(status: string): EventBadgeColor {
   if (status === 'PUBLISHED') {
     return 'success'
@@ -248,14 +238,6 @@ function getEventStatusColor(status: string): EventBadgeColor {
   return 'neutral'
 }
 
-function getOccupancyLabel(sold: number, total: number) {
-  if (total <= 0) {
-    return 'Sin aforo definido'
-  }
-
-  return `${formatPercent(sold / total)} · ${formatInteger(sold)} / ${formatInteger(total)}`
-}
-
 function getCatalogEventImage(event: AdminEventRecord) {
   return event.imageUrl
 }
@@ -263,10 +245,7 @@ function getCatalogEventImage(event: AdminEventRecord) {
 function collectFocusCandidates() {
   return [
     ...requiresAttention.value.map(event => event.id),
-    ...draftEvents.value.map(event => event.id),
-    ...upcomingEvents.value.map(event => event.id),
     ...catalogEvents.value.map(event => event.id),
-    ...topEvents.value.map(event => event.id),
   ]
 }
 
@@ -340,32 +319,10 @@ async function loadDashboard() {
   dashboardPending.value = true
 
   try {
-    const [myEventsResponse, upcomingResponse, attentionResponse, topEventsResponse] = await Promise.all([
-      apiRequest<PaginatedResponse<AdminEventRecord>>('/admin/events/my-events', {
-        method: 'GET',
-        headers: requireAdminHeaders(),
-        query: { page: 1, limit: 6 },
-      }),
-      apiRequest<AdminUpcomingEventRecord[]>('/admin/events/upcoming', {
-        method: 'GET',
-        headers: requireAdminHeaders(),
-        query: { limit: 5 },
-      }),
-      apiRequest<AdminRequiresAttentionRecord[]>('/admin/events/requires-attention', {
-        method: 'GET',
-        headers: requireAdminHeaders(),
-      }),
-      apiRequest<AdminTopEventRecord[]>('/admin/events/top-events', {
-        method: 'GET',
-        headers: requireAdminHeaders(),
-        query: { limit: 5 },
-      }),
-    ])
-
-    myEvents.value = myEventsResponse
-    upcomingEvents.value = upcomingResponse
-    requiresAttention.value = attentionResponse
-    topEvents.value = topEventsResponse
+    requiresAttention.value = await apiRequest<AdminRequiresAttentionRecord[]>('/admin/events/requires-attention', {
+      method: 'GET',
+      headers: requireAdminHeaders(),
+    })
   }
   catch (error) {
     errorMessage.value = getApiErrorMessage(error, 'No pudimos cargar el panel operativo de eventos.')
@@ -401,28 +358,6 @@ async function refreshDashboard() {
   errorMessage.value = ''
   await Promise.all([loadDashboard(), loadCatalog(page.value)])
   await ensureFocusEvent()
-}
-
-async function publishEvent(eventId: string) {
-  publishingEventId.value = eventId
-  successMessage.value = ''
-  errorMessage.value = ''
-
-  try {
-    await apiRequest(`/admin/events/${eventId}/publish`, {
-      method: 'POST',
-      headers: requireAdminHeaders(),
-    })
-
-    successMessage.value = 'Evento publicado correctamente.'
-    await refreshDashboard()
-  }
-  catch (error) {
-    errorMessage.value = getApiErrorMessage(error, 'No pudimos publicar el evento.')
-  }
-  finally {
-    publishingEventId.value = ''
-  }
 }
 
 async function removeEvent(eventId: string) {
@@ -523,45 +458,61 @@ onMounted(async () => {
         </div>
       </AdminOverviewPanel>
 
-      <div class="grid gap-8 xl:grid-cols-[minmax(0,2fr)_minmax(320px,1fr)]">
-        <div class="space-y-8">
-          <AdminOverviewPanel
-            eyebrow="Atención inmediata"
-            title="Eventos que necesitan intervención"
-            tone="subtle"
-          >
-            <div class="space-y-4">
-              <template v-if="dashboardPending">
-                <USkeleton v-for="i in 3" :key="`attention-${i}`" class="h-28 rounded-2xl" />
-              </template>
+      <div class="space-y-8">
+        <AdminOverviewPanel
+          title="Atención inmediata"
+          tone="subtle"
+        >
+          <div class="space-y-4">
+            <template v-if="dashboardPending">
+              <USkeleton v-for="i in 3" :key="`attention-${i}`" class="h-28 rounded-2xl" />
+            </template>
 
-              <AdminEmptyState
-                v-else-if="requiresAttention.length === 0"
-                icon="i-lucide-shield-check"
-                title="Todo bajo control"
-                description="No hay eventos con alertas estructurales ahora mismo."
-              />
+            <AdminEmptyState
+              v-else-if="requiresAttention.length === 0"
+              icon="i-lucide-shield-check"
+              title="Todo al día"
+              description="No hay eventos con incidencias ahora mismo."
+            />
 
-              <AdminEventRow
+            <div v-else class="divide-y divide-default/55">
+              <div
                 v-for="event in requiresAttention"
-                v-else
                 :key="event.id"
-                :title="event.name"
-                :to="`/admin/events/${event.id}/edit`"
-                :event-date="event.eventDate"
-                :status="event.status"
-                :active="selectedEventId === event.id"
+                class="flex flex-col gap-4 py-5 first:pt-0 last:pb-0 lg:flex-row lg:items-start lg:justify-between"
               >
-                <template #badges>
-                  <UBadge :color="getEventStatusColor(event.status)" variant="soft" size="xs" class="rounded-full px-2.5">
-                    {{ event.status }}
-                  </UBadge>
-                  <UBadge color="warning" variant="outline" size="xs" class="rounded-full px-2.5">
-                    {{ event.issues.length }} issue{{ event.issues.length !== 1 ? 's' : '' }}
-                  </UBadge>
-                </template>
+                <div class="min-w-0 space-y-3">
+                  <div class="flex flex-wrap items-center gap-2">
+                    <NuxtLink
+                      :to="`/admin/events/${event.id}/edit`"
+                      class="text-base font-semibold text-highlighted transition-colors hover:text-primary"
+                    >
+                      {{ event.name }}
+                    </NuxtLink>
+                    <UBadge :color="getEventStatusColor(event.status)" variant="soft" size="xs" class="rounded-full px-2.5">
+                      {{ event.status }}
+                    </UBadge>
+                    <UBadge color="warning" variant="outline" size="xs" class="rounded-full px-2.5">
+                      {{ event.issues.length }} alertas
+                    </UBadge>
+                    <UBadge
+                      v-if="selectedEventId === event.id"
+                      color="primary"
+                      variant="soft"
+                      size="xs"
+                      class="rounded-full px-2.5"
+                    >
+                      En foco
+                    </UBadge>
+                  </div>
 
-                <template #details>
+                  <div class="flex flex-wrap items-center gap-x-4 gap-y-2 text-sm text-toned">
+                    <span class="inline-flex items-center gap-2">
+                      <UIcon name="i-lucide-clock-3" class="size-4 text-muted" />
+                      {{ formatEventDate(event.eventDate) }}
+                    </span>
+                  </div>
+
                   <div class="flex flex-wrap gap-2">
                     <UBadge
                       v-for="issue in event.issues"
@@ -574,337 +525,152 @@ onMounted(async () => {
                       {{ issue }}
                     </UBadge>
                   </div>
-                </template>
+                </div>
 
-                <template #actions>
+                <div class="flex shrink-0 flex-wrap items-center gap-2">
                   <BaseButton kind="tertiary" size="sm" @click="focusEvent(event.id)">
                     Métricas
                   </BaseButton>
                   <BaseButton kind="secondary" size="sm" :to="`/admin/events/${event.id}/edit`">
-                    Resolver
+                    Revisar
                   </BaseButton>
-                </template>
-              </AdminEventRow>
+                </div>
+              </div>
             </div>
-          </AdminOverviewPanel>
+          </div>
+        </AdminOverviewPanel>
 
-          <div class="grid gap-8 lg:grid-cols-2">
-            <AdminOverviewPanel
-              eyebrow="Pipeline"
-              title="Tus eventos y borradores"
-              tone="subtle"
-            >
-              <div class="space-y-4">
-                <template v-if="dashboardPending">
-                  <USkeleton v-for="i in 3" :key="`mine-${i}`" class="h-28 rounded-2xl" />
-                </template>
-
-                <AdminEmptyState
-                  v-else-if="!myEvents || myEvents.data.length === 0"
-                  icon="i-lucide-file-stack"
-                  title="Sin pipeline propio"
-                  description="Todavía no hay eventos en tu carril operativo."
-                  action-label="Crear evento"
-                  action-to="/admin/events/new"
-                />
-
-                <AdminEventRow
-                  v-for="event in myEvents?.data || []"
-                  v-else
-                  :key="event.id"
-                  :title="event.name"
-                  :to="`/admin/events/${event.id}/edit`"
-                  :event-date="event.eventDate"
-                  :venue-name="event.venue.name"
-                  :venue-city="event.venue.city"
-                  :image-url="event.imageUrl"
-                  :status="event.status"
-                  :active="selectedEventId === event.id"
-                  compact
-                >
-                  <template #badges>
-                    <UBadge :color="getEventStatusColor(event.status)" variant="soft" size="xs" class="rounded-full px-2.5">
-                      {{ event.status }}
-                    </UBadge>
-                    <UBadge v-if="event.format" color="neutral" variant="outline" size="xs" class="rounded-full px-2.5">
-                      {{ event.format.name }}
-                    </UBadge>
-                  </template>
-
-                  <template #actions>
-                    <BaseButton kind="tertiary" size="sm" @click="focusEvent(event.id)">
-                      Métricas
-                    </BaseButton>
-                    <BaseButton
-                      v-if="event.status === 'DRAFT'"
-                      kind="primary"
-                      size="sm"
-                      :loading="publishingEventId === event.id"
-                      @click="publishEvent(event.id)"
-                    >
-                      Publicar
-                    </BaseButton>
-                    <BaseButton v-else kind="secondary" size="sm" :to="`/admin/events/${event.id}/edit`">
-                      Editar
-                    </BaseButton>
-                  </template>
-                </AdminEventRow>
-              </div>
-            </AdminOverviewPanel>
-
-            <AdminOverviewPanel
-              eyebrow="Calendario"
-              title="Próximos publicados"
-              tone="subtle"
-            >
-              <div class="space-y-4">
-                <template v-if="dashboardPending">
-                  <USkeleton v-for="i in 3" :key="`upcoming-${i}`" class="h-28 rounded-2xl" />
-                </template>
-
-                <AdminEmptyState
-                  v-else-if="upcomingEvents.length === 0"
-                  icon="i-lucide-calendar-search"
-                  title="Sin próximos publicados"
-                  description="No hay eventos publicados en la ventana inmediata."
-                />
-
-                <AdminEventRow
-                  v-for="event in upcomingEvents"
-                  v-else
-                  :key="event.id"
-                  :title="event.name"
-                  :to="`/admin/events/${event.id}/edit`"
-                  :event-date="event.eventDate"
-                  :venue-name="event.venue.name"
-                  :venue-city="event.venue.city"
-                  :active="selectedEventId === event.id"
-                  compact
-                >
-                  <template #badges>
-                    <UBadge color="success" variant="soft" size="xs" class="rounded-full px-2.5">
-                      Publicado
-                    </UBadge>
-                  </template>
-
-                  <template #details>
-                    <p class="text-sm text-toned">
-                      {{ getOccupancyLabel(event.ticketsSold, event.totalCapacity) }}
-                    </p>
-                  </template>
-
-                  <template #actions>
-                    <BaseButton kind="tertiary" size="sm" @click="focusEvent(event.id)">
-                      Métricas
-                    </BaseButton>
-                  </template>
-                </AdminEventRow>
-              </div>
-            </AdminOverviewPanel>
+        <AdminOverviewPanel
+          eyebrow="Evento en foco"
+          :title="focusMetrics?.eventName ?? 'Selecciona un evento'"
+          description=""
+          tone="subtle"
+        >
+          <div v-if="metricsPending" class="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+            <USkeleton v-for="i in 4" :key="`metrics-${i}`" class="h-28 rounded-2xl" />
           </div>
 
-          <AdminOverviewPanel
-            eyebrow="Catálogo publicado"
-            title="Opera la vitrina pública"
-            tone="subtle"
-          >
-            <div class="space-y-6">
-              <AdminFiltersBar
-                v-model:search="filters.search"
-                v-model:city="filters.city"
-                v-model:genre-id="filters.genreId"
-                v-model:format-id="filters.formatId"
-                v-model:date-from="filters.dateFrom"
-                v-model:date-to="filters.dateTo"
-                v-model:page-size="pageSize"
-                v-model:quick-window="quickWindow"
-                :genres="genres"
-                :formats="formats"
-                :loading="catalogPending || filtersPending"
-                :quick-window-options="quickWindowOptions"
-                class="w-full"
-                @apply="applyCatalogFilters"
-                @reset="resetCatalogFilters"
+          <div v-else-if="focusMetrics" class="space-y-6">
+            <div class="flex flex-wrap items-center gap-2">
+              <UBadge :color="getEventStatusColor(focusMetrics.status)" variant="soft" size="sm" class="rounded-full px-2.5">
+                {{ focusMetrics.status }}
+              </UBadge>
+              <UBadge color="neutral" variant="outline" size="sm" class="rounded-full px-2.5">
+                {{ formatPercent(focusMetrics.capacity.occupancyRate) }} de ocupación
+              </UBadge>
+            </div>
+
+            <div class="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+              <AdminStatCard
+                v-for="card in focusSummary"
+                :key="card.label"
+                :label="card.label"
+                :value="card.value"
+                :hint="card.hint"
+                :icon="card.icon"
+                :tone="card.tone"
               />
-
-              <div class="flex flex-col gap-3 border-y border-default/70 py-3 text-sm text-toned sm:flex-row sm:items-center sm:justify-between">
-                <p class="font-medium text-highlighted">
-                  {{ resultSummary }}
-                </p>
-                <UBadge color="neutral" variant="soft" size="sm" class="rounded-full px-2.5">
-                  Página {{ meta.page }} de {{ meta.totalPages }}
-                </UBadge>
-              </div>
-
-              <div class="space-y-4">
-                <template v-if="catalogPending">
-                  <USkeleton v-for="i in 4" :key="`catalog-${i}`" class="h-32 rounded-2xl" />
-                </template>
-
-                <AdminEmptyState
-                  v-else-if="catalogEvents.length === 0"
-                  icon="i-lucide-search-x"
-                  title="Sin resultados publicados"
-                  description="Prueba con otra ventana temporal o cambia los filtros del catálogo."
-                />
-
-                <AdminEventRow
-                  v-for="event in catalogEvents"
-                  v-else
-                  :key="event.id"
-                  :title="event.name"
-                  :to="`/admin/events/${event.id}/edit`"
-                  :event-date="event.eventDate"
-                  :venue-name="event.venue.name"
-                  :venue-city="event.venue.city"
-                  :image-url="getCatalogEventImage(event)"
-                  :status="event.status"
-                  :active="selectedEventId === event.id"
-                >
-                  <template #badges>
-                    <UBadge :color="getEventStatusColor(event.status)" variant="soft" size="xs" class="rounded-full px-2.5">
-                      {{ event.status }}
-                    </UBadge>
-                    <UBadge v-if="event.format" color="neutral" variant="outline" size="xs" class="rounded-full px-2.5">
-                      {{ event.format.name }}
-                    </UBadge>
-                  </template>
-
-                  <template #actions>
-                    <BaseButton kind="tertiary" size="sm" @click="focusEvent(event.id)">
-                      Métricas
-                    </BaseButton>
-                    <BaseButton kind="secondary" size="sm" :to="`/admin/events/${event.id}/edit`">
-                      Editar
-                    </BaseButton>
-                    <AdminDeleteAction
-                      item-label="el evento"
-                      :pending="deletingEventId === event.id"
-                      @confirm="removeEvent(event.id)"
-                    />
-                  </template>
-                </AdminEventRow>
-              </div>
-
-              <div class="flex justify-center pt-2">
-                <AdminPaginationBar
-                  v-if="meta.totalPages > 1"
-                  :page="meta.page"
-                  :total-pages="meta.totalPages"
-                  :total-items="meta.total"
-                  :page-size="meta.limit"
-                  :pending="catalogPending"
-                  @change="goToCatalogPage"
-                />
-              </div>
-            </div>
-          </AdminOverviewPanel>
-        </div>
-
-        <div class="space-y-8">
-          <AdminOverviewPanel
-            eyebrow="Evento en foco"
-            :title="focusMetrics?.eventName ?? 'Selecciona un evento'"
-            description=""
-            tone="subtle"
-          >
-            <div v-if="metricsPending" class="grid gap-4 sm:grid-cols-2">
-              <USkeleton v-for="i in 4" :key="`metrics-${i}`" class="h-28 rounded-2xl" />
             </div>
 
-            <div v-else-if="focusMetrics" class="space-y-6">
-              <div class="flex flex-wrap items-center gap-2">
-                <UBadge :color="getEventStatusColor(focusMetrics.status)" variant="soft" size="sm" class="rounded-full px-2.5">
-                  {{ focusMetrics.status }}
-                </UBadge>
-                <UBadge color="neutral" variant="outline" size="sm" class="rounded-full px-2.5">
-                  {{ formatPercent(focusMetrics.capacity.occupancyRate) }} de ocupación
-                </UBadge>
-              </div>
-
-              <div class="grid gap-4 sm:grid-cols-2">
-                <AdminStatCard
-                  v-for="card in focusSummary"
-                  :key="card.label"
-                  :label="card.label"
-                  :value="card.value"
-                  :hint="card.hint"
-                  :icon="card.icon"
-                  :tone="card.tone"
-                />
-              </div>
-
-              <AdminSection title="Desglose comercial" compact>
-                <div class="space-y-3">
-                  <div class="grid gap-3 text-sm text-toned sm:grid-cols-2">
-                    <div class="rounded-xl border border-default bg-default px-4 py-3">
-                      <p class="font-medium text-highlighted">
-                        Órdenes pendientes
-                      </p>
-                      <p class="mt-1 text-2xl font-semibold text-default">
-                        {{ formatInteger(focusMetrics.orders.pending) }}
-                      </p>
-                    </div>
-                    <div class="rounded-xl border border-default bg-default px-4 py-3">
-                      <p class="font-medium text-highlighted">
-                        Órdenes reembolsadas
-                      </p>
-                      <p class="mt-1 text-2xl font-semibold text-default">
-                        {{ formatInteger(focusMetrics.orders.refunded) }}
-                      </p>
-                    </div>
+            <AdminSection title="Desglose comercial" compact>
+              <div class="space-y-3">
+                <div class="grid gap-3 text-sm text-toned sm:grid-cols-2">
+                  <div class="rounded-xl border border-default bg-default px-4 py-3">
+                    <p class="font-medium text-highlighted">
+                      Órdenes pendientes
+                    </p>
+                    <p class="mt-1 text-2xl font-semibold text-default">
+                      {{ formatInteger(focusMetrics.orders.pending) }}
+                    </p>
                   </div>
-
-                  <div v-if="focusTicketTypes.length > 0" class="space-y-2">
-                    <div
-                      v-for="ticketType in focusTicketTypes"
-                      :key="ticketType.name"
-                      class="flex items-center justify-between rounded-xl border border-default bg-default px-4 py-3 text-sm"
-                    >
-                      <div>
-                        <p class="font-medium text-highlighted">
-                          {{ ticketType.name }}
-                        </p>
-                        <p class="text-toned">
-                          {{ formatInteger(ticketType.sold) }} vendidos
-                        </p>
-                      </div>
-                      <p class="font-semibold text-default">
-                        {{ formatCurrency(ticketType.revenue) }}
-                      </p>
-                    </div>
+                  <div class="rounded-xl border border-default bg-default px-4 py-3">
+                    <p class="font-medium text-highlighted">
+                      Órdenes reembolsadas
+                    </p>
+                    <p class="mt-1 text-2xl font-semibold text-default">
+                      {{ formatInteger(focusMetrics.orders.refunded) }}
+                    </p>
                   </div>
                 </div>
-              </AdminSection>
+
+                <div v-if="focusTicketTypes.length > 0" class="space-y-2">
+                  <div
+                    v-for="ticketType in focusTicketTypes"
+                    :key="ticketType.name"
+                    class="flex items-center justify-between rounded-xl border border-default bg-default px-4 py-3 text-sm"
+                  >
+                    <div>
+                      <p class="font-medium text-highlighted">
+                        {{ ticketType.name }}
+                      </p>
+                      <p class="text-toned">
+                        {{ formatInteger(ticketType.sold) }} vendidos
+                      </p>
+                    </div>
+                    <p class="font-semibold text-default">
+                      {{ formatCurrency(ticketType.revenue) }}
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </AdminSection>
+          </div>
+
+          <AdminEmptyState
+            v-else
+            icon="i-lucide-chart-column"
+            title="Sin evento en foco"
+            description="Selecciona “Métricas” en una fila para ver el detalle."
+          />
+        </AdminOverviewPanel>
+
+        <AdminOverviewPanel
+          eyebrow="Catálogo"
+          title="Catálogo publicado"
+          tone="subtle"
+        >
+          <div class="space-y-6">
+            <AdminFiltersBar
+              v-model:search="filters.search"
+              v-model:city="filters.city"
+              v-model:genre-id="filters.genreId"
+              v-model:format-id="filters.formatId"
+              v-model:date-from="filters.dateFrom"
+              v-model:date-to="filters.dateTo"
+              v-model:page-size="pageSize"
+              v-model:quick-window="quickWindow"
+              :genres="genres"
+              :formats="formats"
+              :loading="catalogPending || filtersPending"
+              :quick-window-options="quickWindowOptions"
+              class="w-full"
+              @apply="applyCatalogFilters"
+              @reset="resetCatalogFilters"
+            />
+
+            <div class="flex flex-col gap-3 border-y border-default/70 py-3 text-sm text-toned sm:flex-row sm:items-center sm:justify-between">
+              <p class="font-medium text-highlighted">
+                {{ resultSummary }}
+              </p>
+              <UBadge color="neutral" variant="soft" size="sm" class="rounded-full px-2.5">
+                Página {{ meta.page }} de {{ meta.totalPages }}
+              </UBadge>
             </div>
 
-            <AdminEmptyState
-              v-else
-              icon="i-lucide-chart-column"
-              title="Sin evento en foco"
-              description="Todavía no hay suficiente contexto para cargar métricas."
-            />
-          </AdminOverviewPanel>
-
-          <AdminOverviewPanel
-            eyebrow="Ranking"
-            title="Top eventos por tickets vendidos"
-            tone="subtle"
-          >
             <div class="space-y-4">
-              <template v-if="dashboardPending">
-                <USkeleton v-for="i in 3" :key="`top-${i}`" class="h-28 rounded-2xl" />
+              <template v-if="catalogPending">
+                <USkeleton v-for="i in 4" :key="`catalog-${i}`" class="h-32 rounded-2xl" />
               </template>
 
               <AdminEmptyState
-                v-else-if="topEvents.length === 0"
-                icon="i-lucide-trophy"
-                title="Sin ranking disponible"
-                description="Aún no hay suficiente venta cerrada para construir el top."
+                v-else-if="catalogEvents.length === 0"
+                icon="i-lucide-search-x"
+                title="Sin resultados publicados"
+                description="Prueba con otros filtros."
               />
 
               <AdminEventRow
-                v-for="event in topEvents"
+                v-for="event in catalogEvents"
                 v-else
                 :key="event.id"
                 :title="event.name"
@@ -912,30 +678,48 @@ onMounted(async () => {
                 :event-date="event.eventDate"
                 :venue-name="event.venue.name"
                 :venue-city="event.venue.city"
+                :image-url="getCatalogEventImage(event)"
+                :status="event.status"
                 :active="selectedEventId === event.id"
-                compact
               >
                 <template #badges>
-                  <UBadge color="primary" variant="soft" size="xs" class="rounded-full px-2.5">
-                    {{ formatInteger(event.ticketsSold) }} tickets
+                  <UBadge :color="getEventStatusColor(event.status)" variant="soft" size="xs" class="rounded-full px-2.5">
+                    {{ event.status }}
                   </UBadge>
-                </template>
-
-                <template #details>
-                  <p class="text-sm text-toned">
-                    {{ formatCurrency(event.revenue) }} · {{ getOccupancyLabel(event.ticketsSold, event.totalCapacity) }}
-                  </p>
+                  <UBadge v-if="event.format" color="neutral" variant="outline" size="xs" class="rounded-full px-2.5">
+                    {{ event.format.name }}
+                  </UBadge>
                 </template>
 
                 <template #actions>
                   <BaseButton kind="tertiary" size="sm" @click="focusEvent(event.id)">
                     Métricas
                   </BaseButton>
+                  <BaseButton kind="secondary" size="sm" :to="`/admin/events/${event.id}/edit`">
+                    Editar
+                  </BaseButton>
+                  <AdminDeleteAction
+                    item-label="el evento"
+                    :pending="deletingEventId === event.id"
+                    @confirm="removeEvent(event.id)"
+                  />
                 </template>
               </AdminEventRow>
             </div>
-          </AdminOverviewPanel>
-        </div>
+
+            <div class="flex justify-center pt-2">
+              <AdminPaginationBar
+                v-if="meta.totalPages > 1"
+                :page="meta.page"
+                :total-pages="meta.totalPages"
+                :total-items="meta.total"
+                :page-size="meta.limit"
+                :pending="catalogPending"
+                @change="goToCatalogPage"
+              />
+            </div>
+          </div>
+        </AdminOverviewPanel>
       </div>
     </div>
   </AdminPageShell>
