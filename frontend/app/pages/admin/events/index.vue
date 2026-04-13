@@ -47,6 +47,12 @@ const catalogMode = ref<CatalogMode>('published')
 
 const page = ref(1)
 const pageSize = ref(12)
+const pageSizeOptions = [
+  { label: '12', value: 12 },
+  { label: '24', value: 24 },
+  { label: '48', value: 48 },
+  { label: '96', value: 96 },
+]
 const quickWindow = ref<QuickWindow>('all')
 
 const meta = ref<PaginatedMeta>({
@@ -59,6 +65,7 @@ const meta = ref<PaginatedMeta>({
 const filters = reactive({
   search: '',
   city: '',
+  artistId: '',
   genreId: '',
   formatId: '',
   dateFrom: '',
@@ -71,6 +78,19 @@ const quickWindowOptions: Array<{ value: QuickWindow, label: string }> = [
   { value: 'thisMonth', label: 'Este mes' },
   { value: 'past', label: 'Histórico' },
 ]
+
+const quickWindowItems = computed(() => {
+  return quickWindowOptions.map(option => ({
+    value: option.value,
+    label: option.label,
+  }))
+})
+
+function setQuickWindow(value: string) {
+  if (value === 'all' || value === 'upcoming' || value === 'thisMonth' || value === 'past') {
+    quickWindow.value = value
+  }
+}
 
 const priorityIssueCount = computed(() => {
   return requiresAttention.value.reduce((total, event) => total + event.issues.length, 0)
@@ -336,6 +356,7 @@ function applyCatalogFilters() {
 function resetCatalogFilters() {
   filters.search = ''
   filters.city = ''
+  filters.artistId = ''
   filters.genreId = ''
   filters.formatId = ''
   filters.dateFrom = ''
@@ -424,32 +445,49 @@ onMounted(async () => {
             v-if="catalogMode === 'published'"
             v-model:search="filters.search"
             v-model:city="filters.city"
+            v-model:artist-id="filters.artistId"
             v-model:genre-id="filters.genreId"
             v-model:format-id="filters.formatId"
             v-model:date-from="filters.dateFrom"
             v-model:date-to="filters.dateTo"
-            v-model:page-size="pageSize"
-            v-model:quick-window="quickWindow"
             :genres="genres"
             :formats="formats"
             :loading="catalogPending || filtersPending"
-            :quick-window-options="quickWindowOptions"
             class="w-full"
             @apply="applyCatalogFilters"
             @reset="resetCatalogFilters"
           />
 
-          <div class="flex flex-col gap-3 border-y border-default/70 py-3 text-sm text-toned sm:flex-row sm:items-center sm:justify-between">
+          <div v-if="catalogMode === 'published'" class="flex flex-col gap-3 border-y border-default/70 py-3 text-sm text-toned sm:flex-row sm:items-center sm:justify-between">
+            <AdminSegmentedControl
+              :items="quickWindowItems"
+              :active-value="quickWindow"
+              size="xs"
+              @select="setQuickWindow"
+            />
+
+            <div class="flex items-center gap-3">
+              <BaseFormSelect
+                name="pageSize"
+                label="Por página"
+                :items="pageSizeOptions"
+                :model-value="pageSize"
+                :disabled="catalogPending"
+                @update:model-value="pageSize = Number($event)"
+              />
+
+              <UBadge color="neutral" variant="soft" size="sm" class="rounded-full px-2.5">
+                Página {{ meta.page }} de {{ meta.totalPages }}
+              </UBadge>
+            </div>
+          </div>
+
+          <div v-else class="flex flex-col gap-3 border-y border-default/70 py-3 text-sm text-toned sm:flex-row sm:items-center sm:justify-between">
             <p class="font-medium text-highlighted">
               {{ catalogSummary }}
             </p>
             <UBadge color="neutral" variant="soft" size="sm" class="rounded-full px-2.5">
-              <template v-if="catalogMode === 'review'">
-                {{ priorityIssueCount }} alertas
-              </template>
-              <template v-else>
-                Página {{ meta.page }} de {{ meta.totalPages }}
-              </template>
+              {{ priorityIssueCount }} alertas
             </UBadge>
           </div>
 

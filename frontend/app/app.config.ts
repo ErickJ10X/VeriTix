@@ -34,10 +34,19 @@ export default defineAppConfig({
       defaultVariants: {
         color: 'neutral',
         variant: 'subtle',
-        size: 'md',
+        size: 'lg',
+      },
+      variants: {
+        size: {
+          lg: {
+            base: 'px-3.5 py-2 text-base/5 gap-2',
+            leading: 'ps-3.5',
+            trailing: 'pe-3.5',
+          },
+        },
       },
       slots: {
-        base: 'rounded-xl border-default/85 bg-default/75 text-highlighted shadow-[inset_0_1px_0_rgba(255,255,255,0.06)]',
+        base: 'rounded-2xl border border-default/70 bg-default/85 text-highlighted shadow-[inset_0_1px_0_rgba(255,255,255,0.08)] transition-all duration-200 hover:border-primary/45 hover:bg-default/95 focus-visible:border-primary/65 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/35',
       },
     },
     card: {
