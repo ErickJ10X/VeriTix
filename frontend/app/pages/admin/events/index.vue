@@ -14,6 +14,19 @@ useSeoMeta({ title: 'Operaciones de eventos | VeriTix' })
 type QuickWindow = 'all' | 'upcoming' | 'thisMonth' | 'past'
 type EventBadgeColor = 'success' | 'warning' | 'error' | 'neutral'
 type CatalogMode = 'published' | 'review'
+interface CatalogEventListItem {
+  id: string
+  title: string
+  to: string
+  eventDate: string | null
+  status: string
+  imageUrl: string | null
+  venueName: string
+  venueCity: string
+  formatName: string
+  issues: string[]
+  isReview: boolean
+}
 
 const apiRequest = useApiRequest()
 const { ensureAdminSession, requireAdminHeaders } = useAdminApi()
@@ -117,6 +130,44 @@ const catalogSummary = computed(() => {
   const end = Math.min(meta.value.page * meta.value.limit, meta.value.total)
 
   return `Mostrando ${start}-${end} de ${meta.value.total} eventos publicados.`
+})
+
+const catalogListItems = computed<CatalogEventListItem[]>(() => {
+  if (catalogMode.value === 'review') {
+    const publishedById = new Map(catalogEvents.value.map(event => [event.id, event]))
+
+    return requiresAttention.value.map((event) => {
+      const publishedMatch = publishedById.get(event.id)
+
+      return {
+        id: event.id,
+        title: event.name,
+        to: `/admin/events/${event.id}/edit`,
+        eventDate: event.eventDate,
+        status: event.status,
+        imageUrl: publishedMatch?.imageUrl ?? null,
+        venueName: publishedMatch?.venue.name ?? '',
+        venueCity: publishedMatch?.venue.city ?? '',
+        formatName: publishedMatch?.format?.name ?? '',
+        issues: event.issues,
+        isReview: true,
+      }
+    })
+  }
+
+  return catalogEvents.value.map(event => ({
+    id: event.id,
+    title: event.name,
+    to: `/admin/events/${event.id}/edit`,
+    eventDate: event.eventDate,
+    status: event.status,
+    imageUrl: getCatalogEventImage(event),
+    venueName: event.venue.name,
+    venueCity: event.venue.city,
+    formatName: event.format?.name ?? '',
+    issues: [],
+    isReview: false,
+  }))
 })
 
 function toStartOfDayIso(value: string): string | undefined {
@@ -422,71 +473,47 @@ onMounted(async () => {
             />
 
             <AdminEventRow
-              v-for="event in requiresAttention"
-              v-else-if="catalogMode === 'review'"
+              v-for="event in catalogListItems"
+              v-else
               :key="event.id"
-              :title="event.name"
-              :to="`/admin/events/${event.id}/edit`"
+              :title="event.title"
+              :to="event.to"
               :event-date="event.eventDate"
-              :status="event.status"
+              :venue-name="event.venueName"
+              :venue-city="event.venueCity"
+              :image-url="event.imageUrl"
+              :status="event.isReview ? '' : event.status"
             >
               <template #badges>
                 <UBadge :color="getEventStatusColor(event.status)" variant="soft" size="xs" class="rounded-full px-2.5">
                   {{ event.status }}
                 </UBadge>
-                <UBadge color="warning" variant="outline" size="xs" class="rounded-full px-2.5">
+                <UBadge v-if="event.formatName" color="neutral" variant="outline" size="xs" class="rounded-full px-2.5">
+                  {{ event.formatName }}
+                </UBadge>
+                <UBadge v-if="event.isReview" color="neutral" variant="outline" size="xs" class="rounded-full px-2.5">
+                  Revisión
+                </UBadge>
+                <UBadge v-if="event.isReview" color="warning" variant="outline" size="xs" class="rounded-full px-2.5">
                   {{ event.issues.length }} alertas
                 </UBadge>
               </template>
 
               <template #details>
-                <div class="flex flex-wrap gap-2">
-                  <UBadge
-                    v-for="issue in event.issues"
-                    :key="issue"
-                    color="warning"
-                    variant="subtle"
-                    size="xs"
-                    class="rounded-full px-2.5"
-                  >
-                    {{ issue }}
-                  </UBadge>
-                </div>
+                <p v-if="event.isReview && event.issues.length > 0" class="flex items-start gap-2 text-sm text-toned">
+                  <UIcon name="i-lucide-alert-triangle" class="mt-0.5 size-4 shrink-0 text-warning" />
+                  <span>
+                    {{ event.issues.join(' · ') }}
+                  </span>
+                </p>
               </template>
 
               <template #actions>
-                <BaseButton kind="secondary" size="sm" :to="`/admin/events/${event.id}/edit`">
-                  Revisar
-                </BaseButton>
-              </template>
-            </AdminEventRow>
-
-            <AdminEventRow
-              v-for="event in catalogEvents"
-              v-else
-              :key="event.id"
-              :title="event.name"
-              :to="`/admin/events/${event.id}/edit`"
-              :event-date="event.eventDate"
-              :venue-name="event.venue.name"
-              :venue-city="event.venue.city"
-              :image-url="getCatalogEventImage(event)"
-              :status="event.status"
-            >
-              <template #badges>
-                <UBadge :color="getEventStatusColor(event.status)" variant="soft" size="xs" class="rounded-full px-2.5">
-                  {{ event.status }}
-                </UBadge>
-                <UBadge v-if="event.format" color="neutral" variant="outline" size="xs" class="rounded-full px-2.5">
-                  {{ event.format.name }}
-                </UBadge>
-              </template>
-
-              <template #actions>
-                <BaseButton kind="secondary" size="sm" :to="`/admin/events/${event.id}/edit`">
+                <BaseButton kind="secondary" size="sm" :to="event.to">
                   Editar
                 </BaseButton>
                 <AdminDeleteAction
+                  v-if="!event.isReview"
                   item-label="el evento"
                   :pending="deletingEventId === event.id"
                   @confirm="removeEvent(event.id)"
