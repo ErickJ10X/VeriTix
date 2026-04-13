@@ -145,9 +145,15 @@ function formatDateTime(value: string) {
 }
 
 function getStatusTone(status: string) {
-  if (status === 'PUBLISHED') { return 'success' }
-  if (status === 'DRAFT') { return 'warning' }
-  if (status === 'CANCELLED') { return 'error' }
+  if (status === 'PUBLISHED') {
+    return 'success'
+  }
+  if (status === 'DRAFT') {
+    return 'warning'
+  }
+  if (status === 'CANCELLED') {
+    return 'error'
+  }
 
   return 'neutral'
 }
@@ -298,9 +304,9 @@ onMounted(() => {
               </div>
 
               <div class="flex shrink-0 items-center gap-3 self-start sm:self-center">
-                <UBadge :color="getStatusTone(event.status)" variant="subtle" size="sm" class="rounded-full px-2.5 font-medium">
+                <BaseBadge kind="status" :color="getStatusTone(event.status)" size="sm">
                   {{ event.status }}
-                </UBadge>
+                </BaseBadge>
 
                 <UIcon name="i-lucide-chevron-right" class="size-4 text-muted transition-colors group-hover:text-highlighted" />
               </div>
@@ -412,9 +418,9 @@ onMounted(() => {
                 </p>
               </div>
 
-              <UBadge :color="user.isActive ? 'success' : 'neutral'" variant="subtle" size="xs" class="rounded-full px-2.5 font-medium">
+              <BaseBadge kind="status" :color="user.isActive ? 'success' : 'neutral'" size="xs">
                 {{ user.isActive ? 'Activo' : 'Inactivo' }}
-              </UBadge>
+              </BaseBadge>
             </NuxtLink>
           </div>
         </AdminOverviewPanel>

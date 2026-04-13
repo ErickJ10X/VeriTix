@@ -46,7 +46,7 @@ export default defineAppConfig({
         },
       },
       slots: {
-        base: 'rounded-2xl border border-default/70 bg-default/85 text-highlighted shadow-[inset_0_1px_0_rgba(255,255,255,0.08)] transition-all duration-200 hover:border-primary/45 hover:bg-default/95 focus-visible:border-primary/65 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/35',
+        base: 'h-12 relative group inline-flex items-center rounded-2xl border border-default/70 bg-default/85 text-highlighted shadow-[inset_0_1px_0_rgba(255,255,255,0.08)] transition-all duration-200 hover:border-primary/45 hover:bg-default/95 focus-visible:border-primary/65 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/35 disabled:cursor-not-allowed disabled:opacity-75',
       },
     },
     card: {

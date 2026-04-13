@@ -246,9 +246,9 @@ onMounted(() => {
                   <p class="font-semibold text-default truncate group-hover:text-primary transition-colors">
                     {{ user.name }} {{ user.lastName }}
                   </p>
-                  <UBadge v-if="user.role === 'ADMIN'" color="primary" variant="soft" size="xs" class="font-semibold rounded-full px-2">
+                  <BaseBadge v-if="user.role === 'ADMIN'" kind="role" size="xs">
                     ADMIN
-                  </UBadge>
+                  </BaseBadge>
                 </div>
                 <div class="flex items-center gap-3 text-sm text-muted">
                   <span class="flex items-center gap-1.5 truncate">
@@ -260,14 +260,9 @@ onMounted(() => {
 
               <!-- Status & Actions -->
               <div class="flex items-center justify-between sm:justify-end gap-6 sm:w-64 mt-3 sm:mt-0 pt-3 sm:pt-0 border-t border-default sm:border-t-0">
-                <UBadge
-                  :color="user.isActive ? 'success' : 'neutral'"
-                  variant="subtle"
-                  size="xs"
-                  class="rounded-full px-2.5"
-                >
+                <BaseBadge kind="status" :color="user.isActive ? 'success' : 'neutral'" size="xs">
                   {{ user.isActive ? 'Activo' : 'Inactivo' }}
-                </UBadge>
+                </BaseBadge>
 
                 <div class="flex items-center gap-2 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity duration-200">
                   <BaseButton

@@ -4,7 +4,6 @@ import { computed } from 'vue'
 interface Props {
   search?: string
   city?: string
-  artistId?: string
   genreId?: string
   formatId?: string
   dateFrom?: string
@@ -17,7 +16,6 @@ interface Props {
 const props = withDefaults(defineProps<Props>(), {
   search: '',
   city: '',
-  artistId: '',
   genreId: '',
   formatId: '',
   dateFrom: '',
@@ -30,7 +28,6 @@ const props = withDefaults(defineProps<Props>(), {
 const emit = defineEmits<{
   (e: 'update:search', value: string): void
   (e: 'update:city', value: string): void
-  (e: 'update:artistId', value: string): void
   (e: 'update:genreId', value: string): void
   (e: 'update:formatId', value: string): void
   (e: 'update:dateFrom', value: string): void
@@ -69,7 +66,7 @@ const selectedFormatId = computed({
 <template>
   <div class="flex flex-col gap-4 w-full">
     <!-- Row 1: Text search filters -->
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 items-end">
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 items-end">
       <BaseFormField
         name="search"
         label="Buscar evento"
@@ -86,15 +83,6 @@ const selectedFormatId = computed({
         icon="i-lucide-map-pin"
         :disabled="loading"
         @update:model-value="$emit('update:city', String($event ?? ''))"
-      />
-
-      <BaseFormField
-        name="artistId"
-        label="Artista"
-        :model-value="artistId"
-        icon="i-lucide-music"
-        disabled
-        @update:model-value="$emit('update:artistId', String($event ?? ''))"
       />
     </div>
 

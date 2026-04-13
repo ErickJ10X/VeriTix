@@ -27,8 +27,7 @@ const toneClasses = computed(() => {
       rightGlow: 'bg-white/5',
       bottomGlow: 'bg-white/4',
       divider: 'border-default/45',
-      badgeColor: 'neutral',
-      badgeVariant: 'subtle',
+      badgeColor: 'neutral' as const,
       action: 'border-default/60 bg-default/6',
       aside: 'border-default/45',
       title: 'text-highlighted',
@@ -42,8 +41,7 @@ const toneClasses = computed(() => {
     rightGlow: 'bg-auric-500/14',
     bottomGlow: 'bg-primary/10',
     divider: 'border-default/60',
-    badgeColor: 'warning',
-    badgeVariant: 'soft',
+    badgeColor: 'warning' as const,
     action: 'border-default/70 bg-default/10',
     aside: 'border-default/55',
     title: 'bg-gradient-to-r from-white to-white/80 bg-clip-text text-transparent drop-shadow-sm',
@@ -80,17 +78,16 @@ const toneClasses = computed(() => {
                 {{ eyebrow }}
               </UiMetaLabel>
 
-              <UBadge
+              <BaseBadge
                 v-if="badge"
+                kind="accent"
                 :color="toneClasses.badgeColor"
-                :variant="toneClasses.badgeVariant"
                 size="xs"
                 icon="i-lucide-sparkles"
                 leading
-                class="rounded-full px-3 py-1 text-xs font-semibold tracking-wide uppercase"
               >
                 {{ badge }}
-              </UBadge>
+              </BaseBadge>
             </div>
 
             <div class="space-y-3">
@@ -106,8 +103,8 @@ const toneClasses = computed(() => {
 
           <div class="flex items-end lg:justify-end">
             <BaseButton
-              kind="secondary"
               v-if="actionTo && actionLabel"
+              kind="secondary"
               :to="actionTo"
               size="lg"
               class="px-5"

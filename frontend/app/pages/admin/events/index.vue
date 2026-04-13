@@ -65,7 +65,6 @@ const meta = ref<PaginatedMeta>({
 const filters = reactive({
   search: '',
   city: '',
-  artistId: '',
   genreId: '',
   formatId: '',
   dateFrom: '',
@@ -356,7 +355,6 @@ function applyCatalogFilters() {
 function resetCatalogFilters() {
   filters.search = ''
   filters.city = ''
-  filters.artistId = ''
   filters.genreId = ''
   filters.formatId = ''
   filters.dateFrom = ''
@@ -445,7 +443,6 @@ onMounted(async () => {
             v-if="catalogMode === 'published'"
             v-model:search="filters.search"
             v-model:city="filters.city"
-            v-model:artist-id="filters.artistId"
             v-model:genre-id="filters.genreId"
             v-model:format-id="filters.formatId"
             v-model:date-from="filters.dateFrom"
@@ -476,9 +473,9 @@ onMounted(async () => {
                 @update:model-value="pageSize = Number($event)"
               />
 
-              <UBadge color="neutral" variant="soft" size="sm" class="rounded-full px-2.5">
+              <BaseBadge kind="info" size="sm">
                 Página {{ meta.page }} de {{ meta.totalPages }}
-              </UBadge>
+              </BaseBadge>
             </div>
           </div>
 
@@ -486,9 +483,9 @@ onMounted(async () => {
             <p class="font-medium text-highlighted">
               {{ catalogSummary }}
             </p>
-            <UBadge color="neutral" variant="soft" size="sm" class="rounded-full px-2.5">
+            <BaseBadge kind="info" size="sm">
               {{ priorityIssueCount }} alertas
-            </UBadge>
+            </BaseBadge>
           </div>
 
           <div class="space-y-4">
@@ -523,18 +520,18 @@ onMounted(async () => {
               :status="event.isReview ? '' : event.status"
             >
               <template #badges>
-                <UBadge :color="getEventStatusColor(event.status)" variant="soft" size="xs" class="rounded-full px-2.5">
+                <BaseBadge kind="status" :color="getEventStatusColor(event.status)" size="xs">
                   {{ event.status }}
-                </UBadge>
-                <UBadge v-if="event.formatName" color="neutral" variant="outline" size="xs" class="rounded-full px-2.5">
+                </BaseBadge>
+                <BaseBadge v-if="event.formatName" kind="outline" size="xs">
                   {{ event.formatName }}
-                </UBadge>
-                <UBadge v-if="event.isReview" color="neutral" variant="outline" size="xs" class="rounded-full px-2.5">
+                </BaseBadge>
+                <BaseBadge v-if="event.isReview" kind="outline" size="xs">
                   Revisión
-                </UBadge>
-                <UBadge v-if="event.isReview" color="warning" variant="outline" size="xs" class="rounded-full px-2.5">
+                </BaseBadge>
+                <BaseBadge v-if="event.isReview" kind="outline" color="warning" size="xs">
                   {{ event.issues.length }} alertas
-                </UBadge>
+                </BaseBadge>
               </template>
 
               <template #details>

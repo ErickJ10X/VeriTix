@@ -268,36 +268,34 @@ onMounted(() => {
               </div>
 
               <div class="flex flex-wrap gap-2 mb-6">
-                <UBadge
+                <BaseBadge
                   v-for="genre in artist.genres.slice(0, 3)"
                   :key="genre.id"
-                  color="neutral"
-                  variant="subtle"
+                  kind="tag"
                   size="xs"
-                  class="relative z-10 rounded-md px-2.5 py-1 text-xs font-semibold"
+                  class="relative z-10"
                 >
                   {{ genre.name }}
-                </UBadge>
-                <UBadge
+                </BaseBadge>
+                <BaseBadge
                   v-if="artist.genres.length > 3"
-                  color="neutral"
-                  variant="outline"
+                  kind="outline"
                   size="xs"
-                  class="relative z-10 rounded-md px-2.5 py-1 text-xs font-semibold"
+                  class="relative z-10"
                 >
                   +{{ artist.genres.length - 3 }}
-                </UBadge>
+                </BaseBadge>
               </div>
 
               <div class="mt-auto flex items-center justify-between pt-4 border-t border-default relative z-10">
-                <UBadge
+                <BaseBadge
+                  kind="status"
                   :color="artist.isActive ? 'success' : 'neutral'"
-                  variant="soft"
                   size="xs"
-                  class="text-xs font-semibold tracking-wide uppercase"
+                  class="tracking-wide uppercase"
                 >
                   {{ artist.isActive ? 'Activo' : 'Inactivo' }}
-                </UBadge>
+                </BaseBadge>
                 <span class="text-xs font-medium text-muted truncate max-w-[100px] hover:text-toned transition-colors" :title="artist.slug">
                   {{ artist.slug }}
                 </span>
