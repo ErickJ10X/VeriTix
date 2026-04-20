@@ -41,21 +41,14 @@ function goToPage(page: number) {
         :ui="{
           list: 'gap-1',
           label: 'min-w-10 text-center',
-          item: 'rounded-sm border-default/60',
-          first: 'rounded-sm border-default/60',
-          prev: 'rounded-sm border-default/60',
-          next: 'rounded-sm border-default/60',
-          last: 'rounded-sm border-default/60',
+          item: '!rounded-sm border-default/60',
+          first: '!rounded-sm border-default/60',
+          prev: '!rounded-sm border-default/60',
+          next: '!rounded-sm border-default/60',
+          last: '!rounded-sm border-default/60',
         }"
         @update:page="goToPage"
       />
     </div>
   </div>
 </template>
-
-<style scoped>
-.admin-pagination :deep(button),
-.admin-pagination :deep(a) {
-  @apply rounded-sm;
-}
-</style>

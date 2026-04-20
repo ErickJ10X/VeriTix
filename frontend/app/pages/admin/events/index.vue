@@ -349,6 +349,12 @@ async function removeEvent(eventId: string) {
 
 function applyCatalogFilters() {
   page.value = 1
+
+  if (catalogMode.value === 'review') {
+    void refreshDashboard()
+    return
+  }
+
   void loadCatalog(1)
 }
 
@@ -361,6 +367,12 @@ function resetCatalogFilters() {
   filters.dateTo = ''
   quickWindow.value = 'all'
   page.value = 1
+
+  if (catalogMode.value === 'review') {
+    void refreshDashboard()
+    return
+  }
+
   void loadCatalog(1)
 }
 
@@ -430,7 +442,7 @@ onMounted(async () => {
         tone="subtle"
       >
         <template #actions>
-          <div v-if="catalogMode === 'published'" class="flex items-center gap-3 sm:self-center">
+          <div class="flex items-center gap-3 sm:self-center">
             <BaseButton
               kind="tertiary"
               size="md"
@@ -452,7 +464,6 @@ onMounted(async () => {
 
         <div class="space-y-6">
           <AdminFiltersBar
-            v-if="catalogMode === 'published'"
             v-model:search="filters.search"
             v-model:city="filters.city"
             v-model:genre-id="filters.genreId"
@@ -468,7 +479,7 @@ onMounted(async () => {
             @update:page-size="pageSize = Number($event)"
           />
 
-          <div v-if="catalogMode === 'published'" class="rounded-2xl border border-default/70 bg-elevated/35 p-3 text-sm text-toned sm:p-4">
+          <div class="rounded-2xl border border-default/70 bg-elevated/35 p-3 text-sm text-toned sm:p-4">
             <div class="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
               <AdminSegmentedControl
                 :items="catalogModeItems"
