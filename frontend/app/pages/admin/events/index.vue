@@ -459,44 +459,46 @@ onMounted(async () => {
             v-model:format-id="filters.formatId"
             v-model:date-from="filters.dateFrom"
             v-model:date-to="filters.dateTo"
+            :page-size="pageSize"
+            :page-size-options="pageSizeOptions"
             :genres="genres"
             :formats="formats"
             :loading="catalogPending || filtersPending"
             class="w-full"
+            @update:page-size="pageSize = Number($event)"
           />
 
-          <div v-if="catalogMode === 'published'" class="flex flex-col gap-4 border-y border-default/70 py-3 text-sm text-toned sm:flex-row sm:items-center sm:justify-between">
-            <AdminSegmentedControl
-              :items="catalogModeItems"
-              :active-value="catalogMode"
-              size="md"
-              @select="setCatalogMode"
-            />
-
-            <div class="flex flex-wrap items-center gap-4 sm:justify-end">
+          <div v-if="catalogMode === 'published'" class="rounded-2xl border border-default/70 bg-elevated/35 p-3 text-sm text-toned sm:p-4">
+            <div class="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
               <AdminSegmentedControl
-                :items="quickWindowItems"
-                :active-value="quickWindow"
-                size="sm"
-                @select="setQuickWindow"
+                :items="catalogModeItems"
+                :active-value="catalogMode"
+                size="md"
+                @select="setCatalogMode"
               />
 
-              <BaseFormSelect
-                name="pageSize"
-                label="Por página"
-                :items="pageSizeOptions"
-                :model-value="pageSize"
-                :disabled="catalogPending"
-                @update:model-value="pageSize = Number($event)"
-              />
-
-              <BaseBadge kind="info" size="sm">
-                Página {{ meta.page }} de {{ meta.totalPages }}
-              </BaseBadge>
+              <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-end sm:gap-4">
+                <AdminSegmentedControl
+                  :items="quickWindowItems"
+                  :active-value="quickWindow"
+                  size="md"
+                  @select="setQuickWindow"
+                />
+              </div>
             </div>
           </div>
 
-          <div v-else class="flex flex-col gap-3 border-y border-default/70 py-3 text-sm text-toned sm:flex-row sm:items-center sm:justify-between">
+          <AdminPaginationBar
+            v-if="catalogMode === 'published'"
+            :page="meta.page"
+            :total-pages="meta.totalPages"
+            :total-items="meta.total"
+            :page-size="meta.limit"
+            :pending="catalogPending"
+            @change="goToCatalogPage"
+          />
+
+          <div v-if="catalogMode === 'review'" class="flex flex-col gap-3 border-y border-default/70 py-3 text-sm text-toned sm:flex-row sm:items-center sm:justify-between">
             <p class="font-medium text-highlighted">
               {{ catalogSummary }}
             </p>
@@ -574,17 +576,15 @@ onMounted(async () => {
             </AdminEventRow>
           </div>
 
-          <div class="flex justify-center pt-2">
-            <AdminPaginationBar
-              v-if="catalogMode === 'published' && meta.totalPages > 1"
-              :page="meta.page"
-              :total-pages="meta.totalPages"
-              :total-items="meta.total"
-              :page-size="meta.limit"
-              :pending="catalogPending"
-              @change="goToCatalogPage"
-            />
-          </div>
+          <AdminPaginationBar
+            v-if="catalogMode === 'published'"
+            :page="meta.page"
+            :total-pages="meta.totalPages"
+            :total-items="meta.total"
+            :page-size="meta.limit"
+            :pending="catalogPending"
+            @change="goToCatalogPage"
+          />
         </div>
       </AdminOverviewPanel>
     </div>

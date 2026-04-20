@@ -4,6 +4,8 @@ import { computed } from 'vue'
 interface Props {
   search?: string
   city?: string
+  pageSize?: number
+  pageSizeOptions?: Array<{ label: string, value: string | number }>
   genreId?: string
   formatId?: string
   dateFrom?: string
@@ -16,6 +18,8 @@ interface Props {
 const props = withDefaults(defineProps<Props>(), {
   search: '',
   city: '',
+  pageSize: 12,
+  pageSizeOptions: () => [],
   genreId: '',
   formatId: '',
   dateFrom: '',
@@ -28,6 +32,7 @@ const props = withDefaults(defineProps<Props>(), {
 const emit = defineEmits<{
   (e: 'update:search', value: string): void
   (e: 'update:city', value: string): void
+  (e: 'update:pageSize', value: number): void
   (e: 'update:genreId', value: string): void
   (e: 'update:formatId', value: string): void
   (e: 'update:dateFrom', value: string): void
@@ -64,7 +69,7 @@ const selectedFormatId = computed({
 <template>
   <div class="flex w-full flex-col gap-4">
     <!-- Row 1: Text search filters -->
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 items-end">
+    <div class="grid grid-cols-1 gap-4 items-end md:grid-cols-3">
       <BaseFormField
         name="search"
         label="Buscar evento"
@@ -81,6 +86,16 @@ const selectedFormatId = computed({
         icon="i-lucide-map-pin"
         :disabled="loading"
         @update:model-value="$emit('update:city', String($event ?? ''))"
+      />
+
+      <BaseFormSelect
+        name="pageSize"
+        label="Por página"
+        size="md"
+        :items="pageSizeOptions"
+        :model-value="pageSize"
+        :disabled="loading"
+        @update:model-value="$emit('update:pageSize', Number($event ?? 12))"
       />
     </div>
 
