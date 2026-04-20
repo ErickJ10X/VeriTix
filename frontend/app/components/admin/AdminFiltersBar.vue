@@ -13,6 +13,11 @@ interface Props {
   genres?: Array<{ id: string, name: string }>
   formats?: Array<{ id: string, name: string }>
   loading?: boolean
+  showCity?: boolean
+  showPageSize?: boolean
+  showGenre?: boolean
+  showFormat?: boolean
+  showDateRange?: boolean
 }
 
 const props = withDefaults(defineProps<Props>(), {
@@ -27,6 +32,11 @@ const props = withDefaults(defineProps<Props>(), {
   genres: () => [],
   formats: () => [],
   loading: false,
+  showCity: true,
+  showPageSize: true,
+  showGenre: true,
+  showFormat: true,
+  showDateRange: true,
 })
 
 const emit = defineEmits<{
@@ -64,12 +74,47 @@ const selectedFormatId = computed({
   get: () => props.formatId || ALL_OPTION_VALUE,
   set: (value: string) => emit('update:formatId', value === ALL_OPTION_VALUE ? '' : value),
 })
+
+const textFiltersGridClass = computed(() => {
+  const visibleColumns = 1 + Number(props.showCity) + Number(props.showPageSize)
+
+  if (visibleColumns === 3) {
+    return 'md:grid-cols-3'
+  }
+
+  if (visibleColumns === 2) {
+    return 'md:grid-cols-2'
+  }
+
+  return 'md:grid-cols-1'
+})
+
+const secondaryFiltersCount = computed(() => {
+  const dateColumns = props.showDateRange ? 2 : 0
+  return dateColumns + Number(props.showGenre) + Number(props.showFormat)
+})
+
+const secondaryFiltersGridClass = computed(() => {
+  if (secondaryFiltersCount.value >= 4) {
+    return 'md:grid-cols-4'
+  }
+
+  if (secondaryFiltersCount.value === 3) {
+    return 'md:grid-cols-3'
+  }
+
+  if (secondaryFiltersCount.value === 2) {
+    return 'md:grid-cols-2'
+  }
+
+  return 'md:grid-cols-1'
+})
 </script>
 
 <template>
   <div class="flex w-full flex-col gap-4">
     <!-- Row 1: Text search filters -->
-    <div class="grid grid-cols-1 gap-4 items-end md:grid-cols-3">
+    <div class="grid grid-cols-1 items-end gap-4" :class="textFiltersGridClass">
       <BaseFormField
         name="search"
         label="Buscar evento"
@@ -80,6 +125,7 @@ const selectedFormatId = computed({
       />
 
       <BaseFormField
+        v-if="showCity"
         name="city"
         label="Ciudad"
         :model-value="city"
@@ -89,6 +135,7 @@ const selectedFormatId = computed({
       />
 
       <BaseFormSelect
+        v-if="showPageSize"
         name="pageSize"
         label="Por página"
         size="md"
@@ -100,8 +147,13 @@ const selectedFormatId = computed({
     </div>
 
     <!-- Row 2: Dates and dropdowns -->
-    <div class="grid grid-cols-2 md:grid-cols-4 gap-4 items-end">
+    <div
+      v-if="secondaryFiltersCount > 0"
+      class="grid grid-cols-1 items-end gap-4"
+      :class="secondaryFiltersGridClass"
+    >
       <BaseFormField
+        v-if="showDateRange"
         name="dateFrom"
         label="Desde"
         type="date"
@@ -111,6 +163,7 @@ const selectedFormatId = computed({
       />
 
       <BaseFormField
+        v-if="showDateRange"
         name="dateTo"
         label="Hasta"
         type="date"
@@ -120,6 +173,7 @@ const selectedFormatId = computed({
       />
 
       <BaseFormSelect
+        v-if="showGenre"
         name="genreId"
         label="Género"
         :items="genreOptions"
@@ -129,6 +183,7 @@ const selectedFormatId = computed({
       />
 
       <BaseFormSelect
+        v-if="showFormat"
         name="formatId"
         label="Formato"
         :items="formatOptions"

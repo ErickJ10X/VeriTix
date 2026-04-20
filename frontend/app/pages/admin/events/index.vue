@@ -475,6 +475,10 @@ onMounted(async () => {
             :genres="genres"
             :formats="formats"
             :loading="catalogPending || filtersPending"
+            :show-page-size="catalogMode === 'published'"
+            :show-date-range="catalogMode === 'published'"
+            :show-genre="catalogMode === 'published'"
+            :show-format="catalogMode === 'published'"
             class="w-full"
             @update:page-size="pageSize = Number($event)"
           />
@@ -488,7 +492,10 @@ onMounted(async () => {
                 @select="setCatalogMode"
               />
 
-              <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-end sm:gap-4">
+              <div
+                v-if="catalogMode === 'published'"
+                class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-end sm:gap-4"
+              >
                 <AdminSegmentedControl
                   :items="quickWindowItems"
                   :active-value="quickWindow"
