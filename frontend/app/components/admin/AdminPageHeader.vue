@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed } from 'vue'
+import { computed } from 'vue';
 
 const props = withDefaults(defineProps<{
   title: string
@@ -33,7 +33,7 @@ const accentClasses = computed(() => {
     <div class="flex items-start gap-4">
       <div
         v-if="icon"
-        class="flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-lg" :class="[accentClasses]"
+        class="flex h-12 w-12 shrink-0 items-center justify-center rounded-lg" :class="[accentClasses]"
       >
         <UIcon :name="icon" class="h-6 w-6" />
       </div>
@@ -47,7 +47,7 @@ const accentClasses = computed(() => {
       </div>
     </div>
 
-    <div v-if="actionLabel" class="flex-shrink-0">
+    <div v-if="actionLabel" class="shrink-0">
       <BaseButton
         :to="actionTo"
         kind="primary"

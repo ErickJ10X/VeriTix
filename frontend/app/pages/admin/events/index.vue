@@ -430,12 +430,24 @@ onMounted(async () => {
         tone="subtle"
       >
         <template #actions>
-          <AdminSegmentedControl
-            :items="catalogModeItems"
-            :active-value="catalogMode"
-            size="sm"
-            @select="setCatalogMode"
-          />
+          <div v-if="catalogMode === 'published'" class="flex items-center gap-3 sm:self-center">
+            <BaseButton
+              kind="tertiary"
+              size="md"
+              :disabled="catalogPending || filtersPending"
+              @click="resetCatalogFilters"
+            >
+              Resetear
+            </BaseButton>
+            <BaseButton
+              kind="primary"
+              size="md"
+              :loading="catalogPending || filtersPending"
+              @click="applyCatalogFilters"
+            >
+              Aplicar
+            </BaseButton>
+          </div>
         </template>
 
         <div class="space-y-6">
@@ -451,19 +463,24 @@ onMounted(async () => {
             :formats="formats"
             :loading="catalogPending || filtersPending"
             class="w-full"
-            @apply="applyCatalogFilters"
-            @reset="resetCatalogFilters"
           />
 
-          <div v-if="catalogMode === 'published'" class="flex flex-col gap-3 border-y border-default/70 py-3 text-sm text-toned sm:flex-row sm:items-center sm:justify-between">
+          <div v-if="catalogMode === 'published'" class="flex flex-col gap-4 border-y border-default/70 py-3 text-sm text-toned sm:flex-row sm:items-center sm:justify-between">
             <AdminSegmentedControl
-              :items="quickWindowItems"
-              :active-value="quickWindow"
-              size="xs"
-              @select="setQuickWindow"
+              :items="catalogModeItems"
+              :active-value="catalogMode"
+              size="md"
+              @select="setCatalogMode"
             />
 
-            <div class="flex items-center gap-3">
+            <div class="flex flex-wrap items-center gap-4 sm:justify-end">
+              <AdminSegmentedControl
+                :items="quickWindowItems"
+                :active-value="quickWindow"
+                size="sm"
+                @select="setQuickWindow"
+              />
+
               <BaseFormSelect
                 name="pageSize"
                 label="Por página"

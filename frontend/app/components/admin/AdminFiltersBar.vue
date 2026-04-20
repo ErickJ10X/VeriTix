@@ -32,8 +32,6 @@ const emit = defineEmits<{
   (e: 'update:formatId', value: string): void
   (e: 'update:dateFrom', value: string): void
   (e: 'update:dateTo', value: string): void
-  (e: 'apply'): void
-  (e: 'reset'): void
 }>()
 
 const ALL_OPTION_VALUE = '__all__'
@@ -64,7 +62,7 @@ const selectedFormatId = computed({
 </script>
 
 <template>
-  <div class="flex flex-col gap-4 w-full">
+  <div class="flex w-full flex-col gap-4">
     <!-- Row 1: Text search filters -->
     <div class="grid grid-cols-1 md:grid-cols-2 gap-4 items-end">
       <BaseFormField
@@ -86,8 +84,8 @@ const selectedFormatId = computed({
       />
     </div>
 
-    <!-- Row 2: Dates, dropdowns, actions -->
-    <div class="grid grid-cols-2 md:grid-cols-5 gap-4 items-end">
+    <!-- Row 2: Dates and dropdowns -->
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-4 items-end">
       <BaseFormField
         name="dateFrom"
         label="Desde"
@@ -123,25 +121,6 @@ const selectedFormatId = computed({
         :disabled="loading"
         @update:model-value="selectedFormatId = String($event ?? ALL_OPTION_VALUE)"
       />
-
-      <div class="flex items-end gap-2">
-        <BaseButton
-          kind="tertiary"
-          size="sm"
-          :disabled="loading"
-          @click="$emit('reset')"
-        >
-          Resetear
-        </BaseButton>
-        <BaseButton
-          kind="primary"
-          size="sm"
-          :loading="loading"
-          @click="$emit('apply')"
-        >
-          Aplicar
-        </BaseButton>
-      </div>
     </div>
   </div>
 </template>
