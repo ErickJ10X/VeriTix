@@ -1,8 +1,6 @@
 <script setup lang="ts">
 import type {
-  AdminArtistRecord,
   AdminEventRecord,
-  AdminUserRecord,
   PaginatedResponse,
 } from '~/types'
 
@@ -12,7 +10,7 @@ definePageMeta({
 
 useSeoMeta({
   title: 'Admin | VeriTix',
-  description: 'Dashboard operativo para eventos, usuarios y artistas en VeriTix.',
+  description: 'Dashboard operativo de eventos en VeriTix.',
 })
 
 const apiRequest = useApiRequest()
@@ -20,16 +18,13 @@ const { ensureAdminSession, requireAdminHeaders } = useAdminApi()
 const { getApiErrorMessage } = useApiErrorMessage()
 
 const events = ref<AdminEventRecord[]>([])
-const users = ref<AdminUserRecord[]>([])
-const artists = ref<AdminArtistRecord[]>([])
 const pending = ref(true)
 const errorMessage = ref('')
 
 const metrics = computed(() => {
-  const activeUsers = users.value.filter(user => user.isActive).length
-  const activeArtists = artists.value.filter(artist => artist.isActive).length
-  const attentionItems = (users.value.length - activeUsers) + (artists.value.length - activeArtists)
   const scheduledEvents = events.value.filter(event => new Date(event.eventDate).getTime() >= Date.now()).length
+  const draftEvents = events.value.filter(event => event.status === 'DRAFT').length
+  const cancelledEvents = events.value.filter(event => event.status === 'CANCELLED').length
 
   return [
     {
@@ -40,25 +35,18 @@ const metrics = computed(() => {
       variant: 'warning' as const,
     },
     {
-      label: 'Usuarios',
-      value: users.value.length,
-      hint: `${activeUsers} activos`,
-      icon: 'i-lucide-users',
-      variant: 'primary' as const,
-    },
-    {
-      label: 'Artistas',
-      value: artists.value.length,
-      hint: `${activeArtists} activos`,
-      icon: 'i-lucide-mic',
-      variant: 'success' as const,
+      label: 'Borradores',
+      value: draftEvents,
+      hint: draftEvents > 0 ? 'pendientes de publicar' : 'sin bloqueos de publicación',
+      icon: 'i-lucide-file-pen-line',
+      variant: draftEvents > 0 ? 'warning' as const : 'success' as const,
     },
     {
       label: 'Atención',
-      value: attentionItems,
-      hint: 'requeridos',
+      value: cancelledEvents,
+      hint: cancelledEvents > 0 ? 'eventos cancelados' : 'sin incidencias críticas',
       icon: 'i-lucide-alert-circle',
-      variant: attentionItems > 0 ? 'error' as const : 'default' as const,
+      variant: cancelledEvents > 0 ? 'error' as const : 'default' as const,
     },
   ]
 })
@@ -69,23 +57,11 @@ const upcomingEvents = computed(() => {
     .slice(0, 5)
 })
 
-const recentUsers = computed(() => {
-  return [...users.value]
-    .sort((left, right) => new Date(right.createdAt).getTime() - new Date(left.createdAt).getTime())
-    .slice(0, 5)
-})
-
-const recentArtists = computed(() => {
-  return [...artists.value]
-    .sort((left, right) => new Date(right.updatedAt).getTime() - new Date(left.updatedAt).getTime())
-    .slice(0, 5)
-})
-
 const attentionQueue = computed(() => {
   const scheduledEvents = events.value.filter(event => new Date(event.eventDate).getTime() >= Date.now()).length
   const draftEvents = events.value.filter(event => event.status === 'DRAFT').length
-  const inactiveUsers = users.value.filter(user => !user.isActive).length
-  const inactiveArtists = artists.value.filter(artist => !artist.isActive).length
+  const cancelledEvents = events.value.filter(event => event.status === 'CANCELLED').length
+  const pastEvents = events.value.filter(event => new Date(event.eventDate).getTime() < Date.now()).length
 
   return [
     {
@@ -101,16 +77,16 @@ const attentionQueue = computed(() => {
       icon: 'i-lucide-file-pen-line',
     },
     {
-      label: 'Usuarios inactivos',
-      detail: inactiveUsers > 0 ? `${inactiveUsers} requieren revisión` : 'Sin incidencias en cuentas',
-      tone: inactiveUsers > 0 ? 'error' as const : 'success' as const,
-      icon: 'i-lucide-user-x',
+      label: 'Eventos cancelados',
+      detail: cancelledEvents > 0 ? `${cancelledEvents} requieren seguimiento` : 'Sin cancelaciones activas',
+      tone: cancelledEvents > 0 ? 'error' as const : 'success' as const,
+      icon: 'i-lucide-ban',
     },
     {
-      label: 'Artistas inactivos',
-      detail: inactiveArtists > 0 ? `${inactiveArtists} necesitan atención` : 'Catálogo estable hoy',
-      tone: inactiveArtists > 0 ? 'error' as const : 'success' as const,
-      icon: 'i-lucide-mic-off',
+      label: 'Histórico',
+      detail: `${pastEvents} eventos ya celebrados`,
+      tone: 'default' as const,
+      icon: 'i-lucide-history',
     },
   ]
 })
@@ -123,22 +99,12 @@ const quickActions = [
     icon: 'i-lucide-calendar-plus',
   },
   {
-    label: 'Nuevo usuario',
-    to: '/admin/users/new',
+    label: 'Ver catálogo',
+    to: '/admin/events',
     kind: 'secondary' as const,
-    icon: 'i-lucide-user-plus',
-  },
-  {
-    label: 'Nuevo artista',
-    to: '/admin/artists/new',
-    kind: 'secondary' as const,
-    icon: 'i-lucide-mic-vocal',
+    icon: 'i-lucide-store',
   },
 ] as const
-
-function formatRelativeDate(value: string) {
-  return new Date(value).toLocaleDateString('es-ES', { day: 'numeric', month: 'short' })
-}
 
 function formatDateTime(value: string) {
   return new Date(value).toLocaleString('es-ES', { dateStyle: 'medium', timeStyle: 'short' })
@@ -158,14 +124,6 @@ function getStatusTone(status: string) {
   return 'neutral'
 }
 
-function getUserInitials(user: AdminUserRecord) {
-  return `${user.name.charAt(0)}${user.lastName.charAt(0)}`.toUpperCase()
-}
-
-function getArtistInitials(artist: AdminArtistRecord) {
-  return artist.name.charAt(0).toUpperCase()
-}
-
 async function loadDashboard() {
   pending.value = true
   errorMessage.value = ''
@@ -174,27 +132,13 @@ async function loadDashboard() {
     await ensureAdminSession()
     const headers = requireAdminHeaders()
 
-    const [eventsResponse, usersResponse, artistsResponse] = await Promise.all([
-      apiRequest<PaginatedResponse<AdminEventRecord>>('/admin/events', {
-        method: 'GET',
-        headers,
-        query: { page: 1, limit: 12 },
-      }),
-      apiRequest<PaginatedResponse<AdminUserRecord>>('/admin/users', {
-        method: 'GET',
-        headers,
-        query: { page: 1, limit: 12 },
-      }),
-      apiRequest<PaginatedResponse<AdminArtistRecord>>('/admin/artists', {
-        method: 'GET',
-        headers,
-        query: { page: 1, limit: 12 },
-      }),
-    ])
+    const eventsResponse = await apiRequest<PaginatedResponse<AdminEventRecord>>('/admin/events', {
+      method: 'GET',
+      headers,
+      query: { page: 1, limit: 12 },
+    })
 
     events.value = eventsResponse.data
-    users.value = usersResponse.data
-    artists.value = artistsResponse.data
   }
   catch (error) {
     errorMessage.value = getApiErrorMessage(error, 'No pudimos cargar el resumen del dashboard.')
@@ -212,7 +156,7 @@ onMounted(() => {
 <template>
   <AdminPageShell
     title="Dashboard"
-    description="Supervisa agenda, personas y catálogo desde una vista clara, más útil y menos saturada visualmente."
+    description="Supervisa agenda y estado operativo de eventos desde una vista clara y enfocada."
     primary-action-to="/admin/events/new"
     primary-action-label="Nuevo evento"
   >
@@ -370,108 +314,6 @@ onMounted(() => {
                 </BaseButton>
               </div>
             </div>
-          </div>
-        </AdminOverviewPanel>
-      </div>
-
-      <div class="grid gap-6 xl:grid-cols-2">
-        <AdminOverviewPanel
-          eyebrow="Personas"
-          title="Usuarios recientes"
-          description="Últimos accesos creados o actualizados para revisar actividad y estado general."
-          tone="subtle"
-        >
-          <template #actions>
-            <BaseButton kind="tertiary" size="sm" to="/admin/users" trailing-icon="i-lucide-arrow-right">
-              Ver todos
-            </BaseButton>
-          </template>
-
-          <div v-if="pending" class="space-y-3">
-            <USkeleton v-for="index in 4" :key="index" class="h-16 rounded-xl" />
-          </div>
-
-          <AdminEmptyState
-            v-else-if="recentUsers.length === 0"
-            icon="i-lucide-users"
-            title="Sin usuarios recientes"
-            description="Cuando entren nuevas cuentas o cambios recientes aparecerán aquí para seguimiento rápido."
-          />
-
-          <div v-else class="divide-y divide-default/55">
-            <NuxtLink
-              v-for="user in recentUsers.slice(0, 4)"
-              :key="user.id"
-              :to="`/admin/users/${user.id}/edit`"
-              class="group flex items-center gap-3 py-4 first:pt-0 last:pb-0"
-            >
-              <div class="flex size-10 shrink-0 items-center justify-center rounded-full border border-primary/20 bg-primary/10 text-xs font-semibold text-primary">
-                {{ getUserInitials(user) }}
-              </div>
-
-              <div class="min-w-0 flex-1 space-y-1">
-                <p class="truncate text-sm font-semibold text-highlighted transition-colors group-hover:text-primary">
-                  {{ user.name }} {{ user.lastName }}
-                </p>
-                <p class="truncate text-sm text-toned">
-                  {{ user.email }}
-                </p>
-              </div>
-
-              <BaseBadge kind="status" :color="user.isActive ? 'success' : 'neutral'" size="xs">
-                {{ user.isActive ? 'Activo' : 'Inactivo' }}
-              </BaseBadge>
-            </NuxtLink>
-          </div>
-        </AdminOverviewPanel>
-
-        <AdminOverviewPanel
-          eyebrow="Catálogo"
-          title="Artistas recientes"
-          description="Altas o cambios recientes del catálogo para verificar consistencia y preparación editorial."
-          tone="subtle"
-        >
-          <template #actions>
-            <BaseButton kind="tertiary" size="sm" to="/admin/artists" trailing-icon="i-lucide-arrow-right">
-              Ver todos
-            </BaseButton>
-          </template>
-
-          <div v-if="pending" class="space-y-3">
-            <USkeleton v-for="index in 4" :key="index" class="h-16 rounded-xl" />
-          </div>
-
-          <AdminEmptyState
-            v-else-if="recentArtists.length === 0"
-            icon="i-lucide-mic-vocal"
-            title="Sin artistas recientes"
-            description="El catálogo aún no tiene movimientos recientes. Cuando los haya, aparecerán aquí."
-          />
-
-          <div v-else class="divide-y divide-default/55">
-            <NuxtLink
-              v-for="artist in recentArtists.slice(0, 4)"
-              :key="artist.id"
-              :to="`/admin/artists/${artist.id}/edit`"
-              class="group flex items-center gap-3 py-4 first:pt-0 last:pb-0"
-            >
-              <div class="flex size-10 shrink-0 items-center justify-center rounded-full border border-success/20 bg-success/10 text-xs font-semibold text-success">
-                {{ getArtistInitials(artist) }}
-              </div>
-
-              <div class="min-w-0 flex-1 space-y-1">
-                <p class="truncate text-sm font-semibold text-highlighted transition-colors group-hover:text-success">
-                  {{ artist.name }}
-                </p>
-                <p class="truncate text-sm text-toned">
-                  {{ artist.country || 'País pendiente' }}
-                </p>
-              </div>
-
-              <span class="text-xs text-dimmed">
-                {{ formatRelativeDate(artist.updatedAt) }}
-              </span>
-            </NuxtLink>
           </div>
         </AdminOverviewPanel>
       </div>

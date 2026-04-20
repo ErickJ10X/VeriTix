@@ -14,8 +14,6 @@ const route = useRoute()
 const navigationItems = [
   { label: 'Dashboard', to: '/admin', icon: 'i-lucide-layout-dashboard' },
   { label: 'Eventos', to: '/admin/events', icon: 'i-lucide-calendar-range' },
-  { label: 'Usuarios', to: '/admin/users', icon: 'i-lucide-users' },
-  { label: 'Artistas', to: '/admin/artists', icon: 'i-lucide-mic-vocal' },
 ] as const
 
 const navigationSegments = computed(() => {

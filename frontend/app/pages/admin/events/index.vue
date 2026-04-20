@@ -95,32 +95,6 @@ const priorityIssueCount = computed(() => {
   return requiresAttention.value.reduce((total, event) => total + event.issues.length, 0)
 })
 
-const controlStats = computed(() => {
-  return [
-    {
-      label: 'En atención',
-      value: requiresAttention.value.length,
-      hint: requiresAttention.value.length > 0 ? 'Pendientes de revisar' : 'Sin bloqueos activos',
-      icon: 'i-lucide-siren',
-      tone: requiresAttention.value.length > 0 ? 'warning' as const : 'success' as const,
-    },
-    {
-      label: 'Alertas',
-      value: priorityIssueCount.value,
-      hint: requiresAttention.value.length > 0 ? 'Distribuidas en revisión' : 'Nada pendiente hoy',
-      icon: 'i-lucide-alert-triangle',
-      tone: priorityIssueCount.value > 0 ? 'warning' as const : 'success' as const,
-    },
-    {
-      label: 'Publicados',
-      value: meta.value.total,
-      hint: meta.value.total > 0 ? `${meta.value.totalPages} páginas en catálogo` : 'Sin resultados con los filtros actuales',
-      icon: 'i-lucide-store',
-      tone: meta.value.total > 0 ? 'primary' as const : 'default' as const,
-    },
-  ]
-})
-
 const catalogModeItems = computed(() => {
   return [
     { value: 'published', label: 'Publicados', icon: 'i-lucide-store' },
@@ -402,39 +376,6 @@ onMounted(async () => {
     <div class="mx-auto max-w-7xl space-y-8" data-testid="admin-events-page">
       <BaseStatusMessage v-if="errorMessage" :message="errorMessage" />
       <BaseStatusMessage v-if="successMessage" tone="success" :message="successMessage" />
-
-      <AdminOverviewPanel
-        eyebrow="Dashboard"
-        title="Control operativo"
-        tone="subtle"
-      >
-        <template #actions>
-          <BaseButton kind="secondary" size="sm" leading-icon="i-lucide-refresh-cw" @click="refreshDashboard">
-            Refrescar
-          </BaseButton>
-        </template>
-
-        <div class="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
-          <template v-if="dashboardPending || catalogPending">
-            <div v-for="i in 3" :key="i" class="rounded-2xl border border-default bg-default p-6">
-              <USkeleton class="mb-4 h-10 w-10 rounded-lg" />
-              <USkeleton class="mb-2 h-8 w-20" />
-              <USkeleton class="h-4 w-28" />
-            </div>
-          </template>
-
-          <AdminStatCard
-            v-for="card in controlStats"
-            v-else
-            :key="card.label"
-            :label="card.label"
-            :value="card.value"
-            :hint="card.hint"
-            :icon="card.icon"
-            :tone="card.tone"
-          />
-        </div>
-      </AdminOverviewPanel>
 
       <AdminOverviewPanel
         eyebrow="Catálogo"
