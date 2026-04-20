@@ -557,16 +557,16 @@ onMounted(async () => {
               :status="event.isReview ? '' : event.status"
             >
               <template #badges>
-                <BaseBadge kind="status" :color="getEventStatusColor(event.status)" size="xs">
+                <BaseBadge kind="status" :color="getEventStatusColor(event.status)" size="sm">
                   {{ event.status }}
                 </BaseBadge>
-                <BaseBadge v-if="event.formatName" kind="outline" size="xs">
+                <BaseBadge v-if="event.formatName" kind="tag" size="sm">
                   {{ event.formatName }}
                 </BaseBadge>
-                <BaseBadge v-if="event.isReview" kind="outline" size="xs">
+                <BaseBadge v-if="event.isReview" kind="info" size="sm">
                   Revisión
                 </BaseBadge>
-                <BaseBadge v-if="event.isReview" kind="outline" color="warning" size="xs">
+                <BaseBadge v-if="event.isReview" kind="status" color="warning" size="sm">
                   {{ event.issues.length }} alertas
                 </BaseBadge>
               </template>
@@ -581,12 +581,14 @@ onMounted(async () => {
               </template>
 
               <template #actions>
-                <BaseButton kind="secondary" size="sm" :to="event.to">
+                <BaseButton kind="secondary" size="sm" class="!rounded-md border-default/55 bg-default/55 hover:bg-default/70" :to="event.to">
                   Editar
                 </BaseButton>
                 <AdminDeleteAction
                   v-if="!event.isReview"
                   item-label="el evento"
+                  trigger-kind="secondary"
+                  trigger-class="!rounded-md border-error/35 text-error hover:border-error/50 hover:bg-error/12 hover:text-error"
                   :pending="deletingEventId === event.id"
                   @confirm="removeEvent(event.id)"
                 />
