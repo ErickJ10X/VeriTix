@@ -3,40 +3,66 @@ import { computed } from 'vue'
 
 interface Props {
   search?: string
+  searchLabel?: string
+  searchName?: string
+  searchPlaceholder?: string
+  searchIcon?: string
   city?: string
+  cityLabel?: string
+  cityName?: string
+  cityPlaceholder?: string
   pageSize?: number
   pageSizeOptions?: Array<{ label: string, value: string | number }>
+  pageSizeLabel?: string
+  pageSizeName?: string
   genreId?: string
+  genreLabel?: string
+  genreName?: string
   formatId?: string
+  formatLabel?: string
+  formatName?: string
   dateFrom?: string
+  dateFromLabel?: string
+  dateFromName?: string
   dateTo?: string
+  dateToLabel?: string
+  dateToName?: string
   genres?: Array<{ id: string, name: string }>
   formats?: Array<{ id: string, name: string }>
   loading?: boolean
-  showCity?: boolean
-  showPageSize?: boolean
-  showGenre?: boolean
-  showFormat?: boolean
-  showDateRange?: boolean
+  visibleFilters?: Array<'city' | 'pageSize' | 'genre' | 'format' | 'dateRange'>
 }
 
 const props = withDefaults(defineProps<Props>(), {
   search: '',
+  searchLabel: 'Buscar evento',
+  searchName: 'search',
+  searchPlaceholder: '',
+  searchIcon: 'i-lucide-search',
   city: '',
+  cityLabel: 'Ciudad',
+  cityName: 'city',
+  cityPlaceholder: '',
   pageSize: 12,
   pageSizeOptions: () => [],
+  pageSizeLabel: 'Por página',
+  pageSizeName: 'pageSize',
   genreId: '',
+  genreLabel: 'Género',
+  genreName: 'genreId',
   formatId: '',
+  formatLabel: 'Formato',
+  formatName: 'formatId',
   dateFrom: '',
+  dateFromLabel: 'Desde',
+  dateFromName: 'dateFrom',
   dateTo: '',
+  dateToLabel: 'Hasta',
+  dateToName: 'dateTo',
   genres: () => [],
   formats: () => [],
   loading: false,
-  showCity: true,
-  showPageSize: true,
-  showGenre: true,
-  showFormat: true,
-  showDateRange: true,
+  visibleFilters: () => ['city', 'pageSize', 'genre', 'format', 'dateRange'],
 })
 
 const emit = defineEmits<{
@@ -75,8 +101,14 @@ const selectedFormatId = computed({
   set: (value: string) => emit('update:formatId', value === ALL_OPTION_VALUE ? '' : value),
 })
 
+const showCity = computed(() => props.visibleFilters.includes('city'))
+const showPageSize = computed(() => props.visibleFilters.includes('pageSize'))
+const showGenre = computed(() => props.visibleFilters.includes('genre'))
+const showFormat = computed(() => props.visibleFilters.includes('format'))
+const showDateRange = computed(() => props.visibleFilters.includes('dateRange'))
+
 const textFiltersGridClass = computed(() => {
-  const visibleColumns = 1 + Number(props.showCity) + Number(props.showPageSize)
+  const visibleColumns = 1 + Number(showCity.value) + Number(showPageSize.value)
 
   if (visibleColumns === 3) {
     return 'md:grid-cols-3'
@@ -90,8 +122,8 @@ const textFiltersGridClass = computed(() => {
 })
 
 const secondaryFiltersCount = computed(() => {
-  const dateColumns = props.showDateRange ? 2 : 0
-  return dateColumns + Number(props.showGenre) + Number(props.showFormat)
+  const dateColumns = showDateRange.value ? 2 : 0
+  return dateColumns + Number(showGenre.value) + Number(showFormat.value)
 })
 
 const secondaryFiltersGridClass = computed(() => {
@@ -116,28 +148,30 @@ const secondaryFiltersGridClass = computed(() => {
     <!-- Row 1: Text search filters -->
     <div class="grid grid-cols-1 items-end gap-4" :class="textFiltersGridClass">
       <BaseFormField
-        name="search"
-        label="Buscar evento"
+        :name="searchName"
+        :label="searchLabel"
         :model-value="search"
-        icon="i-lucide-search"
+        :placeholder="searchPlaceholder"
+        :icon="searchIcon"
         :disabled="loading"
         @update:model-value="$emit('update:search', String($event ?? ''))"
       />
 
       <BaseFormField
         v-if="showCity"
-        name="city"
-        label="Ciudad"
+        :name="cityName"
+        :label="cityLabel"
         :model-value="city"
         icon="i-lucide-map-pin"
+        :placeholder="cityPlaceholder"
         :disabled="loading"
         @update:model-value="$emit('update:city', String($event ?? ''))"
       />
 
       <BaseFormSelect
         v-if="showPageSize"
-        name="pageSize"
-        label="Por página"
+        :name="pageSizeName"
+        :label="pageSizeLabel"
         size="md"
         :items="pageSizeOptions"
         :model-value="pageSize"
@@ -154,8 +188,8 @@ const secondaryFiltersGridClass = computed(() => {
     >
       <BaseFormField
         v-if="showDateRange"
-        name="dateFrom"
-        label="Desde"
+        :name="dateFromName"
+        :label="dateFromLabel"
         type="date"
         :model-value="dateFrom"
         :disabled="loading"
@@ -164,8 +198,8 @@ const secondaryFiltersGridClass = computed(() => {
 
       <BaseFormField
         v-if="showDateRange"
-        name="dateTo"
-        label="Hasta"
+        :name="dateToName"
+        :label="dateToLabel"
         type="date"
         :model-value="dateTo"
         :disabled="loading"
@@ -174,8 +208,8 @@ const secondaryFiltersGridClass = computed(() => {
 
       <BaseFormSelect
         v-if="showGenre"
-        name="genreId"
-        label="Género"
+        :name="genreName"
+        :label="genreLabel"
         :items="genreOptions"
         :model-value="selectedGenreId"
         :disabled="loading"
@@ -184,8 +218,8 @@ const secondaryFiltersGridClass = computed(() => {
 
       <BaseFormSelect
         v-if="showFormat"
-        name="formatId"
-        label="Formato"
+        :name="formatName"
+        :label="formatLabel"
         :items="formatOptions"
         :model-value="selectedFormatId"
         :disabled="loading"

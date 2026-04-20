@@ -7,26 +7,25 @@ import type {
   PaginatedMeta,
   PaginatedResponse,
 } from '~/types'
+import type {
+  CatalogEventListItem,
+  CatalogMode,
+  QuickWindow,
+} from '~/utils/admin/eventsCatalog'
+import {
+  buildCatalogQuery,
+  buildCatalogSummary,
+  CATALOG_MODE_ITEMS,
+  createCatalogListItems,
+  getEventStatusColor,
+  isCatalogMode,
+  isQuickWindow,
+  PAGE_SIZE_OPTIONS,
+  QUICK_WINDOW_OPTIONS,
+} from '~/utils/admin/eventsCatalog'
 
 definePageMeta({ middleware: 'admin' })
 useSeoMeta({ title: 'Operaciones de eventos | VeriTix' })
-
-type QuickWindow = 'all' | 'upcoming' | 'thisMonth' | 'past'
-type EventBadgeColor = 'success' | 'warning' | 'error' | 'neutral'
-type CatalogMode = 'published' | 'review'
-interface CatalogEventListItem {
-  id: string
-  title: string
-  to: string
-  eventDate: string | null
-  status: string
-  imageUrl: string | null
-  venueName: string
-  venueCity: string
-  formatName: string
-  issues: string[]
-  isReview: boolean
-}
 
 const apiRequest = useApiRequest()
 const { ensureAdminSession, requireAdminHeaders } = useAdminApi()
@@ -47,12 +46,7 @@ const catalogMode = ref<CatalogMode>('published')
 
 const page = ref(1)
 const pageSize = ref(12)
-const pageSizeOptions = [
-  { label: '12', value: 12 },
-  { label: '24', value: 24 },
-  { label: '48', value: 48 },
-  { label: '96', value: 96 },
-]
+const pageSizeOptions = PAGE_SIZE_OPTIONS
 const quickWindow = ref<QuickWindow>('all')
 
 const meta = ref<PaginatedMeta>({
@@ -71,12 +65,7 @@ const filters = reactive({
   dateTo: '',
 })
 
-const quickWindowOptions: Array<{ value: QuickWindow, label: string }> = [
-  { value: 'all', label: 'Todo' },
-  { value: 'upcoming', label: 'Próximos' },
-  { value: 'thisMonth', label: 'Este mes' },
-  { value: 'past', label: 'Histórico' },
-]
+const quickWindowOptions = QUICK_WINDOW_OPTIONS
 
 const quickWindowItems = computed(() => {
   return quickWindowOptions.map(option => ({
@@ -86,7 +75,7 @@ const quickWindowItems = computed(() => {
 })
 
 function setQuickWindow(value: string) {
-  if (value === 'all' || value === 'upcoming' || value === 'thisMonth' || value === 'past') {
+  if (isQuickWindow(value)) {
     quickWindow.value = value
   }
 }
@@ -96,10 +85,7 @@ const priorityIssueCount = computed(() => {
 })
 
 const catalogModeItems = computed(() => {
-  return [
-    { value: 'published', label: 'Publicados', icon: 'i-lucide-store' },
-    { value: 'review', label: 'Revisión', icon: 'i-lucide-siren' },
-  ] satisfies Array<{ value: CatalogMode, label: string, icon: string }>
+  return CATALOG_MODE_ITEMS
 })
 
 const catalogSectionTitle = computed(() => {
@@ -107,133 +93,20 @@ const catalogSectionTitle = computed(() => {
 })
 
 const catalogSummary = computed(() => {
-  if (catalogMode.value === 'review') {
-    if (requiresAttention.value.length === 0) {
-      return 'No hay eventos pendientes de revisión.'
-    }
-
-    return `${requiresAttention.value.length} eventos requieren revisión.`
-  }
-
-  if (meta.value.total === 0) {
-    return 'No hay eventos publicados para la combinación actual.'
-  }
-
-  const start = (meta.value.page - 1) * meta.value.limit + 1
-  const end = Math.min(meta.value.page * meta.value.limit, meta.value.total)
-
-  return `Mostrando ${start}-${end} de ${meta.value.total} eventos publicados.`
+  return buildCatalogSummary({
+    catalogMode: catalogMode.value,
+    requiresAttentionCount: requiresAttention.value.length,
+    meta: meta.value,
+  })
 })
 
 const catalogListItems = computed<CatalogEventListItem[]>(() => {
-  if (catalogMode.value === 'review') {
-    const publishedById = new Map(catalogEvents.value.map(event => [event.id, event]))
-
-    return requiresAttention.value.map((event) => {
-      const publishedMatch = publishedById.get(event.id)
-
-      return {
-        id: event.id,
-        title: event.name,
-        to: `/admin/events/${event.id}/edit`,
-        eventDate: event.eventDate,
-        status: event.status,
-        imageUrl: publishedMatch?.imageUrl ?? null,
-        venueName: publishedMatch?.venue.name ?? '',
-        venueCity: publishedMatch?.venue.city ?? '',
-        formatName: publishedMatch?.format?.name ?? '',
-        issues: event.issues,
-        isReview: true,
-      }
-    })
-  }
-
-  return catalogEvents.value.map(event => ({
-    id: event.id,
-    title: event.name,
-    to: `/admin/events/${event.id}/edit`,
-    eventDate: event.eventDate,
-    status: event.status,
-    imageUrl: getCatalogEventImage(event),
-    venueName: event.venue.name,
-    venueCity: event.venue.city,
-    formatName: event.format?.name ?? '',
-    issues: [],
-    isReview: false,
-  }))
+  return createCatalogListItems({
+    catalogMode: catalogMode.value,
+    catalogEvents: catalogEvents.value,
+    requiresAttention: requiresAttention.value,
+  })
 })
-
-function toStartOfDayIso(value: string): string | undefined {
-  if (!value) {
-    return undefined
-  }
-
-  return new Date(`${value}T00:00:00`).toISOString()
-}
-
-function toEndOfDayIso(value: string): string | undefined {
-  if (!value) {
-    return undefined
-  }
-
-  return new Date(`${value}T23:59:59`).toISOString()
-}
-
-function getQuickWindowRange() {
-  const now = new Date()
-
-  if (quickWindow.value === 'upcoming') {
-    return { dateFrom: now.toISOString(), dateTo: undefined }
-  }
-
-  if (quickWindow.value === 'past') {
-    return { dateFrom: undefined, dateTo: now.toISOString() }
-  }
-
-  if (quickWindow.value === 'thisMonth') {
-    const monthStart = new Date(now.getFullYear(), now.getMonth(), 1)
-    const monthEnd = new Date(now.getFullYear(), now.getMonth() + 1, 0, 23, 59, 59)
-
-    return { dateFrom: monthStart.toISOString(), dateTo: monthEnd.toISOString() }
-  }
-
-  return { dateFrom: undefined, dateTo: undefined }
-}
-
-function buildCatalogQuery(pageValue = page.value) {
-  const quickRange = !filters.dateFrom && !filters.dateTo
-    ? getQuickWindowRange()
-    : { dateFrom: undefined, dateTo: undefined }
-
-  return {
-    page: pageValue,
-    limit: pageSize.value,
-    search: filters.search.trim() || undefined,
-    city: filters.city.trim() || undefined,
-    genreId: filters.genreId || undefined,
-    formatId: filters.formatId || undefined,
-    dateFrom: toStartOfDayIso(filters.dateFrom) ?? quickRange.dateFrom,
-    dateTo: toEndOfDayIso(filters.dateTo) ?? quickRange.dateTo,
-  }
-}
-
-function getEventStatusColor(status: string): EventBadgeColor {
-  if (status === 'PUBLISHED') {
-    return 'success'
-  }
-  if (status === 'DRAFT') {
-    return 'warning'
-  }
-  if (status === 'CANCELLED') {
-    return 'error'
-  }
-
-  return 'neutral'
-}
-
-function getCatalogEventImage(event: AdminEventRecord) {
-  return event.imageUrl
-}
 
 async function loadFilterOptions() {
   filtersPending.value = true
@@ -262,7 +135,12 @@ async function loadCatalog(targetPage = page.value) {
     const response = await apiRequest<PaginatedResponse<AdminEventRecord>>('/admin/events', {
       method: 'GET',
       headers: requireAdminHeaders(),
-      query: buildCatalogQuery(targetPage),
+      query: buildCatalogQuery({
+        pageValue: targetPage,
+        pageSize: pageSize.value,
+        filters,
+        quickWindow: quickWindow.value,
+      }),
     })
 
     catalogEvents.value = response.data
@@ -355,7 +233,7 @@ function goToCatalogPage(nextPage: number) {
 }
 
 function setCatalogMode(value: string) {
-  if (value === 'published' || value === 'review') {
+  if (isCatalogMode(value)) {
     catalogMode.value = value
   }
 }
@@ -416,10 +294,7 @@ onMounted(async () => {
             :genres="genres"
             :formats="formats"
             :loading="catalogPending || filtersPending"
-            :show-page-size="catalogMode === 'published'"
-            :show-date-range="catalogMode === 'published'"
-            :show-genre="catalogMode === 'published'"
-            :show-format="catalogMode === 'published'"
+            :visible-filters="catalogMode === 'published' ? ['city', 'pageSize', 'genre', 'format', 'dateRange'] : ['city']"
             class="w-full"
             @update:page-size="pageSize = Number($event)"
           />
@@ -522,7 +397,7 @@ onMounted(async () => {
               </template>
 
               <template #actions>
-                <BaseButton kind="secondary" size="sm" class="!rounded-md border-default/55 bg-default/55 hover:bg-default/70" :to="event.to">
+                <BaseButton kind="secondary" size="sm" class="rounded-md! border-default/55 bg-default/55 hover:bg-default/70" :to="event.to">
                   Editar
                 </BaseButton>
                 <AdminDeleteAction

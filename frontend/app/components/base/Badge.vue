@@ -25,7 +25,7 @@ defineOptions({
 
 const props = withDefaults(defineProps<{
   kind?: BadgeKind
-  color?: 'primary' | 'secondary' | 'success' | 'info' | 'warning' | 'error' | 'neutral'
+  color?: BadgeColor
   size?: 'xs' | 'sm' | 'md' | 'lg' | 'xl'
   icon?: string
   leading?: boolean
@@ -38,10 +38,12 @@ const props = withDefaults(defineProps<{
 })
 
 type BadgeKind = 'status' | 'tag' | 'outline' | 'info' | 'role' | 'price' | 'accent'
+type BadgeColor = 'primary' | 'secondary' | 'success' | 'info' | 'warning' | 'error' | 'neutral'
+type BadgeVariant = 'soft' | 'subtle' | 'outline'
 
 const attrs = useAttrs()
 
-function resolveDefaults(kind: BadgeKind, explicitColor?: string) {
+function resolveDefaults(kind: BadgeKind, explicitColor?: BadgeColor): { color: BadgeColor, variant: BadgeVariant } {
   switch (kind) {
     case 'status':
       return { color: explicitColor ?? 'neutral', variant: 'soft' as const }
@@ -83,8 +85,10 @@ const badgeClass = computed(() => {
 
 const resolved = computed(() => {
   const defaults = resolveDefaults(props.kind, props.color)
+  const color: BadgeColor = props.color ?? defaults.color
+
   return {
-    color: props.color ?? defaults.color,
+    color,
     variant: defaults.variant,
   }
 })

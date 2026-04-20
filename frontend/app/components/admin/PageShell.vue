@@ -1,23 +1,36 @@
 <script setup lang="ts">
-withDefaults(defineProps<{
+interface AdminPageNavigationItem {
+  label: string
+  to: string
+  icon: string
+}
+
+const props = withDefaults(defineProps<{
   title: string
   description: string
   primaryActionTo?: string
   primaryActionLabel?: string
+  navigationItems?: AdminPageNavigationItem[]
 }>(), {
   primaryActionTo: '',
   primaryActionLabel: '',
 })
 
-const route = useRoute()
-
-const navigationItems = [
+const DEFAULT_NAVIGATION_ITEMS: AdminPageNavigationItem[] = [
   { label: 'Dashboard', to: '/admin', icon: 'i-lucide-layout-dashboard' },
   { label: 'Eventos', to: '/admin/events', icon: 'i-lucide-calendar-range' },
-] as const
+  { label: 'Usuarios', to: '/admin/users', icon: 'i-lucide-users' },
+  { label: 'Artistas', to: '/admin/artists', icon: 'i-lucide-mic-2' },
+]
+
+const route = useRoute()
+
+const navigationItems = computed(() => {
+  return props.navigationItems ?? DEFAULT_NAVIGATION_ITEMS
+})
 
 const navigationSegments = computed(() => {
-  return navigationItems.map(item => ({
+  return navigationItems.value.map(item => ({
     ...item,
     value: item.to,
     testId: `admin-nav-${item.label.toLowerCase()}`,
@@ -25,7 +38,7 @@ const navigationSegments = computed(() => {
 })
 
 const activeNavigation = computed(() => {
-  return navigationItems.find(item => isActive(item.to))?.to ?? '/admin'
+  return navigationItems.value.find(item => isActive(item.to))?.to ?? '/admin'
 })
 
 function isActive(path: string): boolean {
