@@ -3,8 +3,8 @@
   "rootDir": ".",
   "testEnvironment": "node",
   "testRegex": ".e2e-spec.ts$",
-  "globalSetup": "<rootDir>/setup-env.js",
-  "setupFiles": ["<rootDir>/setup-env.js"],
+  "globalSetup": "<rootDir>/setup-integration.js",
+  "setupFiles": ["<rootDir>/setup-integration.js"],
   "transform": {
     "^.+\\.(t|j)s$": ["ts-jest", { "diagnostics": false }]
   },
