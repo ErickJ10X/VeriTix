@@ -33,7 +33,21 @@ async function bootstrap() {
   app.use(bodyParser.urlencoded({ extended: true }));
 
   // Seguridad: headers HTTP (X-Content-Type-Options, Strict-Transport-Security, etc.)
-  app.use(helmet());
+  // CSP configurada para permitir los assets inline que usa Swagger UI
+  app.use(
+    helmet({
+      contentSecurityPolicy: {
+        directives: {
+          defaultSrc: [`'self'`],
+          styleSrc: [`'self'`, `'unsafe-inline'`],
+          scriptSrc: [`'self'`, `'unsafe-inline'`],
+          scriptSrcElem: [`'self'`, `'unsafe-inline'`],
+          imgSrc: [`'self'`, 'data:', 'validator.swagger.io'],
+          upgradeInsecureRequests: null,
+        },
+      },
+    }),
+  );
   app.use(cookieParser());
 
   // Prefijo global de la API
