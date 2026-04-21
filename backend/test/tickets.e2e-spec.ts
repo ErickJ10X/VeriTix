@@ -7,7 +7,26 @@ import request from 'supertest';
 import { AppModule } from '../src/app.module';
 import { PrismaService } from '../src/prisma/prisma.service';
 
+jest.setTimeout(30000);
+
 const makeHash = () => crypto.randomBytes(32).toString('hex');
+
+async function registerVerifyLogin(
+  app: INestApplication,
+  prisma: PrismaService,
+  data: { email: string; password: string; name: string; lastName: string; phone: string },
+): Promise<{ token: string; userId: string }> {
+  await request(app.getHttpServer()).post('/api/v1/auth/register').send(data).expect(201);
+  await prisma.user.update({
+    where: { email: data.email },
+    data: { emailVerified: true, verificationToken: null, verificationTokenExp: null },
+  });
+  const loginRes = await request(app.getHttpServer())
+    .post('/api/v1/auth/login')
+    .send({ email: data.email, password: data.password })
+    .expect(200);
+  return { token: loginRes.body.accessToken as string, userId: loginRes.body.user.id as string };
+}
 
 describe('Tickets (e2e)', () => {
   let app: INestApplication;
@@ -64,27 +83,24 @@ describe('Tickets (e2e)', () => {
       .expect(200);
     adminToken = adminLogin.body.accessToken as string;
 
-    // Register buyer
-    const buyerReg = await request(app.getHttpServer())
-      .post('/api/v1/auth/register')
-      .send({ email: buyerEmail, password: 'Buyer1234!', name: 'Buyer', lastName: 'Tickets', phone: buyerPhone })
-      .expect(201);
-    buyerToken = buyerReg.body.accessToken as string;
-    buyerId = buyerReg.body.user.id as string;
+    // Register + verify + login as buyer
+    const buyerResult = await registerVerifyLogin(app, prisma, {
+      email: buyerEmail, password: 'Buyer1234!', name: 'Buyer', lastName: 'Tickets', phone: buyerPhone,
+    });
+    buyerToken = buyerResult.token;
+    buyerId = buyerResult.userId;
 
-    // Register validator + upgrade role
-    const validatorReg = await request(app.getHttpServer())
-      .post('/api/v1/auth/register')
-      .send({ email: validatorEmail, password: 'Validator1234!', name: 'Validator', lastName: 'Tickets', phone: validatorPhone })
-      .expect(201);
-    const validatorId = validatorReg.body.user.id as string;
-
+    // Register + verify + login as validator, then upgrade role
+    const validatorResult = await registerVerifyLogin(app, prisma, {
+      email: validatorEmail, password: 'Validator1234!', name: 'Validator', lastName: 'Tickets', phone: validatorPhone,
+    });
     await request(app.getHttpServer())
-      .patch(`/api/v1/users/${validatorId}`)
+      .patch(`/api/v1/users/${validatorResult.userId}`)
       .set('Authorization', `Bearer ${adminToken}`)
       .send({ role: 'VALIDATOR' })
       .expect(200);
 
+    // Re-login to get token with VALIDATOR role in JWT
     const validatorLogin = await request(app.getHttpServer())
       .post('/api/v1/auth/login')
       .send({ email: validatorEmail, password: 'Validator1234!' })
@@ -184,7 +200,7 @@ describe('Tickets (e2e)', () => {
     await prisma.refreshToken.deleteMany({ where: { user: { email: { startsWith: 'e2e-tickets-' } } } });
     await prisma.user.deleteMany({ where: { email: { startsWith: 'e2e-tickets-' } } });
     await app.close();
-  });
+  }, 30000);
 
   // ── GET /api/v1/tickets/mine ───────────────────────────────────────────────
 

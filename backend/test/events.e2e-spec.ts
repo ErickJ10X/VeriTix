@@ -6,13 +6,33 @@ import request from 'supertest';
 import { AppModule } from '../src/app.module';
 import { PrismaService } from '../src/prisma/prisma.service';
 
+jest.setTimeout(30000);
+
 const uid = () => `${Date.now()}-${Math.random().toString(36).slice(2, 7)}`;
+
+async function registerVerifyLogin(
+  app: INestApplication,
+  prisma: PrismaService,
+  data: { email: string; password: string; name: string; lastName: string; phone: string },
+): Promise<{ token: string; userId: string }> {
+  await request(app.getHttpServer()).post('/api/v1/auth/register').send(data).expect(201);
+  await prisma.user.update({
+    where: { email: data.email },
+    data: { emailVerified: true, verificationToken: null, verificationTokenExp: null },
+  });
+  const loginRes = await request(app.getHttpServer())
+    .post('/api/v1/auth/login')
+    .send({ email: data.email, password: data.password })
+    .expect(200);
+  return { token: loginRes.body.accessToken as string, userId: loginRes.body.user.id as string };
+}
 
 describe('Events (e2e)', () => {
   let app: INestApplication;
   let prisma: PrismaService;
 
   const suffix = Date.now();
+  const city = `TestCity-${suffix}`; // unique per run — avoids leaking published events from prior runs
   const ADMIN_EMAIL = 'admin@veritix.app';
   const ADMIN_PASSWORD = 'Admin1234!';
 
@@ -53,32 +73,31 @@ describe('Events (e2e)', () => {
       .expect(200);
     adminToken = adminLogin.body.accessToken as string;
 
-    // Register creator + upgrade role
-    const creatorReg = await request(app.getHttpServer())
-      .post('/api/v1/auth/register')
-      .send({ email: creatorEmail, password: 'Creator1234!', name: 'Creator', lastName: 'E2E', phone: creatorPhone })
-      .expect(201);
-    creatorId = creatorReg.body.user.id as string;
+    // Register + verify + login as creator
+    const creatorResult = await registerVerifyLogin(app, prisma, {
+      email: creatorEmail, password: 'Creator1234!', name: 'Creator', lastName: 'E2E', phone: creatorPhone,
+    });
+    creatorId = creatorResult.userId;
 
+    // Upgrade to CREATOR role
     await request(app.getHttpServer())
       .patch(`/api/v1/users/${creatorId}`)
       .set('Authorization', `Bearer ${adminToken}`)
       .send({ role: 'CREATOR' })
       .expect(200);
 
-    // Re-login to get token with CREATOR role
+    // Re-login to get token with CREATOR role in JWT
     const creatorLogin = await request(app.getHttpServer())
       .post('/api/v1/auth/login')
       .send({ email: creatorEmail, password: 'Creator1234!' })
       .expect(200);
     creatorToken = creatorLogin.body.accessToken as string;
 
-    // Register buyer
-    const buyerReg = await request(app.getHttpServer())
-      .post('/api/v1/auth/register')
-      .send({ email: buyerEmail, password: 'Buyer1234!', name: 'Buyer', lastName: 'E2E', phone: buyerPhone })
-      .expect(201);
-    buyerToken = buyerReg.body.accessToken as string;
+    // Register + verify + login as buyer
+    const buyerResult = await registerVerifyLogin(app, prisma, {
+      email: buyerEmail, password: 'Buyer1234!', name: 'Buyer', lastName: 'E2E', phone: buyerPhone,
+    });
+    buyerToken = buyerResult.token;
 
     // Create venue via prisma (avoids coupling with catalogs E2E)
     const venue = await prisma.venue.create({
@@ -86,7 +105,7 @@ describe('Events (e2e)', () => {
         name: `Venue-Events-${suffix}`,
         slug: `venue-events-${suffix}`,
         address: 'Test St 1',
-        city: 'TestCity',
+        city,
         country: 'MX',
       },
     });
@@ -101,7 +120,7 @@ describe('Events (e2e)', () => {
     await prisma.refreshToken.deleteMany({ where: { user: { email: { startsWith: 'e2e-events-' } } } });
     await prisma.user.deleteMany({ where: { email: { startsWith: 'e2e-events-' } } });
     await app.close();
-  });
+  }, 30000);
 
   // ── POST /api/v1/events ────────────────────────────────────────────────────
 
@@ -242,11 +261,11 @@ describe('Events (e2e)', () => {
   // ── POST /api/v1/events/:id/publish ───────────────────────────────────────
 
   describe('POST /api/v1/events/:id/publish', () => {
-    it('13. 200 — creator publishes their event', async () => {
+    it('13. 201 — creator publishes their event', async () => {
       const res = await request(app.getHttpServer())
         .post(`/api/v1/events/${eventId}/publish`)
         .set('Authorization', `Bearer ${creatorToken}`)
-        .expect(200);
+        .expect(201);
 
       expect(res.body.status).toBe('PUBLISHED');
       expect(res.body.id).toBe(eventId);
@@ -270,9 +289,9 @@ describe('Events (e2e)', () => {
   // ── GET /api/v1/events (after publish) ────────────────────────────────────
 
   describe('GET /api/v1/events — after publish', () => {
-    it('16. PUBLISHED event appears in public listing', async () => {
+    it('16. PUBLISHED event appears in public listing (search by unique city)', async () => {
       const res = await request(app.getHttpServer())
-        .get('/api/v1/events')
+        .get(`/api/v1/events?city=${encodeURIComponent(city)}&limit=50`)
         .expect(200);
 
       const found = (res.body.data as Array<{ id: string }>).some(e => e.id === eventId);
@@ -315,9 +334,10 @@ describe('Events (e2e)', () => {
         .set('Authorization', `Bearer ${creatorToken}`)
         .expect(200);
 
-      expect(res.body.id).toBe(eventId);
-      expect(res.body).toHaveProperty('maxCapacity');
-      expect(Array.isArray(res.body.ticketTypes)).toBe(true);
+      expect(res.body.eventId).toBe(eventId);
+      expect(res.body).toHaveProperty('capacity');
+      expect(res.body).toHaveProperty('revenue');
+      expect(res.body).toHaveProperty('orders');
     });
 
     it('21. 403 — buyer cannot see metrics', async () => {

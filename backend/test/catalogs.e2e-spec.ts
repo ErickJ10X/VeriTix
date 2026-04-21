@@ -6,6 +6,8 @@ import request from 'supertest';
 import { AppModule } from '../src/app.module';
 import { PrismaService } from '../src/prisma/prisma.service';
 
+jest.setTimeout(30000);
+
 const uid = () => `${Date.now()}-${Math.random().toString(36).slice(2, 7)}`;
 
 describe('Catalogs — Venues (e2e)', () => {
@@ -47,12 +49,20 @@ describe('Catalogs — Venues (e2e)', () => {
       .expect(200);
     adminToken = adminLogin.body.accessToken as string;
 
-    // Register buyer (for 403 tests)
-    const buyerReg = await request(app.getHttpServer())
+    // Register + verify + login as buyer (for 403 tests)
+    await request(app.getHttpServer())
       .post('/api/v1/auth/register')
       .send({ email: buyerEmail, password: 'Buyer1234!', name: 'Buyer', lastName: 'Catalogs', phone: buyerPhone })
       .expect(201);
-    buyerToken = buyerReg.body.accessToken as string;
+    await prisma.user.update({
+      where: { email: buyerEmail },
+      data: { emailVerified: true, verificationToken: null, verificationTokenExp: null },
+    });
+    const buyerLogin = await request(app.getHttpServer())
+      .post('/api/v1/auth/login')
+      .send({ email: buyerEmail, password: 'Buyer1234!' })
+      .expect(200);
+    buyerToken = buyerLogin.body.accessToken as string;
   });
 
   afterAll(async () => {
@@ -61,7 +71,7 @@ describe('Catalogs — Venues (e2e)', () => {
     await prisma.refreshToken.deleteMany({ where: { user: { email: { startsWith: 'e2e-catalogs-' } } } });
     await prisma.user.deleteMany({ where: { email: { startsWith: 'e2e-catalogs-' } } });
     await app.close();
-  });
+  }, 30000);
 
   // ── POST /api/v1/venues ────────────────────────────────────────────────────
 

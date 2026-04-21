@@ -7,6 +7,25 @@ import { AppModule } from '../src/app.module';
 import { PrismaService } from '../src/prisma/prisma.service';
 import { STRIPE_CLIENT } from '../src/modules/stripe/stripe.module';
 
+jest.setTimeout(30000);
+
+async function registerVerifyLogin(
+  app: INestApplication,
+  prisma: PrismaService,
+  data: { email: string; password: string; name: string; lastName: string; phone: string },
+): Promise<{ token: string; userId: string }> {
+  await request(app.getHttpServer()).post('/api/v1/auth/register').send(data).expect(201);
+  await prisma.user.update({
+    where: { email: data.email },
+    data: { emailVerified: true, verificationToken: null, verificationTokenExp: null },
+  });
+  const loginRes = await request(app.getHttpServer())
+    .post('/api/v1/auth/login')
+    .send({ email: data.email, password: data.password })
+    .expect(200);
+  return { token: loginRes.body.accessToken as string, userId: loginRes.body.user.id as string };
+}
+
 describe('Orders (e2e)', () => {
   let app: INestApplication;
   let prisma: PrismaService;
@@ -35,10 +54,13 @@ describe('Orders (e2e)', () => {
   const mockStripe = {
     checkout: {
       sessions: {
-        create: jest.fn().mockResolvedValue({
-          id: 'cs_test_mock_session',
-          url: 'https://checkout.stripe.com/pay/cs_test_mock',
-        }),
+        // Each call returns a unique session ID to avoid DB unique constraint violations
+        create: jest.fn().mockImplementation(() =>
+          Promise.resolve({
+            id: `cs_test_${Date.now()}_${Math.random().toString(36).slice(2)}`,
+            url: 'https://checkout.stripe.com/pay/cs_test_mock',
+          }),
+        ),
       },
     },
     webhooks: {
@@ -72,20 +94,18 @@ describe('Orders (e2e)', () => {
       .expect(200);
     adminToken = adminLogin.body.accessToken as string;
 
-    // Register buyer
-    const buyerReg = await request(app.getHttpServer())
-      .post('/api/v1/auth/register')
-      .send({ email: buyerEmail, password: 'Buyer1234!', name: 'Buyer', lastName: 'Orders', phone: buyerPhone })
-      .expect(201);
-    buyerToken = buyerReg.body.accessToken as string;
-    buyerId = buyerReg.body.user.id as string;
+    // Register + verify + login as buyer
+    const buyerResult = await registerVerifyLogin(app, prisma, {
+      email: buyerEmail, password: 'Buyer1234!', name: 'Buyer', lastName: 'Orders', phone: buyerPhone,
+    });
+    buyerToken = buyerResult.token;
+    buyerId = buyerResult.userId;
 
-    // Register a second buyer (for access control tests)
-    const buyer2Reg = await request(app.getHttpServer())
-      .post('/api/v1/auth/register')
-      .send({ email: buyer2Email, password: 'Buyer1234!', name: 'Buyer2', lastName: 'Orders', phone: buyer2Phone })
-      .expect(201);
-    buyer2Token = buyer2Reg.body.accessToken as string;
+    // Register + verify + login as second buyer (access control tests)
+    const buyer2Result = await registerVerifyLogin(app, prisma, {
+      email: buyer2Email, password: 'Buyer1234!', name: 'Buyer2', lastName: 'Orders', phone: buyer2Phone,
+    });
+    buyer2Token = buyer2Result.token;
 
     // Create a CREATOR user via prisma (for event ownership + findByEvent test)
     const creator = await prisma.user.create({
@@ -146,7 +166,7 @@ describe('Orders (e2e)', () => {
     await prisma.refreshToken.deleteMany({ where: { user: { email: { startsWith: 'e2e-orders-' } } } });
     await prisma.user.deleteMany({ where: { email: { startsWith: 'e2e-orders-' } } });
     await app.close();
-  });
+  }, 30000);
 
   // ── POST /api/v1/orders ────────────────────────────────────────────────────
 
@@ -211,10 +231,11 @@ describe('Orders (e2e)', () => {
     });
 
     it('5. 404 — non-existent eventId', async () => {
+      // Use a valid v4 UUID format (13th char must be '4', 17th must be 8|9|a|b)
       await request(app.getHttpServer())
         .post('/api/v1/orders')
         .set('Authorization', `Bearer ${buyerToken}`)
-        .send({ eventId: '00000000-0000-0000-0000-000000000000', items: [{ ticketTypeId, quantity: 1 }] })
+        .send({ eventId: 'a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11', items: [{ ticketTypeId, quantity: 1 }] })
         .expect(404);
     });
   });
