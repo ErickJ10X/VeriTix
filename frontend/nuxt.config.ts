@@ -5,10 +5,14 @@ export default defineNuxtConfig({
   compatibilityDate: '2025-07-15',
   devtools: { enabled: true },
 
+  app: {
+    baseURL: '/verifront/',
+  },
+
   runtimeConfig: {
-    backendApiBase: 'http://localhost:3001/api/v1',
+    backendApiBase: 'https://cwtg.xyz/veriback/api/v1',
     public: {
-      apiBase: '/api',
+      apiBase: '/veriback/api/v1',
     },
   },
 
