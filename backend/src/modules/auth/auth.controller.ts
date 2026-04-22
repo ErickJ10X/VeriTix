@@ -175,7 +175,7 @@ export class AuthController {
     res.cookie(REFRESH_COOKIE, token, {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
-      sameSite: 'lax',
+      sameSite: 'strict',
       path: '/auth',
       maxAge: this.jwtTokenService.refreshDurationMs,
     });

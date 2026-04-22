@@ -148,7 +148,7 @@ export type FindAllEventsParams = {
   dateFrom?: string;
   dateTo?: string;
   search?: string;
-  artistName?: string;
+  artist?: string;
 };
 
 // ── Analytics types ───────────────────────────────────────────────────────────
@@ -217,7 +217,7 @@ export class EventsRepository {
   async findAll(
     params: FindAllEventsParams,
   ): Promise<PaginatedResponse<EventListItem>> {
-    const { page, limit, city, genreId, formatId, dateFrom, dateTo, search, artistName } =
+    const { page, limit, city, genreId, formatId, dateFrom, dateTo, search, artist } =
       params;
 
     const where: EventWhereInput = {
@@ -236,9 +236,9 @@ export class EventsRepository {
     if (search) {
       where.name = { contains: search, mode: 'insensitive' };
     }
-    if (artistName) {
+    if (artist) {
       where.artists = {
-        some: { artist: { name: { contains: artistName, mode: 'insensitive' } } },
+        some: { artist: { name: { contains: artist, mode: 'insensitive' } } },
       };
     }
 

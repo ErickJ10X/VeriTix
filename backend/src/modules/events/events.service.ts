@@ -76,7 +76,7 @@ export class EventsService {
         dateFrom: query.dateFrom,
         dateTo: query.dateTo,
         search: query.search,
-        artistName: query.artistName,
+        artist: query.artist,
       }),
     );
   }
@@ -119,7 +119,7 @@ export class EventsService {
           dateFrom: query.dateFrom,
           dateTo: query.dateTo,
           search: query.search,
-          artistName: query.artistName,
+          artist: query.artist,
         }),
       CACHE_TTL_SHORT,
     ) as Promise<PaginatedResponse<EventListResponseDto>>;

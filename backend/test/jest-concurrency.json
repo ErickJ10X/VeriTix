@@ -2,7 +2,7 @@
   "moduleFileExtensions": ["js", "json", "ts"],
   "rootDir": ".",
   "testEnvironment": "node",
-  "testRegex": ".e2e-spec.ts$",
+  "testRegex": ".concurrency.spec.ts$",
   "globalSetup": "<rootDir>/setup-integration.js",
   "setupFiles": ["<rootDir>/setup-integration.js"],
   "transform": {
