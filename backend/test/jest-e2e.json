@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 {
   "moduleFileExtensions": ["js", "json", "ts"],
   "rootDir": ".",
@@ -17,3 +18,24 @@
     "^@prisma-client$": "<rootDir>/../src/generated/prisma"
   }
 }
+=======
+{
+  "moduleFileExtensions": ["js", "json", "ts"],
+  "rootDir": ".",
+  "testEnvironment": "node",
+  "testRegex": ".e2e-spec.ts$",
+  "globalSetup": "<rootDir>/setup-integration.js",
+  "setupFiles": ["<rootDir>/setup-integration.js"],
+  "transform": {
+    "^.+\\.(t|j)s$": ["ts-jest", { "diagnostics": false }]
+  },
+  "transformIgnorePatterns": [
+    "node_modules/(?!jose/)"
+  ],
+  "moduleNameMapper": {
+    "^@common/(.*)$": "<rootDir>/../src/common/$1",
+    "^@modules/(.*)$": "<rootDir>/../src/modules/$1",
+    "^@prisma-client$": "<rootDir>/../src/generated/prisma"
+  }
+}
+>>>>>>> origin/backend
