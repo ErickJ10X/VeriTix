@@ -55,14 +55,14 @@ const currencyOptions = ['EUR', 'USD', 'COP']
 
 const venueOptions = computed(() => {
   return props.venues.map(venue => ({
-    label: `${venue.name} · ${venue.city}`,
+    label: `${venue.name} - ${venue.city}`,
     value: venue.id,
   }))
 })
 
 const formatOptions = computed(() => {
   return [
-    { label: 'Sin formato específico', value: NO_FORMAT_OPTION_VALUE },
+    { label: 'Sin formato especifico', value: NO_FORMAT_OPTION_VALUE },
     ...props.formats.map(format => ({ label: format.name, value: format.id })),
   ]
 })
@@ -146,51 +146,57 @@ watch(() => props.initialValue, applyInitialValue, { immediate: true })
 </script>
 
 <template>
-  <UForm :state="state" :schema="schema" :validate-on="[]" class="space-y-8" @submit="handleSubmit">
-    <div class="grid gap-5 lg:grid-cols-2">
+  <UForm :state="state" :schema="schema" :validate-on="[]" class="space-y-7 sm:space-y-8" @submit="handleSubmit">
+    <div class="grid gap-4 sm:gap-5 lg:grid-cols-2">
       <BaseFormField v-model="state.name" name="name" label="Nombre" placeholder="VeriTix Sunset Series" required />
       <BaseFormField v-model="state.eventDate" name="eventDate" label="Fecha del evento" type="datetime-local" required />
     </div>
 
-    <UFormField name="description" label="Descripción">
-      <UTextarea v-model="state.description" :rows="5" placeholder="Describe la propuesta del evento" />
+    <UFormField name="description" label="Descripcion" class="w-full">
+      <UTextarea
+        v-model="state.description"
+        class="w-full"
+        :rows="5"
+        placeholder="Describe la propuesta del evento"
+      />
     </UFormField>
 
-    <div class="grid gap-5 lg:grid-cols-3">
+    <div class="grid gap-4 sm:gap-5 lg:grid-cols-3">
       <BaseFormField v-model="state.doorsOpenTime" name="doorsOpenTime" label="Apertura de puertas" type="datetime-local" />
       <BaseFormField v-model="state.startSale" name="startSale" label="Inicio de venta" type="datetime-local" />
       <BaseFormField v-model="state.endSale" name="endSale" label="Fin de venta" type="datetime-local" />
     </div>
 
-    <div class="grid gap-5 lg:grid-cols-2">
-      <BaseFormField v-model="state.maxCapacity" name="maxCapacity" label="Capacidad máxima" type="number" required />
+    <div class="grid gap-4 sm:gap-5 lg:grid-cols-2">
+      <BaseFormField v-model="state.maxCapacity" name="maxCapacity" label="Capacidad maxima" type="number" required />
       <BaseFormField v-model="state.imageUrl" name="imageUrl" label="Imagen" type="url" placeholder="https://..." />
     </div>
 
-    <div class="grid gap-5 lg:grid-cols-3">
+    <div class="grid gap-4 sm:gap-5 lg:grid-cols-3">
       <UFormField name="currency" label="Moneda" required>
-        <USelect v-model="state.currency" :items="currencyOptions" />
+        <USelect v-model="state.currency" :items="currencyOptions" class="w-full" />
       </UFormField>
 
       <UFormField name="venueId" label="Venue" required>
-        <USelect v-model="state.venueId" :items="venueOptions" placeholder="Selecciona un venue" />
+        <USelect v-model="state.venueId" :items="venueOptions" placeholder="Selecciona un venue" class="w-full" />
       </UFormField>
 
       <UFormField name="formatId" label="Formato">
-        <USelect v-model="selectedFormatId" :items="formatOptions" />
+        <USelect v-model="selectedFormatId" :items="formatOptions" class="w-full" />
       </UFormField>
     </div>
 
-    <UFormField name="genreIds" label="Géneros">
+    <UFormField name="genreIds" label="Generos" class="w-full">
       <USelect
         v-model="state.genreIds"
+        class="w-full"
         :items="genreOptions"
         multiple
-        placeholder="Selecciona géneros"
+        placeholder="Selecciona generos"
       />
     </UFormField>
 
-    <div class="flex justify-end">
+    <div class="flex justify-end border-t border-default/55 pt-6">
       <BaseButton kind="primary" type="submit" size="lg" :loading="submitting" :disabled="submitting" data-testid="event-form-submit">
         {{ submitLabel }}
       </BaseButton>

@@ -64,7 +64,7 @@ interface EventDetailApiItem {
   }>
 }
 
-function toIsoString(value: string | Date | null | undefined): string | null {
+export function toIsoString(value: string | Date | null | undefined): string | null {
   if (!value) {
     return null
   }
@@ -72,7 +72,7 @@ function toIsoString(value: string | Date | null | undefined): string | null {
   return typeof value === 'string' ? value : value.toISOString()
 }
 
-function normalizeFilters(raw?: Partial<EventCatalogFilters>): EventCatalogFilters {
+export function normalizeFilters(raw?: Partial<EventCatalogFilters>): EventCatalogFilters {
   return {
     search: raw?.search?.trim() ?? '',
     genreId: raw?.genreId?.trim() ?? '',
@@ -81,15 +81,15 @@ function normalizeFilters(raw?: Partial<EventCatalogFilters>): EventCatalogFilte
   }
 }
 
-function buildFallbackImage(seed: string): string {
+export function buildFallbackImage(seed: string): string {
   return `https://picsum.photos/seed/${seed}/900/1200`
 }
 
-function buildEventFallbackImage(eventId: string): string {
+export function buildEventFallbackImage(eventId: string): string {
   return buildFallbackImage(`veritix-event-${eventId}`)
 }
 
-function normalizeCurrencyCode(value: string): CurrencyCode {
+export function normalizeCurrencyCode(value: string): CurrencyCode {
   if (value === 'USD' || value === 'EUR' || value === 'COP') {
     return value
   }
@@ -97,7 +97,7 @@ function normalizeCurrencyCode(value: string): CurrencyCode {
   return 'EUR'
 }
 
-function mapEventListItem(item: EventListApiItem): EventCatalogItem {
+export function mapEventListItem(item: EventListApiItem): EventCatalogItem {
   return {
     id: item.id,
     name: item.name,
@@ -109,7 +109,7 @@ function mapEventListItem(item: EventListApiItem): EventCatalogItem {
   }
 }
 
-function mapEventDetail(item: EventDetailApiItem): EventCatalogDetail {
+export function mapEventDetail(item: EventDetailApiItem): EventCatalogDetail {
   return {
     id: item.id,
     name: item.name,
@@ -142,9 +142,9 @@ export function usePublicEvents(filters?: MaybeRef<Partial<EventCatalogFilters> 
   return useAsyncData<PaginatedResponse<EventCatalogItem>>(
     cacheKey,
     async () => {
-        const response = await apiRequest<PaginatedResponse<EventListApiItem>>('/events', {
-          method: 'GET',
-          query: {
+      const response = await apiRequest<PaginatedResponse<EventListApiItem>>('/events', {
+        method: 'GET',
+        query: {
           page: normalizedFilters.value.page,
           limit: 24,
           city: normalizedFilters.value.city || undefined,
