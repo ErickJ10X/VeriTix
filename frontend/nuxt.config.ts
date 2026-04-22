@@ -1,5 +1,5 @@
-import { fileURLToPath } from 'node:url'
 import tailwindcss from '@tailwindcss/vite'
+import { fileURLToPath } from 'node:url'
 
 export default defineNuxtConfig({
   compatibilityDate: '2025-07-15',
@@ -46,6 +46,9 @@ export default defineNuxtConfig({
         'zod',
       ],
     },
+    server: {
+      allowedHosts: ['cwtg.xyz', 'localhost'],
+    }
   },
 
   eslint: {
