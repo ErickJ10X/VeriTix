@@ -11,7 +11,7 @@ definePageMeta({ middleware: 'admin' })
 useSeoMeta({ title: 'Nuevo evento | Admin VeriTix' })
 
 const apiRequest = useApiRequest()
-const { ensureAdminSession, requireAdminHeaders } = useAdminApi()
+const { requireAdminHeaders } = useAdminApi()
 const { getApiErrorMessage } = useApiErrorMessage()
 
 const venues = ref<VenueOption[]>([])
@@ -64,15 +64,8 @@ async function createEvent(payload: AdminEventPayload) {
   }
 }
 
-onMounted(async () => {
-  try {
-    await ensureAdminSession()
-    await loadOptions()
-  }
-  catch (error) {
-    errorMessage.value = getApiErrorMessage(error, 'No pudimos iniciar la sesion admin.')
-    loading.value = false
-  }
+onMounted(() => {
+  void loadOptions()
 })
 </script>
 

@@ -12,7 +12,7 @@ const route = useRoute()
 const artistId = computed(() => String(route.params.id || ''))
 
 const apiRequest = useApiRequest()
-const { ensureAdminSession, requireAdminHeaders } = useAdminApi()
+const { requireAdminHeaders } = useAdminApi()
 const { getApiErrorMessage, getApiErrorStatus } = useApiErrorMessage()
 
 const artist = ref<AdminArtistRecord | null>(null)
@@ -78,9 +78,8 @@ async function updateArtist(payload: AdminArtistPayload) {
   }
 }
 
-onMounted(async () => {
-  await ensureAdminSession()
-  await Promise.all([loadGenres(), loadArtist()])
+onMounted(() => {
+  void Promise.all([loadGenres(), loadArtist()])
 })
 </script>
 

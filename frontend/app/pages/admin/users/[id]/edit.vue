@@ -11,7 +11,7 @@ const route = useRoute()
 const userId = computed(() => String(route.params.id || ''))
 
 const apiRequest = useApiRequest()
-const { ensureAdminSession, requireAdminHeaders, roleOptions } = useAdminApi()
+const { requireAdminHeaders, roleOptions } = useAdminApi()
 const { getApiErrorMessage, getApiErrorStatus } = useApiErrorMessage()
 
 const user = ref<AdminUserRecord | null>(null)
@@ -67,9 +67,8 @@ async function updateUser(payload: AdminUpdateUserPayload) {
   }
 }
 
-onMounted(async () => {
-  await ensureAdminSession()
-  await loadUser()
+onMounted(() => {
+  void loadUser()
 })
 </script>
 

@@ -28,7 +28,7 @@ definePageMeta({ middleware: 'admin' })
 useSeoMeta({ title: 'Operaciones de eventos | VeriTix' })
 
 const apiRequest = useApiRequest()
-const { ensureAdminSession, requireAdminHeaders } = useAdminApi()
+const { requireAdminHeaders } = useAdminApi()
 const { getApiErrorMessage } = useApiErrorMessage()
 
 const catalogEvents = ref<AdminEventRecord[]>([])
@@ -238,9 +238,8 @@ function setCatalogMode(value: string) {
   }
 }
 
-onMounted(async () => {
-  await ensureAdminSession()
-  await Promise.all([loadFilterOptions(), loadDashboard(), loadCatalog()])
+onMounted(() => {
+  void Promise.all([loadFilterOptions(), loadDashboard(), loadCatalog()])
 })
 </script>
 

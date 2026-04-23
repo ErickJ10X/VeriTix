@@ -14,28 +14,8 @@ function buildAdminAuthHeaders(accessToken: string | null): HeadersInit {
 }
 
 export function useAdminApi() {
-  const { accessToken, user, ensureSession, isAuthenticated } = useAuth()
+  const { accessToken } = useAuth()
   const { getApiErrorMessage, getApiErrorStatus } = useApiErrorMessage()
-
-  const isAdmin = computed(() => user.value?.role === 'ADMIN')
-
-  async function ensureAdminSession(): Promise<void> {
-    await ensureSession()
-
-    if (!isAuthenticated.value) {
-      throw createError({
-        statusCode: 401,
-        statusMessage: 'Debes iniciar sesión para entrar al panel admin.',
-      })
-    }
-
-    if (!isAdmin.value) {
-      throw createError({
-        statusCode: 403,
-        statusMessage: 'Necesitas rol ADMIN para entrar al panel admin.',
-      })
-    }
-  }
 
   function requireAdminHeaders(): HeadersInit {
     return buildAdminAuthHeaders(accessToken.value)
@@ -57,10 +37,7 @@ export function useAdminApi() {
   ]
 
   return {
-    user,
-    isAdmin,
     roleOptions,
-    ensureAdminSession,
     requireAdminHeaders,
     normalizeAdminError,
   }

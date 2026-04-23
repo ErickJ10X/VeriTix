@@ -15,7 +15,7 @@ const route = useRoute()
 const eventId = computed(() => String(route.params.id || ''))
 
 const apiRequest = useApiRequest()
-const { ensureAdminSession, requireAdminHeaders } = useAdminApi()
+const { requireAdminHeaders } = useAdminApi()
 const { getApiErrorMessage, getApiErrorStatus } = useApiErrorMessage()
 
 const event = ref<AdminEventDetail | null>(null)
@@ -100,9 +100,8 @@ async function updateEvent(payload: AdminEventPayload) {
   }
 }
 
-onMounted(async () => {
-  await ensureAdminSession()
-  await Promise.all([loadOptions(), loadEvent()])
+onMounted(() => {
+  void Promise.all([loadOptions(), loadEvent()])
 })
 </script>
 

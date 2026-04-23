@@ -9,7 +9,7 @@ definePageMeta({ middleware: 'admin' })
 useSeoMeta({ title: 'Nuevo usuario | Admin VeriTix' })
 
 const apiRequest = useApiRequest()
-const { ensureAdminSession, requireAdminHeaders, roleOptions } = useAdminApi()
+const { requireAdminHeaders, roleOptions } = useAdminApi()
 const { getApiErrorMessage } = useApiErrorMessage()
 
 const submitting = ref(false)
@@ -39,10 +39,6 @@ async function createUser(payload: AdminCreateUserPayload | AdminUpdateUserPaylo
     submitting.value = false
   }
 }
-
-onMounted(async () => {
-  await ensureAdminSession()
-})
 </script>
 
 <template>

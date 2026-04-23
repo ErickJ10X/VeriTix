@@ -11,7 +11,7 @@ definePageMeta({ middleware: 'admin' })
 useSeoMeta({ title: 'Usuarios | Admin VeriTix' })
 
 const apiRequest = useApiRequest()
-const { ensureAdminSession, requireAdminHeaders, roleOptions } = useAdminApi()
+const { requireAdminHeaders, roleOptions } = useAdminApi()
 const { getApiErrorMessage } = useApiErrorMessage()
 
 const users = ref<AdminUserRecord[]>([])
@@ -131,9 +131,8 @@ async function removeUser(userId: string) {
   }
 }
 
-onMounted(async () => {
-  await ensureAdminSession()
-  await loadUsers()
+onMounted(() => {
+  void loadUsers()
 })
 </script>
 

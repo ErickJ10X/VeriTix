@@ -9,7 +9,7 @@ definePageMeta({ middleware: 'admin' })
 useSeoMeta({ title: 'Nuevo artista | Admin VeriTix' })
 
 const apiRequest = useApiRequest()
-const { ensureAdminSession, requireAdminHeaders } = useAdminApi()
+const { requireAdminHeaders } = useAdminApi()
 const { getApiErrorMessage } = useApiErrorMessage()
 
 const genres = ref<GenreOption[]>([])
@@ -52,9 +52,8 @@ async function createArtist(payload: AdminArtistPayload) {
   }
 }
 
-onMounted(async () => {
-  await ensureAdminSession()
-  await loadGenres()
+onMounted(() => {
+  void loadGenres()
 })
 </script>
 

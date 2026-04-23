@@ -2,11 +2,14 @@ type HttpMethod = 'GET' | 'POST' | 'PATCH' | 'PUT' | 'DELETE'
 
 type ApiQueryValue = string | number | boolean | undefined
 
+const TRAILING_SLASH_REGEX = /\/$/
+
 interface ApiRequestOptions<TBody = unknown> {
   method?: HttpMethod
   body?: TBody
   headers?: HeadersInit
   query?: Record<string, ApiQueryValue>
+  timeoutMs?: number
 }
 
 export function useApiRequest() {
@@ -31,9 +34,13 @@ export function useApiRequest() {
     }
 
     const origin = import.meta.server ? useRequestURL().origin : window.location.origin
-    const apiBaseUrl = new URL(config.public.apiBase, origin).toString().replace(/\/$/, '')
+    const apiBaseUrl = new URL(config.public.apiBase, origin).toString().replace(TRAILING_SLASH_REGEX, '')
     const normalizedPath = path.startsWith('/') ? path : `/${path}`
     const apiUrl = `${apiBaseUrl}${normalizedPath}`
+    const configuredTimeout = Number(config.public.apiTimeoutMs ?? 8000)
+    const timeout = Number.isFinite(configuredTimeout) && configuredTimeout > 0
+      ? configuredTimeout
+      : 8000
 
     const response: unknown = await $fetch(apiUrl, {
       method: options.method,
@@ -41,6 +48,8 @@ export function useApiRequest() {
       headers,
       query: options.query,
       credentials: 'include' as const,
+      retry: 0,
+      timeout: options.timeoutMs ?? timeout,
     })
 
     return response as TResponse

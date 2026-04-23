@@ -12,7 +12,7 @@ definePageMeta({ middleware: 'admin' })
 useSeoMeta({ title: 'Artistas | Admin VeriTix' })
 
 const apiRequest = useApiRequest()
-const { ensureAdminSession, requireAdminHeaders } = useAdminApi()
+const { requireAdminHeaders } = useAdminApi()
 const { getApiErrorMessage } = useApiErrorMessage()
 
 const artists = ref<AdminArtistRecord[]>([])
@@ -128,9 +128,8 @@ async function removeArtist(artistId: string) {
   }
 }
 
-onMounted(async () => {
-  await ensureAdminSession()
-  await Promise.all([loadGenres(), loadArtists()])
+onMounted(() => {
+  void Promise.all([loadGenres(), loadArtists()])
 })
 </script>
 

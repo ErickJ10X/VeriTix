@@ -14,7 +14,7 @@ useSeoMeta({
 })
 
 const apiRequest = useApiRequest()
-const { ensureAdminSession, requireAdminHeaders } = useAdminApi()
+const { requireAdminHeaders } = useAdminApi()
 const { getApiErrorMessage } = useApiErrorMessage()
 
 const events = ref<AdminEventRecord[]>([])
@@ -129,7 +129,6 @@ async function loadDashboard() {
   errorMessage.value = ''
 
   try {
-    await ensureAdminSession()
     const headers = requireAdminHeaders()
 
     const eventsResponse = await apiRequest<PaginatedResponse<AdminEventRecord>>('/admin/events', {
