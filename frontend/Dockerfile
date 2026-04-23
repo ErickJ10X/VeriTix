@@ -5,11 +5,6 @@ FROM base AS deps
 COPY package.json bun.lock ./
 RUN bun install --frozen-lockfile
 
-FROM deps AS development
-ENV NODE_ENV=development
-EXPOSE 3000
-CMD ["bun", "run", "dev", "--host", "0.0.0.0", "--port", "3000"]
-
 FROM deps AS builder
 COPY . .
 RUN bun run build
@@ -29,5 +24,8 @@ COPY --from=builder --chown=nuxt:nuxt /app/.output ./.output
 USER nuxt
 
 EXPOSE 3000
+
+HEALTHCHECK --interval=30s --timeout=3s --start-period=10s --retries=3 \
+  CMD wget -qO- http://127.0.0.1:3000/verifront/ > /dev/null || exit 1
 
 CMD ["bun", ".output/server/index.mjs"]
