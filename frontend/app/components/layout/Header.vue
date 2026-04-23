@@ -68,9 +68,9 @@ const isEventsRoute = computed(() => {
               </BaseButton>
             </template>
 
-            <template v-else-if="showAccountAction">
+            <ClientOnly v-else-if="isAuthenticated">
               <LayoutAccountMenu />
-            </template>
+            </ClientOnly>
 
             <template v-else />
           </div>
