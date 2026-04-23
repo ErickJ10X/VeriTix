@@ -1,18 +1,20 @@
-import tailwindcss from '@tailwindcss/vite'
+import process from 'node:process'
 import { fileURLToPath } from 'node:url'
+import tailwindcss from '@tailwindcss/vite'
 
 export default defineNuxtConfig({
   compatibilityDate: '2025-07-15',
   devtools: { enabled: true },
 
   app: {
-    baseURL: '/verifront/',
+    baseURL: process.env.NUXT_APP_BASE_URL || '/',
   },
 
   runtimeConfig: {
-    backendApiBase: 'https://cwtg.xyz/veriback/api/v1',
+    backendApiBase:
+            process.env.NUXT_BACKEND_API_BASE || process.env.NUXT_PUBLIC_API_BASE || 'http://localhost:3000/api/v1',
     public: {
-      apiBase: '/veriback/api/v1',
+      apiBase: process.env.NUXT_PUBLIC_API_BASE || 'http://localhost:3000/api/v1',
     },
   },
 
@@ -36,19 +38,13 @@ export default defineNuxtConfig({
   css: ['./app/assets/css/main.css'],
 
   vite: {
-    plugins: [
-      tailwindcss(),
-    ],
+    plugins: [tailwindcss()],
     optimizeDeps: {
-      include: [
-        '@vue/devtools-core',
-        '@vue/devtools-kit',
-        'zod',
-      ],
+      include: ['@vue/devtools-core', '@vue/devtools-kit', 'zod'],
     },
     server: {
       allowedHosts: ['cwtg.xyz', 'localhost'],
-    }
+    },
   },
 
   eslint: {
@@ -56,5 +52,4 @@ export default defineNuxtConfig({
       standalone: false,
     },
   },
-
 })

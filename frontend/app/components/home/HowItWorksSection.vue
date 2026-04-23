@@ -43,10 +43,10 @@ const steps = [
         class="vtx-flow-node"
         :class="step.toneClass"
       >
-          <div class="space-y-3">
-            <UiMetaLabel>
-              {{ step.cue }}
-            </UiMetaLabel>
+        <div class="space-y-3">
+          <UiMetaLabel>
+            {{ step.cue }}
+          </UiMetaLabel>
 
           <div class="flex items-center justify-between gap-3">
             <span class="vtx-flow-index">

@@ -5,7 +5,6 @@ const confirmPasswordModel = defineModel<string>('confirmPassword', { default: '
 const showCurrentPasswordModel = defineModel<boolean>('showCurrentPassword', { default: false })
 const showNewPasswordModel = defineModel<boolean>('showNewPassword', { default: false })
 const showConfirmPasswordModel = defineModel<boolean>('showConfirmPassword', { default: false })
-
 </script>
 
 <template>

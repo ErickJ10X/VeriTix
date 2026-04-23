@@ -149,5 +149,4 @@ const isEventsRoute = computed(() => {
     padding-top: 0.25rem;
   }
 }
-
 </style>

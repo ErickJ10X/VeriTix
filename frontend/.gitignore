@@ -24,5 +24,5 @@ logs
 !.env.example
 
 AGENTS.md
-.agents
-.sisyphus
+
+.atl/
