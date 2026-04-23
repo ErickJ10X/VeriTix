@@ -27,9 +27,9 @@ export function useAdminEventsRepository() {
     ])
 
     return {
-      venues: venuesResponse.data,
-      genres: genresResponse,
-      formats: formatsResponse.data,
+      venues: venuesResponse?.data ?? [],
+      genres: genresResponse ?? [],
+      formats: formatsResponse?.data ?? [],
     }
   }
 

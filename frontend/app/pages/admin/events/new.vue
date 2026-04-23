@@ -26,9 +26,9 @@ async function loadOptions() {
   try {
     const options = await getFormOptions()
 
-    venues.value = options.venues
-    genres.value = options.genres
-    formats.value = options.formats
+    venues.value = options.venues ?? []
+    genres.value = options.genres ?? []
+    formats.value = options.formats ?? []
   }
   catch (error) {
     errorMessage.value = getApiErrorMessage(error, 'No pudimos cargar las opciones del evento.')
@@ -67,39 +67,40 @@ onMounted(() => {
     primary-action-to="/admin/events"
     primary-action-label="Volver a eventos"
   >
-    <div class="mx-auto w-full max-w-5xl space-y-6 sm:space-y-8">
+    <div class="mx-auto max-w-5xl space-y-6">
       <BaseStatusMessage v-if="errorMessage" :message="errorMessage" />
 
-      <UiGlassPanel tone="strong" padding="lg" radius="xl" class="min-w-0">
-        <div class="mb-6 flex flex-col gap-4 border-b border-default/55 pb-5 sm:flex-row sm:items-center sm:justify-between">
-          <div class="space-y-2">
-            <UiMetaLabel tone="accent">
-              Eventos
-            </UiMetaLabel>
-            <div class="space-y-1">
-              <h2 class="text-xl font-semibold tracking-tight text-highlighted">
-                Alta de evento
-              </h2>
-              <p class="max-w-2xl text-sm leading-relaxed text-toned">
-                Completa la ficha operativa y deja listo el evento para entrar al catalogo del dashboard.
-              </p>
-            </div>
-          </div>
-
+      <AdminOverviewPanel
+        eyebrow="Eventos"
+        title="Alta de evento"
+        description="Completa la ficha operativa y deja listo el evento para entrar al catalogo del dashboard."
+        tone="subtle"
+      >
+        <template #actions>
           <div class="flex flex-wrap items-center gap-2">
             <BaseBadge kind="info" size="sm">
-              {{ venues.length }} venues
+              {{ venues?.length || 0 }} venues
             </BaseBadge>
             <BaseBadge kind="tag" size="sm">
-              {{ formats.length }} formatos
+              {{ formats?.length || 0 }} formatos
             </BaseBadge>
             <BaseBadge kind="status" color="primary" size="sm">
-              {{ genres.length }} generos
+              {{ genres?.length || 0 }} generos
             </BaseBadge>
           </div>
-        </div>
+        </template>
+
+        <template v-if="loading">
+          <div class="space-y-4">
+            <USkeleton class="h-12 w-full rounded-xl" />
+            <USkeleton class="h-12 w-full rounded-xl" />
+            <USkeleton class="h-24 w-full rounded-xl" />
+            <USkeleton class="h-12 w-full rounded-xl" />
+          </div>
+        </template>
 
         <AdminEventForm
+          v-else
           :venues="venues"
           :genres="genres"
           :formats="formats"
@@ -107,7 +108,7 @@ onMounted(() => {
           submit-label="Crear evento"
           @submit="createEvent"
         />
-      </UiGlassPanel>
+      </AdminOverviewPanel>
     </div>
   </AdminPageShell>
 </template>
