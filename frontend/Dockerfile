@@ -19,8 +19,9 @@ ENV NITRO_PORT=3000
 RUN addgroup --system --gid 1001 nuxt && \
     adduser --system --uid 1001 nuxt
 
-COPY --from=builder --chown=nuxt:nuxt /app/.output ./.output
-COPY --from=builder --chown=nuxt:nuxt /app/node_modules ./node_modules
+COPY --from=builder /app/.output ./.output
+RUN cd .output/server && rm -rf node_modules && bun install && \
+    chown -R nuxt:nuxt /app/.output
 
 USER nuxt
 
