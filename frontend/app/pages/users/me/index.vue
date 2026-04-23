@@ -218,12 +218,12 @@ onMounted(() => {
       </div>
 
       <div v-else class="space-y-6">
-        <article class="rounded-[1.8rem] border border-default bg-elevated/40 p-5 sm:p-7">
+        <article class="rounded-panel border border-default bg-elevated/40 p-5 sm:p-7">
           <div class="space-y-2 border-b border-default/55 pb-5">
             <UiMetaLabel>
               Perfil
             </UiMetaLabel>
-            <h2 class="text-2xl font-semibold text-highlighted sm:text-[1.9rem]">
+            <h2 class="text-2xl font-semibold text-highlighted sm:text-3xl">
               Datos personales
             </h2>
             <p class="max-w-2xl text-sm leading-relaxed text-toned">
@@ -267,12 +267,12 @@ onMounted(() => {
           </UForm>
         </article>
 
-        <article id="seguridad" class="scroll-mt-28 rounded-[1.8rem] border border-default bg-elevated/40 p-5 sm:p-7">
+        <article id="seguridad" class="scroll-mt-28 rounded-panel border border-default bg-elevated/40 p-5 sm:p-7">
           <div class="space-y-2 border-b border-default/55 pb-5">
             <UiMetaLabel>
               Seguridad
             </UiMetaLabel>
-            <h2 class="text-2xl font-semibold text-highlighted sm:text-[1.9rem]">
+            <h2 class="text-2xl font-semibold text-highlighted sm:text-3xl">
               Acceso a la cuenta
             </h2>
             <p class="max-w-2xl text-sm leading-relaxed text-toned">

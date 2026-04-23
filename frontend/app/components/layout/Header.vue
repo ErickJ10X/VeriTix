@@ -26,7 +26,7 @@ const isEventsRoute = computed(() => {
           <span class="vtx-header-brand-mark" aria-hidden="true" />
 
           <div class="min-w-0">
-            <p class="truncate font-display text-[1.45rem] leading-none tracking-wide text-highlighted">
+            <p class="truncate font-display text-xl leading-none tracking-wide text-highlighted">
               Veritix
             </p>
             <UiMetaLabel as="p" class="truncate text-dimmed/90">

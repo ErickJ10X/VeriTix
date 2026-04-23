@@ -91,7 +91,7 @@ const toneClasses = computed(() => {
             </div>
 
             <div class="space-y-3">
-              <h1 class="max-w-4xl font-display text-3xl leading-tight sm:text-4xl lg:text-[3.1rem]" :class="toneClasses.title">
+              <h1 class="max-w-4xl font-display text-3xl leading-tight sm:text-4xl lg:text-5xl" :class="toneClasses.title">
                 {{ title }}
               </h1>
 

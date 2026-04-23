@@ -9,6 +9,15 @@ export default defineAppConfig({
       error: 'crimson',
       success: 'verdant',
     },
+    // Custom radius tokens for components that need larger corner radius
+    radius: {
+      panel: '1.8rem', // Large panel radius for settings/profile sections
+    },
+    // Custom font size tokens
+    fontSize: {
+      display: '2xl', // ~1.45rem for header brand
+      heading: '3xl', // ~1.9rem for section headers
+    },
     button: {
       defaultVariants: {
         color: 'neutral',
