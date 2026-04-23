@@ -20,6 +20,9 @@ RUN addgroup --system --gid 1001 nuxt && \
     adduser --system --uid 1001 nuxt
 
 COPY --from=builder --chown=nuxt:nuxt /app/.output ./.output
+COPY --from=builder /app/package.json /app/bun.lock ./
+RUN bun install --frozen-lockfile --production && \
+    chown -R nuxt:nuxt node_modules
 
 USER nuxt
 
