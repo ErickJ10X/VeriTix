@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import type {
   AdminEventRecord,
-  PaginatedResponse,
 } from '~/types'
+import { useAdminEventsRepository } from '~/repositories/adminEventsRepository'
 
 definePageMeta({
   middleware: 'admin',
@@ -13,8 +13,7 @@ useSeoMeta({
   description: 'Dashboard operativo de eventos en VeriTix.',
 })
 
-const apiRequest = useApiRequest()
-const { requireAdminHeaders } = useAdminApi()
+const { listCatalog } = useAdminEventsRepository()
 const { getApiErrorMessage } = useApiErrorMessage()
 
 const events = ref<AdminEventRecord[]>([])
@@ -129,12 +128,18 @@ async function loadDashboard() {
   errorMessage.value = ''
 
   try {
-    const headers = requireAdminHeaders()
-
-    const eventsResponse = await apiRequest<PaginatedResponse<AdminEventRecord>>('/admin/events', {
-      method: 'GET',
-      headers,
-      query: { page: 1, limit: 12 },
+    const eventsResponse = await listCatalog({
+      pageValue: 1,
+      pageSize: 12,
+      filters: {
+        search: '',
+        city: '',
+        genreId: '',
+        formatId: '',
+        dateFrom: '',
+        dateTo: '',
+      },
+      quickWindow: 'all',
     })
 
     events.value = eventsResponse.data

@@ -3,15 +3,14 @@ import type {
   AdminEventPayload,
   AdminOption,
   GenreOption,
-  PaginatedResponse,
   VenueOption,
 } from '~/types'
+import { useAdminEventsRepository } from '~/repositories/adminEventsRepository'
 
 definePageMeta({ middleware: 'admin' })
 useSeoMeta({ title: 'Nuevo evento | Admin VeriTix' })
 
-const apiRequest = useApiRequest()
-const { requireAdminHeaders } = useAdminApi()
+const { createEvent: createAdminEvent, getFormOptions } = useAdminEventsRepository()
 const { getApiErrorMessage } = useApiErrorMessage()
 
 const venues = ref<VenueOption[]>([])
@@ -25,15 +24,11 @@ async function loadOptions() {
   loading.value = true
 
   try {
-    const [venuesResponse, genresResponse, formatsResponse] = await Promise.all([
-      apiRequest<PaginatedResponse<VenueOption>>('/venues', { method: 'GET' }),
-      apiRequest<GenreOption[]>('/genres', { method: 'GET' }),
-      apiRequest<PaginatedResponse<AdminOption>>('/concert-formats', { method: 'GET' }),
-    ])
+    const options = await getFormOptions()
 
-    venues.value = venuesResponse.data
-    genres.value = genresResponse
-    formats.value = formatsResponse.data
+    venues.value = options.venues
+    genres.value = options.genres
+    formats.value = options.formats
   }
   catch (error) {
     errorMessage.value = getApiErrorMessage(error, 'No pudimos cargar las opciones del evento.')
@@ -48,11 +43,7 @@ async function createEvent(payload: AdminEventPayload) {
   errorMessage.value = ''
 
   try {
-    await apiRequest('/admin/events', {
-      method: 'POST',
-      headers: requireAdminHeaders(),
-      body: payload,
-    })
+    await createAdminEvent(payload)
 
     await navigateTo('/admin/events')
   }

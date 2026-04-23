@@ -3,15 +3,15 @@ import type {
   AdminOption,
   AdminUserRecord,
   PaginatedMeta,
-  PaginatedResponse,
 } from '~/types'
-import { PAGE_SIZE_OPTIONS } from '~/utils/admin/eventsCatalog'
+import { useAdminUsersRepository } from '~/repositories/adminUsersRepository'
+import { PAGE_SIZE_OPTIONS } from '~/utils/admin/pagination'
 
 definePageMeta({ middleware: 'admin' })
 useSeoMeta({ title: 'Usuarios | Admin VeriTix' })
 
-const apiRequest = useApiRequest()
-const { requireAdminHeaders, roleOptions } = useAdminApi()
+const { listUsers, deleteUser } = useAdminUsersRepository()
+const { roleOptions } = useAdminApi()
 const { getApiErrorMessage } = useApiErrorMessage()
 
 const users = ref<AdminUserRecord[]>([])
@@ -68,16 +68,12 @@ async function loadUsers(targetPage = page.value) {
   errorMessage.value = ''
 
   try {
-    const response = await apiRequest<PaginatedResponse<AdminUserRecord>>('/admin/users', {
-      method: 'GET',
-      headers: requireAdminHeaders(),
-      query: {
-        page: targetPage,
-        limit: pageSize.value,
-        search: filters.search.trim() || undefined,
-        role: filters.role || undefined,
-        isActive: filters.isActive || undefined,
-      },
+    const response = await listUsers({
+      pageValue: targetPage,
+      pageSize: pageSize.value,
+      search: filters.search,
+      role: filters.role,
+      isActive: filters.isActive,
     })
 
     users.value = response.data
@@ -115,10 +111,7 @@ async function removeUser(userId: string) {
   errorMessage.value = ''
 
   try {
-    await apiRequest(`/admin/users/${userId}`, {
-      method: 'DELETE',
-      headers: requireAdminHeaders(),
-    })
+    await deleteUser(userId)
 
     successMessage.value = 'Usuario eliminado correctamente.'
     await loadUsers(page.value)

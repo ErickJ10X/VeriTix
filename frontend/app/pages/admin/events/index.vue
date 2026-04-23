@@ -5,30 +5,28 @@ import type {
   AdminRequiresAttentionRecord,
   GenreOption,
   PaginatedMeta,
-  PaginatedResponse,
 } from '~/types'
 import type {
   CatalogEventListItem,
   CatalogMode,
   QuickWindow,
 } from '~/utils/admin/eventsCatalog'
+import { useAdminEventsRepository } from '~/repositories/adminEventsRepository'
 import {
-  buildCatalogQuery,
   buildCatalogSummary,
   CATALOG_MODE_ITEMS,
   createCatalogListItems,
   getEventStatusColor,
   isCatalogMode,
   isQuickWindow,
-  PAGE_SIZE_OPTIONS,
   QUICK_WINDOW_OPTIONS,
 } from '~/utils/admin/eventsCatalog'
+import { PAGE_SIZE_OPTIONS } from '~/utils/admin/pagination'
 
 definePageMeta({ middleware: 'admin' })
 useSeoMeta({ title: 'Operaciones de eventos | VeriTix' })
 
-const apiRequest = useApiRequest()
-const { requireAdminHeaders } = useAdminApi()
+const { deleteEvent: deleteAdminEvent, getFormOptions, listCatalog, listRequiresAttention } = useAdminEventsRepository()
 const { getApiErrorMessage } = useApiErrorMessage()
 
 const catalogEvents = ref<AdminEventRecord[]>([])
@@ -112,13 +110,10 @@ async function loadFilterOptions() {
   filtersPending.value = true
 
   try {
-    const [genresResponse, formatsResponse] = await Promise.all([
-      apiRequest<GenreOption[]>('/genres', { method: 'GET' }),
-      apiRequest<PaginatedResponse<AdminOption>>('/concert-formats', { method: 'GET' }),
-    ])
+    const options = await getFormOptions()
 
-    genres.value = genresResponse
-    formats.value = formatsResponse.data
+    genres.value = options.genres
+    formats.value = options.formats
   }
   catch (error) {
     errorMessage.value = getApiErrorMessage(error, 'No pudimos cargar los filtros operativos.')
@@ -132,15 +127,11 @@ async function loadCatalog(targetPage = page.value) {
   catalogPending.value = true
 
   try {
-    const response = await apiRequest<PaginatedResponse<AdminEventRecord>>('/admin/events', {
-      method: 'GET',
-      headers: requireAdminHeaders(),
-      query: buildCatalogQuery({
-        pageValue: targetPage,
-        pageSize: pageSize.value,
-        filters,
-        quickWindow: quickWindow.value,
-      }),
+    const response = await listCatalog({
+      pageValue: targetPage,
+      pageSize: pageSize.value,
+      filters,
+      quickWindow: quickWindow.value,
     })
 
     catalogEvents.value = response.data
@@ -159,10 +150,7 @@ async function loadDashboard() {
   dashboardPending.value = true
 
   try {
-    requiresAttention.value = await apiRequest<AdminRequiresAttentionRecord[]>('/admin/events/requires-attention', {
-      method: 'GET',
-      headers: requireAdminHeaders(),
-    })
+    requiresAttention.value = await listRequiresAttention()
   }
   catch (error) {
     errorMessage.value = getApiErrorMessage(error, 'No pudimos cargar el panel operativo de eventos.')
@@ -183,10 +171,7 @@ async function removeEvent(eventId: string) {
   errorMessage.value = ''
 
   try {
-    await apiRequest(`/admin/events/${eventId}`, {
-      method: 'DELETE',
-      headers: requireAdminHeaders(),
-    })
+    await deleteAdminEvent(eventId)
 
     successMessage.value = 'Evento cancelado correctamente.'
     await refreshDashboard()

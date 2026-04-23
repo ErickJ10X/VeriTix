@@ -4,15 +4,14 @@ import type {
   AdminOption,
   GenreOption,
   PaginatedMeta,
-  PaginatedResponse,
 } from '~/types'
-import { PAGE_SIZE_OPTIONS } from '~/utils/admin/eventsCatalog'
+import { useAdminArtistsRepository } from '~/repositories/adminArtistsRepository'
+import { PAGE_SIZE_OPTIONS } from '~/utils/admin/pagination'
 
 definePageMeta({ middleware: 'admin' })
 useSeoMeta({ title: 'Artistas | Admin VeriTix' })
 
-const apiRequest = useApiRequest()
-const { requireAdminHeaders } = useAdminApi()
+const { deleteArtist: deleteAdminArtist, listArtists, listGenres } = useAdminArtistsRepository()
 const { getApiErrorMessage } = useApiErrorMessage()
 
 const artists = ref<AdminArtistRecord[]>([])
@@ -53,7 +52,7 @@ const genreFilterOptions = computed<AdminOption[]>(() => {
 
 async function loadGenres() {
   try {
-    genres.value = await apiRequest<GenreOption[]>('/genres', { method: 'GET' })
+    genres.value = await listGenres()
   }
   catch {
     genres.value = []
@@ -65,16 +64,12 @@ async function loadArtists(targetPage = page.value) {
   errorMessage.value = ''
 
   try {
-    const response = await apiRequest<PaginatedResponse<AdminArtistRecord>>('/admin/artists', {
-      method: 'GET',
-      headers: requireAdminHeaders(),
-      query: {
-        page: targetPage,
-        limit: pageSize.value,
-        search: filters.search.trim() || undefined,
-        genreId: filters.genreId || undefined,
-        isActive: filters.isActive || undefined,
-      },
+    const response = await listArtists({
+      pageValue: targetPage,
+      pageSize: pageSize.value,
+      search: filters.search,
+      genreId: filters.genreId,
+      isActive: filters.isActive,
     })
 
     artists.value = response.data
@@ -112,10 +107,7 @@ async function removeArtist(artistId: string) {
   errorMessage.value = ''
 
   try {
-    await apiRequest(`/admin/artists/${artistId}`, {
-      method: 'DELETE',
-      headers: requireAdminHeaders(),
-    })
+    await deleteAdminArtist(artistId)
 
     successMessage.value = 'Artista eliminado correctamente.'
     await loadArtists(page.value)

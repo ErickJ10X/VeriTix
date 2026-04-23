@@ -1,15 +1,14 @@
 <script setup lang="ts">
 import type {
   AdminArtistPayload,
-  AdminArtistRecord,
   GenreOption,
 } from '~/types'
+import { useAdminArtistsRepository } from '~/repositories/adminArtistsRepository'
 
 definePageMeta({ middleware: 'admin' })
 useSeoMeta({ title: 'Nuevo artista | Admin VeriTix' })
 
-const apiRequest = useApiRequest()
-const { requireAdminHeaders } = useAdminApi()
+const { createArtist: createAdminArtist, listGenres } = useAdminArtistsRepository()
 const { getApiErrorMessage } = useApiErrorMessage()
 
 const genres = ref<GenreOption[]>([])
@@ -21,7 +20,7 @@ async function loadGenres() {
   loading.value = true
 
   try {
-    genres.value = await apiRequest<GenreOption[]>('/genres', { method: 'GET' })
+    genres.value = await listGenres()
   }
   catch (error) {
     errorMessage.value = getApiErrorMessage(error, 'No pudimos cargar los géneros.')
@@ -36,11 +35,7 @@ async function createArtist(payload: AdminArtistPayload) {
   errorMessage.value = ''
 
   try {
-    await apiRequest<AdminArtistRecord, AdminArtistPayload>('/artists', {
-      method: 'POST',
-      headers: requireAdminHeaders(),
-      body: payload,
-    })
+    await createAdminArtist(payload)
 
     await navigateTo('/admin/artists')
   }

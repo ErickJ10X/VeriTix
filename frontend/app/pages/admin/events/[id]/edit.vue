@@ -4,9 +4,9 @@ import type {
   AdminEventPayload,
   AdminOption,
   GenreOption,
-  PaginatedResponse,
   VenueOption,
 } from '~/types'
+import { useAdminEventsRepository } from '~/repositories/adminEventsRepository'
 
 definePageMeta({ middleware: 'admin' })
 useSeoMeta({ title: 'Editar evento | Admin VeriTix' })
@@ -14,8 +14,7 @@ useSeoMeta({ title: 'Editar evento | Admin VeriTix' })
 const route = useRoute()
 const eventId = computed(() => String(route.params.id || ''))
 
-const apiRequest = useApiRequest()
-const { requireAdminHeaders } = useAdminApi()
+const { getFormOptions, getEvent: getAdminEvent, updateEvent: updateAdminEvent } = useAdminEventsRepository()
 const { getApiErrorMessage, getApiErrorStatus } = useApiErrorMessage()
 
 const event = ref<AdminEventDetail | null>(null)
@@ -42,15 +41,11 @@ function getStatusTone(status: string) {
 }
 
 async function loadOptions() {
-  const [venuesResponse, genresResponse, formatsResponse] = await Promise.all([
-    apiRequest<PaginatedResponse<VenueOption>>('/venues', { method: 'GET' }),
-    apiRequest<GenreOption[]>('/genres', { method: 'GET' }),
-    apiRequest<PaginatedResponse<AdminOption>>('/concert-formats', { method: 'GET' }),
-  ])
+  const options = await getFormOptions()
 
-  venues.value = venuesResponse.data
-  genres.value = genresResponse
-  formats.value = formatsResponse.data
+  venues.value = options.venues
+  genres.value = options.genres
+  formats.value = options.formats
 }
 
 async function loadEvent() {
@@ -58,10 +53,7 @@ async function loadEvent() {
   errorMessage.value = ''
 
   try {
-    event.value = await apiRequest<AdminEventDetail>(`/admin/events/${eventId.value}`, {
-      method: 'GET',
-      headers: requireAdminHeaders(),
-    })
+    event.value = await getAdminEvent(eventId.value)
   }
   catch (error) {
     if (getApiErrorStatus(error) === 404) {
@@ -84,11 +76,7 @@ async function updateEvent(payload: AdminEventPayload) {
   successMessage.value = ''
 
   try {
-    event.value = await apiRequest<AdminEventDetail, AdminEventPayload>(`/admin/events/${eventId.value}`, {
-      method: 'PATCH',
-      headers: requireAdminHeaders(),
-      body: payload,
-    })
+    event.value = await updateAdminEvent(eventId.value, payload)
 
     successMessage.value = 'Evento actualizado correctamente.'
   }

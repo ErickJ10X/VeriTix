@@ -3,6 +3,7 @@ import type {
   AdminUpdateUserPayload,
   AdminUserRecord,
 } from '~/types'
+import { useAdminUsersRepository } from '~/repositories/adminUsersRepository'
 
 definePageMeta({ middleware: 'admin' })
 useSeoMeta({ title: 'Editar usuario | Admin VeriTix' })
@@ -10,8 +11,8 @@ useSeoMeta({ title: 'Editar usuario | Admin VeriTix' })
 const route = useRoute()
 const userId = computed(() => String(route.params.id || ''))
 
-const apiRequest = useApiRequest()
-const { requireAdminHeaders, roleOptions } = useAdminApi()
+const { getUser: getAdminUser, updateUser: updateAdminUser } = useAdminUsersRepository()
+const { roleOptions } = useAdminApi()
 const { getApiErrorMessage, getApiErrorStatus } = useApiErrorMessage()
 
 const user = ref<AdminUserRecord | null>(null)
@@ -25,10 +26,7 @@ async function loadUser() {
   errorMessage.value = ''
 
   try {
-    user.value = await apiRequest<AdminUserRecord>(`/admin/users/${userId.value}`, {
-      method: 'GET',
-      headers: requireAdminHeaders(),
-    })
+    user.value = await getAdminUser(userId.value)
   }
   catch (error) {
     if (getApiErrorStatus(error) === 404) {
@@ -51,11 +49,7 @@ async function updateUser(payload: AdminUpdateUserPayload) {
   successMessage.value = ''
 
   try {
-    user.value = await apiRequest<AdminUserRecord, AdminUpdateUserPayload>(`/admin/users/${userId.value}`, {
-      method: 'PATCH',
-      headers: requireAdminHeaders(),
-      body: payload,
-    })
+    user.value = await updateAdminUser(userId.value, payload)
 
     successMessage.value = 'Usuario actualizado correctamente.'
   }

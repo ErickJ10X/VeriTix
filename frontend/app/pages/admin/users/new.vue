@@ -2,14 +2,14 @@
 import type {
   AdminCreateUserPayload,
   AdminUpdateUserPayload,
-  AdminUserRecord,
 } from '~/types'
+import { useAdminUsersRepository } from '~/repositories/adminUsersRepository'
 
 definePageMeta({ middleware: 'admin' })
 useSeoMeta({ title: 'Nuevo usuario | Admin VeriTix' })
 
-const apiRequest = useApiRequest()
-const { requireAdminHeaders, roleOptions } = useAdminApi()
+const { createUser: createAdminUser } = useAdminUsersRepository()
+const { roleOptions } = useAdminApi()
 const { getApiErrorMessage } = useApiErrorMessage()
 
 const submitting = ref(false)
@@ -24,11 +24,7 @@ async function createUser(payload: AdminCreateUserPayload | AdminUpdateUserPaylo
       throw new Error('Payload inválido para crear usuario.')
     }
 
-    await apiRequest<AdminUserRecord, AdminCreateUserPayload>('/admin/users', {
-      method: 'POST',
-      headers: requireAdminHeaders(),
-      body: payload,
-    })
+    await createAdminUser(payload)
 
     await navigateTo('/admin/users')
   }

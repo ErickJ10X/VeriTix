@@ -4,6 +4,7 @@ import type {
   AdminArtistRecord,
   GenreOption,
 } from '~/types'
+import { useAdminArtistsRepository } from '~/repositories/adminArtistsRepository'
 
 definePageMeta({ middleware: 'admin' })
 useSeoMeta({ title: 'Editar artista | Admin VeriTix' })
@@ -11,8 +12,7 @@ useSeoMeta({ title: 'Editar artista | Admin VeriTix' })
 const route = useRoute()
 const artistId = computed(() => String(route.params.id || ''))
 
-const apiRequest = useApiRequest()
-const { requireAdminHeaders } = useAdminApi()
+const { getArtist: getAdminArtist, listGenres, updateArtist: updateAdminArtist } = useAdminArtistsRepository()
 const { getApiErrorMessage, getApiErrorStatus } = useApiErrorMessage()
 
 const artist = ref<AdminArtistRecord | null>(null)
@@ -24,7 +24,7 @@ const successMessage = ref('')
 
 async function loadGenres() {
   try {
-    genres.value = await apiRequest<GenreOption[]>('/genres', { method: 'GET' })
+    genres.value = await listGenres()
   }
   catch {
     genres.value = []
@@ -36,10 +36,7 @@ async function loadArtist() {
   errorMessage.value = ''
 
   try {
-    artist.value = await apiRequest<AdminArtistRecord>(`/artists/${artistId.value}`, {
-      method: 'GET',
-      headers: requireAdminHeaders(),
-    })
+    artist.value = await getAdminArtist(artistId.value)
   }
   catch (error) {
     if (getApiErrorStatus(error) === 404) {
@@ -62,11 +59,7 @@ async function updateArtist(payload: AdminArtistPayload) {
   successMessage.value = ''
 
   try {
-    artist.value = await apiRequest<AdminArtistRecord, AdminArtistPayload>(`/artists/${artistId.value}`, {
-      method: 'PATCH',
-      headers: requireAdminHeaders(),
-      body: payload,
-    })
+    artist.value = await updateAdminArtist(artistId.value, payload)
 
     successMessage.value = 'Artista actualizado correctamente.'
   }
