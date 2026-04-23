@@ -20,9 +20,7 @@ RUN addgroup --system --gid 1001 nuxt && \
     adduser --system --uid 1001 nuxt
 
 COPY --from=builder --chown=nuxt:nuxt /app/.output ./.output
-RUN cd .output/server && bun install --production && \
-    bun add ofetch && \
-    chown -R nuxt:nuxt /app/.output
+COPY --from=builder --chown=nuxt:nuxt /app/node_modules ./node_modules
 
 USER nuxt
 
