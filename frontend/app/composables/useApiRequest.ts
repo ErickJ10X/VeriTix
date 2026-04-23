@@ -30,7 +30,10 @@ export function useApiRequest() {
       }
     }
 
-    const apiUrl = `${import.meta.server ? useRequestURL().origin : window.location.origin}${config.public.apiBase}${path}`
+    const origin = import.meta.server ? useRequestURL().origin : window.location.origin
+    const apiBaseUrl = new URL(config.public.apiBase, origin).toString().replace(/\/$/, '')
+    const normalizedPath = path.startsWith('/') ? path : `/${path}`
+    const apiUrl = `${apiBaseUrl}${normalizedPath}`
 
     const response: unknown = await $fetch(apiUrl, {
       method: options.method,
