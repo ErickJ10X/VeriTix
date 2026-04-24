@@ -59,6 +59,7 @@ const filters = reactive({
   formatId: '',
   dateFrom: '',
   dateTo: '',
+  artistName: '',
 })
 
 const quickWindowOptions = QUICK_WINDOW_OPTIONS
@@ -197,6 +198,7 @@ function resetCatalogFilters() {
   filters.formatId = ''
   filters.dateFrom = ''
   filters.dateTo = ''
+  filters.artistName = ''
   quickWindow.value = 'all'
   page.value = 1
 
@@ -265,14 +267,12 @@ onMounted(() => {
             v-model:format-id="filters.formatId"
             v-model:date-from="filters.dateFrom"
             v-model:date-to="filters.dateTo"
-            :page-size="pageSize"
-            :page-size-options="pageSizeOptions"
+            v-model:artist-name="filters.artistName"
             :genres="genres"
             :formats="formats"
             :loading="catalogPending || filtersPending"
-            :visible-filters="catalogMode === 'published' ? ['city', 'pageSize', 'genre', 'format', 'dateRange'] : ['city']"
+            :visible-filters="catalogMode === 'published' ? ['city', 'artistName', 'genre', 'format', 'dateRange'] : ['city']"
             class="w-full"
-            @update:page-size="pageSize = Number($event)"
           />
 
           <div class="rounded-2xl border border-default/70 bg-elevated/35 p-3 text-sm text-toned sm:p-4">

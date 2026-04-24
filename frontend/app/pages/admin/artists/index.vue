@@ -198,84 +198,62 @@ onMounted(() => {
             action-to="/admin/artists/new"
           />
 
-          <div v-else class="grid grid-cols-1 gap-6 md:grid-cols-2 xl:grid-cols-3">
-            <AdminCard
+<div v-else class="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
+            <div
               v-for="artist in artists"
               :key="artist.id"
-              class="h-full border-default/65 bg-elevated/20"
+              class="group relative block"
             >
-              <div class="flex h-full flex-col gap-4">
-                <div class="flex items-start justify-between gap-3">
-                  <div class="flex min-w-0 items-center gap-3">
+              <NuxtLink
+                :to="`/admin/artists/${artist.id}/edit`"
+                class="block"
+              >
+                <div class="aspect-square overflow-hidden rounded-xl bg-elevated/30">
+                  <img
+                    v-if="artist.imageUrl"
+                    :src="artist.imageUrl"
+                    :alt="artist.name"
+                    class="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
+                  >
+                  <div
+                    v-else
+                    class="flex h-full items-center justify-center bg-gradient-to-br from-toned/25 to-toned/10"
+                  >
                     <UAvatar
-                      :src="artist.imageUrl || undefined"
-                      :alt="artist.name"
                       :text="artistInitials(artist)"
                       size="xl"
-                      class="ring-1 ring-default/60"
+                      class="!size-16"
                     />
-
-                    <div class="min-w-0 space-y-1">
-                      <p class="truncate text-base font-semibold text-highlighted">
-                        {{ artist.name }}
-                      </p>
-                      <p class="truncate text-sm text-toned">
-                        {{ artist.slug }}
-                      </p>
-                    </div>
                   </div>
 
-                  <span :class="artist.isActive ? 'text-success' : 'text-muted'" class="text-xs font-medium">
+                  <!-- Status -->
+                  <div
+                    class="absolute left-2 top-2 rounded-full px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wider opacity-80"
+                    :class="artist.isActive ? 'bg-black/60 text-white' : 'bg-black/40 text-muted'"
+                  >
                     {{ artist.isActive ? 'Activo' : 'Inactivo' }}
-                  </span>
-                </div>
-
-                <div class="space-y-2 text-sm">
-                  <div class="flex items-center justify-between border-b border-default/60 pb-2">
-                    <span class="text-muted">País</span>
-                    <span class="truncate text-toned">{{ artist.country || 'Sin definir' }}</span>
-                  </div>
-
-                  <div>
-                    <p class="mb-1.5 text-muted">Géneros</p>
-                    <div class="flex flex-wrap gap-1.5">
-                      <span
-                        v-for="genre in artist.genres.slice(0, 3)"
-                        :key="genre.id"
-                        class="rounded-full border border-default/60 px-2 py-0.5 text-xs font-medium text-toned"
-                      >
-                        {{ genre.name }}
-                      </span>
-                      <span
-                        v-if="artist.genres.length > 3"
-                        class="rounded-full border border-default/60 px-2 py-0.5 text-xs font-medium text-muted"
-                      >
-                        +{{ artist.genres.length - 3 }}
-                      </span>
-                      <span
-                        v-if="artist.genres.length === 0"
-                        class="text-xs text-muted"
-                      >
-                        Sin géneros asignados
-                      </span>
-                    </div>
                   </div>
                 </div>
 
-                <div class="mt-auto grid grid-cols-2 gap-2 border-t border-default/60 pt-3">
-                  <BaseButton kind="secondary" size="sm" block :to="`/admin/artists/${artist.id}/edit`">
-                    Editar
-                  </BaseButton>
-                  <AdminDeleteAction
-                    item-label="el artista"
-                    trigger-kind="tertiary"
-                    trigger-class="w-full justify-center text-error hover:bg-error/10"
-                    :pending="deletingId === artist.id"
-                    @confirm="removeArtist(artist.id)"
-                  />
+                <div class="mt-2">
+                  <h3 class="truncate text-sm font-medium text-highlighted">
+                    {{ artist.name }}
+                  </h3>
+                  <p v-if="artist.genres.length" class="truncate text-xs text-toned">
+                    {{ artist.genres.map(g => g.name).join(', ') }}
+                  </p>
                 </div>
-              </div>
-            </AdminCard>
+              </NuxtLink>
+
+              <!-- Delete action -->
+              <AdminDeleteAction
+                item-label="el artista"
+                trigger-kind="tertiary"
+                trigger-class="absolute right-1 top-1 opacity-0 group-hover:opacity-100 bg-black/60 hover:bg-error/80 text-white p-1.5 rounded transition-opacity"
+                :pending="deletingId === artist.id"
+                @confirm="removeArtist(artist.id)"
+              />
+            </div>
           </div>
 
           <AdminPaginationBar
