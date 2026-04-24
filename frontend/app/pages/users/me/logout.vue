@@ -20,7 +20,7 @@ onMounted(async () => {
     await router.push('/')
   }
   catch (error) {
-    notifyApiError(error, 'Error al cerrar sesion.', { id: 'auth-logout-error' })
+    notifyApiError(error, 'Error al cerrar sesión.', { id: 'auth-logout-error' })
     loggingOut.value = false
   }
 })
@@ -28,15 +28,15 @@ onMounted(async () => {
 
 <template>
   <UsersSettingsShell
-    title="Cerrando sesion"
-    description="Espera un momento mientras cerramos tu sesion de forma segura."
+    title="Cerrando sesión"
+    description="Espera un momento mientras cerramos tu sesión de forma segura."
     tone="minimal"
   >
     <div class="flex flex-col items-center justify-center py-20 text-center">
       <template v-if="loggingOut">
         <UIcon name="i-lucide-loader-2" class="size-10 animate-spin text-auric-400" />
         <p class="mt-6 text-lg font-medium text-highlighted">
-          Cerrando sesion...
+          Cerrando sesión...
         </p>
         <p class="mt-2 text-sm text-toned">
           Saliendo de VeriTix de forma segura.
@@ -51,7 +51,7 @@ onMounted(async () => {
           Ha ocurrido un problema
         </p>
         <p class="mt-2 text-sm text-toned">
-          No pudimos cerrar tu sesion. Volve a intentarlo.
+          No pudimos cerrar tu sesión. Volvé a intentarlo.
         </p>
         <BaseButton
           kind="primary"

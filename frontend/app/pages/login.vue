@@ -39,7 +39,7 @@ async function onSubmit() {
     await navigateTo('/')
   }
   catch (error) {
-    notifyApiError(error, 'Credenciales incorrectas. Por favor, intenta de nuevo.', { id: 'auth-login-error' })
+    notifyApiError(error, 'Credenciales incorrectas. Por favor, intentá de nuevo.', { id: 'auth-login-error' })
   }
 }
 </script>
@@ -59,7 +59,7 @@ async function onSubmit() {
             </h1>
 
             <p class="mx-auto mt-3 max-w-md text-sm text-toned">
-              Inicia sesion para acceder a tu cuenta
+              Iniciá sesión para acceder a tu cuenta
             </p>
           </header>
 

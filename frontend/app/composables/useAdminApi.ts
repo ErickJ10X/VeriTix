@@ -15,18 +15,24 @@ function buildAdminAuthHeaders(accessToken: string | null): HeadersInit {
 
 export function useAdminApi() {
   const { accessToken } = useAuth()
-  const { getApiErrorMessage, getApiErrorStatus } = useApiErrorMessage()
+  const { getApiErrorMessage, getApiErrorStatus, isApiSessionExpiredError } = useApiErrorMessage()
 
   function requireAdminHeaders(): HeadersInit {
     return buildAdminAuthHeaders(accessToken.value)
   }
 
   function normalizeAdminError(error: unknown, fallback: string): never {
-    throw createError({
+    const normalizedError = createError({
       statusCode: getApiErrorStatus(error) ?? 500,
       statusMessage: getApiErrorMessage(error, fallback),
       data: error,
     })
+
+    if (isApiSessionExpiredError(error)) {
+      ;(normalizedError as Record<string, unknown>).__sessionExpired = true
+    }
+
+    throw normalizedError
   }
 
   const roleOptions: Array<{ value: UserRole, label: string }> = [

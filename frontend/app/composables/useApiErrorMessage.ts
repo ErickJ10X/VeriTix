@@ -8,6 +8,7 @@ interface FetchLikeError {
     status?: number
   }
   data?: ApiErrorPayload
+  __sessionExpired?: boolean
 }
 
 export function useApiErrorMessage() {
@@ -26,6 +27,18 @@ export function useApiErrorMessage() {
   function isApiAuthError(error: unknown): boolean {
     const status = getApiErrorStatus(error)
     return status === 401 || status === 403
+  }
+
+  function isApiSessionExpiredError(error: unknown): boolean {
+    return Boolean((error as FetchLikeError).__sessionExpired)
+  }
+
+  function markApiSessionExpiredError(error: unknown): unknown {
+    if (error && typeof error === 'object') {
+      ;(error as FetchLikeError).__sessionExpired = true
+    }
+
+    return error
   }
 
   function getApiErrorMessage(error: unknown, fallback: string): string {
@@ -60,5 +73,7 @@ export function useApiErrorMessage() {
     getApiErrorMessage,
     isApiAuthError,
     isApiTimeoutError,
+    isApiSessionExpiredError,
+    markApiSessionExpiredError,
   }
 }

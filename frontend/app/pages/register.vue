@@ -54,7 +54,7 @@ async function onSubmit() {
     await navigateTo('/')
   }
   catch (error) {
-    notifyApiError(error, 'Error al crear la cuenta. Por favor, intenta de nuevo.', { id: 'auth-register-error' })
+    notifyApiError(error, 'Error al crear la cuenta. Por favor, intentá de nuevo.', { id: 'auth-register-error' })
   }
 }
 </script>
@@ -74,7 +74,7 @@ async function onSubmit() {
             </h1>
 
             <p class="mx-auto mt-3 max-w-md text-sm text-toned">
-              Unete a VeriTix y descubre tu proximo concierto
+              Unite a VeriTix y descubrí tu próximo concierto
             </p>
           </header>
 

@@ -75,6 +75,7 @@ export function useAuth() {
       await apiRequest<RegisterResponse, RegisterRequest>('/auth/register', {
         method: 'POST',
         body: payload,
+        skipAuthRefresh: true,
       })
 
       return await login({
@@ -94,6 +95,7 @@ export function useAuth() {
       const response = await apiRequest<AuthResponse, LoginRequest>('/auth/login', {
         method: 'POST',
         body: payload,
+        skipAuthRefresh: true,
       })
 
       return applyAuth(response)
@@ -108,6 +110,7 @@ export function useAuth() {
       const response = await apiRequest<AuthResponse>('/auth/refresh', {
         method: 'POST',
         headers: buildAuthHeaders(accessToken.value),
+        skipAuthRefresh: true,
       })
 
       return applyAuth(response)
@@ -126,6 +129,7 @@ export function useAuth() {
       await apiRequest<void>('/auth/logout', {
         method: 'POST',
         headers: buildAuthHeaders(accessToken.value),
+        skipAuthRefresh: true,
       })
     }
     finally {

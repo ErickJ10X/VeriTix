@@ -156,7 +156,7 @@ async function submitProfile() {
     })
 
     applyProfileState()
-    notifySuccess('Perfil actualizado.', { id: 'profile-update-success' })
+    notifySuccess('Perfil actualizado correctamente.', { id: 'profile-update-success' })
   }
   catch (error) {
     notifyApiError(error, 'No pudimos guardar el perfil.', { id: 'profile-update-error' })
@@ -178,10 +178,10 @@ async function submitPassword() {
     passwordState.currentPassword = ''
     passwordState.newPassword = ''
     passwordState.confirmPassword = ''
-    notifySuccess('Contrasena actualizada.', { id: 'security-update-success' })
+    notifySuccess('Contraseña actualizada correctamente.', { id: 'security-update-success' })
   }
   catch (error) {
-    notifyApiError(error, 'No pudimos actualizar la contrasena.', { id: 'security-update-error' })
+    notifyApiError(error, 'No pudimos actualizar la contraseña.', { id: 'security-update-error' })
   }
   finally {
     passwordSubmitting.value = false
@@ -238,7 +238,7 @@ onMounted(() => {
 
             <div class="flex flex-col gap-3 pt-2 sm:flex-row sm:items-center sm:justify-between">
               <span class="text-sm text-toned">
-                Datos visibles y de contacto.
+              Datos visibles y de contacto.
               </span>
 
               <BaseButton
@@ -286,7 +286,7 @@ onMounted(() => {
 
             <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
               <span class="text-sm text-toned">
-                Acceso y proteccion de la cuenta.
+                Acceso y protección de la cuenta.
               </span>
 
               <div class="flex flex-col gap-3 sm:flex-row sm:items-center">
@@ -296,7 +296,7 @@ onMounted(() => {
                   size="lg"
                   class="px-6"
                 >
-                  Cerrar sesion
+                  Cerrar sesión
                 </BaseButton>
 
                 <BaseButton
@@ -306,7 +306,7 @@ onMounted(() => {
                   class="vtx-profile-submit px-6"
                   :loading="passwordSubmitting"
                 >
-                  Actualizar contrasena
+                  Actualizar contraseña
                 </BaseButton>
               </div>
             </div>

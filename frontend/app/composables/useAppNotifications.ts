@@ -6,13 +6,13 @@ interface NotifyOptions {
 
 export function useAppNotifications() {
   const toast = useToast()
-  const { getApiErrorMessage, isApiAuthError } = useApiErrorMessage()
+  const { getApiErrorMessage, isApiSessionExpiredError } = useApiErrorMessage()
   const { clearAuth } = useAuth()
 
   function notifyError(description: string, options: NotifyOptions = {}) {
     toast.add({
       id: options.id,
-      title: options.title ?? 'No se pudo completar',
+      title: options.title ?? 'Error',
       description,
       color: 'error',
       icon: 'i-lucide-alert-circle',
@@ -23,7 +23,7 @@ export function useAppNotifications() {
   function notifySuccess(description: string, options: NotifyOptions = {}) {
     toast.add({
       id: options.id,
-      title: options.title ?? 'Listo',
+      title: options.title ?? 'Éxito',
       description,
       color: 'success',
       icon: 'i-lucide-check-circle',
@@ -34,7 +34,7 @@ export function useAppNotifications() {
   function notifyInfo(description: string, options: NotifyOptions = {}) {
     toast.add({
       id: options.id,
-      title: options.title ?? 'Información',
+      title: options.title ?? 'Aviso',
       description,
       color: 'info',
       icon: 'i-lucide-info',
@@ -43,12 +43,12 @@ export function useAppNotifications() {
   }
 
   function notifyApiError(error: unknown, fallback: string, options: NotifyOptions = {}) {
-    if (isApiAuthError(error) && import.meta.client) {
+    if (isApiSessionExpiredError(error) && import.meta.client) {
       clearAuth()
       toast.add({
         id: options.id ?? 'auth-session-expired',
         title: 'Sesión expirada',
-        description: 'Volvé a iniciar sesión para continuar.',
+        description: 'Tu sesión expiró. Volvé a iniciar sesión para continuar.',
         color: 'warning',
         icon: 'i-lucide-log-in',
         duration: options.duration ?? 6000,
