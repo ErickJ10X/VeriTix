@@ -1,4 +1,4 @@
-import type { AuthResponse, LoginRequest, RegisterRequest, UserProfile } from '~~/shared/types'
+import type { AuthResponse, LoginRequest, RegisterRequest, RegisterResponse, UserProfile } from '~~/shared/types'
 
 function buildAuthHeaders(accessToken: string | null): HeadersInit | undefined {
   if (!accessToken) {
@@ -72,12 +72,15 @@ export function useAuth() {
     pending.value = true
 
     try {
-      const response = await apiRequest<AuthResponse, RegisterRequest>('/auth/register', {
+      await apiRequest<RegisterResponse, RegisterRequest>('/auth/register', {
         method: 'POST',
         body: payload,
       })
 
-      return applyAuth(response)
+      return await login({
+        email: payload.email,
+        password: payload.password,
+      })
     }
     finally {
       pending.value = false

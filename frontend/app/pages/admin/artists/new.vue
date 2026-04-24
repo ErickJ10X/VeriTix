@@ -4,6 +4,7 @@ import type {
   GenreOption,
 } from '~/types'
 import { useAdminArtistsRepository } from '~/repositories/adminArtistsRepository'
+import { normalizeArtistPayload } from '~/utils/admin/formSafeRails'
 
 definePageMeta({ middleware: 'admin' })
 useSeoMeta({ title: 'Nuevo artista | Admin VeriTix' })
@@ -31,11 +32,17 @@ async function loadGenres() {
 }
 
 async function createArtist(payload: AdminArtistPayload) {
+  if (submitting.value) {
+    return
+  }
+
+  const normalizedPayload = normalizeArtistPayload(payload)
+
   submitting.value = true
   errorMessage.value = ''
 
   try {
-    await createAdminArtist(payload)
+    await createAdminArtist(normalizedPayload)
 
     await navigateTo('/admin/artists')
   }
@@ -55,27 +62,32 @@ onMounted(() => {
 <template>
   <AdminPageShell
     title="Nuevo artista"
-    description="Crea un perfil artístico listo para asociar a eventos y catálogos."
+    description="Crea un artista y dejalo listo para asociar a eventos."
     primary-action-to="/admin/artists"
     primary-action-label="Volver a artistas"
   >
-    <div class="mx-auto max-w-5xl space-y-6">
+    <div class="mx-auto max-w-5xl space-y-5">
       <BaseStatusMessage v-if="errorMessage" :message="errorMessage" />
 
-      <AdminFormSurface
-        eyebrow="Artistas"
-        title="Alta de artista"
-        description="Define identidad, metadata pública y clasificación por géneros para el equipo de contenido."
-        icon="i-lucide-mic-2"
-        variant="primary"
-        :highlights="['slug único', 'metadatos públicos', 'géneros asociados']"
+      <AdminOverviewPanel
+        title="Datos del artista"
+        description="Completa la ficha principal para catalogo y búsqueda."
+        tone="subtle"
       >
+        <template #actions>
+          <div class="flex flex-wrap items-center gap-2.5">
+            <BaseBadge kind="info" size="sm" class="min-w-24 justify-center">
+              {{ genres?.length || 0 }} géneros
+            </BaseBadge>
+          </div>
+        </template>
+
         <template v-if="loading">
           <div class="space-y-4">
-            <USkeleton class="h-11 w-full rounded-lg" />
-            <USkeleton class="h-11 w-full rounded-lg" />
-            <USkeleton class="h-24 w-full rounded-lg" />
-            <USkeleton class="h-11 w-full rounded-lg" />
+            <USkeleton class="h-12 w-full rounded-xl" />
+            <USkeleton class="h-12 w-full rounded-xl" />
+            <USkeleton class="h-24 w-full rounded-xl" />
+            <USkeleton class="h-12 w-full rounded-xl" />
           </div>
         </template>
 
@@ -86,7 +98,7 @@ onMounted(() => {
           submit-label="Crear artista"
           @submit="createArtist"
         />
-      </AdminFormSurface>
+      </AdminOverviewPanel>
     </div>
   </AdminPageShell>
 </template>

@@ -17,3 +17,7 @@ export interface AuthResponse {
   accessToken: string
   user: UserProfile
 }
+
+export interface RegisterResponse {
+  message: string
+}

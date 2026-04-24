@@ -6,6 +6,7 @@ import type {
   VenueOption,
 } from '~/types'
 import { useAdminEventsRepository } from '~/repositories/adminEventsRepository'
+import { normalizeEventPayload } from '~/utils/admin/formSafeRails'
 
 definePageMeta({ middleware: 'admin' })
 useSeoMeta({ title: 'Nuevo evento | Admin VeriTix' })
@@ -39,11 +40,17 @@ async function loadOptions() {
 }
 
 async function createEvent(payload: AdminEventPayload) {
+  if (submitting.value) {
+    return
+  }
+
+  const normalizedPayload = normalizeEventPayload(payload)
+
   submitting.value = true
   errorMessage.value = ''
 
   try {
-    await createAdminEvent(payload)
+    await createAdminEvent(normalizedPayload)
 
     await navigateTo('/admin/events')
   }
@@ -63,28 +70,27 @@ onMounted(() => {
 <template>
   <AdminPageShell
     title="Nuevo evento"
-    description="Crea una fecha nueva dentro del flujo operativo de eventos y configuralo antes de publicarlo."
+    description="Crea un evento y dejalo listo para publicar."
     primary-action-to="/admin/events"
     primary-action-label="Volver a eventos"
   >
-    <div class="mx-auto max-w-5xl space-y-6">
+    <div class="mx-auto max-w-5xl space-y-5">
       <BaseStatusMessage v-if="errorMessage" :message="errorMessage" />
 
       <AdminOverviewPanel
-        eyebrow="Eventos"
-        title="Alta de evento"
-        description="Completa la ficha operativa y deja listo el evento para entrar al catalogo del dashboard."
+        title="Datos del evento"
+        description="Completa los campos principales para crear la ficha."
         tone="subtle"
       >
         <template #actions>
-          <div class="flex flex-wrap items-center gap-2">
-            <BaseBadge kind="info" size="sm">
+          <div class="flex flex-wrap items-center gap-2.5">
+            <BaseBadge kind="info" size="sm" class="min-w-24 justify-center">
               {{ venues?.length || 0 }} venues
             </BaseBadge>
-            <BaseBadge kind="tag" size="sm">
+            <BaseBadge kind="info" size="sm" class="min-w-24 justify-center">
               {{ formats?.length || 0 }} formatos
             </BaseBadge>
-            <BaseBadge kind="status" color="primary" size="sm">
+            <BaseBadge kind="info" size="sm" class="min-w-24 justify-center">
               {{ genres?.length || 0 }} generos
             </BaseBadge>
           </div>

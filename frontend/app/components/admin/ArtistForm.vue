@@ -5,6 +5,7 @@ import type {
   GenreOption,
 } from '~/types'
 import { z } from 'zod'
+import { normalizeArtistPayload } from '~/utils/admin/formSafeRails'
 
 const props = withDefaults(defineProps<{
   initialValue?: Partial<AdminArtistRecord>
@@ -61,7 +62,11 @@ function applyInitialValue() {
 }
 
 function handleSubmit() {
-  emit('submit', {
+  if (props.submitting) {
+    return
+  }
+
+  emit('submit', normalizeArtistPayload({
     name: state.name.trim(),
     slug: state.slug.trim(),
     bio: state.bio.trim() || undefined,
@@ -69,7 +74,7 @@ function handleSubmit() {
     country: state.country.trim() || undefined,
     website: state.website.trim() || undefined,
     genreIds: state.genreIds.length > 0 ? state.genreIds : undefined,
-  })
+  }))
 }
 
 watch(() => props.initialValue, applyInitialValue, { immediate: true })
@@ -89,7 +94,7 @@ watch(() => props.initialValue, applyInitialValue, { immediate: true })
     </div>
 
     <UFormField name="bio" label="Biografía">
-      <UTextarea v-model="state.bio" :rows="5" placeholder="Describe al artista" />
+      <BaseFormTextarea v-model="state.bio" placeholder="Describe al artista" />
     </UFormField>
 
     <div class="grid gap-5 lg:grid-cols-3">

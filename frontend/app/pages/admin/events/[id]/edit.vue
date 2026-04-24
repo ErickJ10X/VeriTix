@@ -7,6 +7,7 @@ import type {
   VenueOption,
 } from '~/types'
 import { useAdminEventsRepository } from '~/repositories/adminEventsRepository'
+import { hasEventSemanticChanges, normalizeEventPayload } from '~/utils/admin/formSafeRails'
 
 definePageMeta({ middleware: 'admin' })
 useSeoMeta({ title: 'Editar evento | Admin VeriTix' })
@@ -25,6 +26,7 @@ const loading = ref(true)
 const submitting = ref(false)
 const errorMessage = ref('')
 const successMessage = ref('')
+const infoMessage = ref('')
 
 function getStatusTone(status: string) {
   if (status === 'PUBLISHED') {
@@ -71,12 +73,26 @@ async function loadEvent() {
 }
 
 async function updateEvent(payload: AdminEventPayload) {
+  if (submitting.value || !event.value) {
+    return
+  }
+
+  const normalizedPayload = normalizeEventPayload(payload)
+
+  if (!hasEventSemanticChanges(event.value, normalizedPayload)) {
+    errorMessage.value = ''
+    successMessage.value = ''
+    infoMessage.value = 'No hay cambios para guardar.'
+    return
+  }
+
   submitting.value = true
   errorMessage.value = ''
   successMessage.value = ''
+  infoMessage.value = ''
 
   try {
-    event.value = await updateAdminEvent(eventId.value, payload)
+    event.value = await updateAdminEvent(eventId.value, normalizedPayload)
 
     successMessage.value = 'Evento actualizado correctamente.'
   }
@@ -96,49 +112,53 @@ onMounted(() => {
 <template>
   <AdminPageShell
     title="Editar evento"
-    description="Ajusta los datos operativos del evento, su programación y las opciones de venta."
+    description="Actualiza la ficha del evento y su configuración operativa."
     primary-action-to="/admin/events"
     primary-action-label="Volver a eventos"
   >
-    <div class="space-y-8">
+    <div class="mx-auto max-w-5xl space-y-5">
       <BaseStatusMessage v-if="errorMessage" :message="errorMessage" />
+      <BaseStatusMessage v-if="infoMessage" tone="info" :message="infoMessage" />
       <BaseStatusMessage v-if="successMessage" tone="success" :message="successMessage" />
 
       <AdminOverviewPanel
-        eyebrow="Eventos"
-        title="Ficha de evento"
-        description="Actualiza la información seleccionada sin salir del flujo operativo del dashboard."
+        title="Datos del evento"
+        description="Edita los campos principales del evento seleccionado."
         tone="subtle"
       >
         <template #actions>
-          <div v-if="event" class="flex items-center gap-2">
-            <BaseBadge kind="status" :color="getStatusTone(event.status)" size="sm">
+          <div v-if="event" class="flex flex-wrap items-center gap-2.5">
+            <BaseBadge kind="info" size="sm" class="min-w-24 justify-center">
+              {{ venues?.length || 0 }} venues
+            </BaseBadge>
+            <BaseBadge kind="info" size="sm" class="min-w-24 justify-center">
+              {{ formats?.length || 0 }} formatos
+            </BaseBadge>
+            <BaseBadge kind="status" :color="getStatusTone(event.status)" size="sm" class="min-w-24 justify-center">
               {{ event.status }}
             </BaseBadge>
           </div>
         </template>
 
-        <UiGlassPanel tone="strong" padding="lg" radius="xl" class="min-w-0">
-          <template v-if="loading">
-            <div class="space-y-4">
-              <USkeleton class="h-11 w-full rounded-lg" />
-              <USkeleton class="h-11 w-full rounded-lg" />
-              <USkeleton class="h-24 w-full rounded-lg" />
-              <USkeleton class="h-11 w-full rounded-lg" />
-            </div>
-          </template>
+        <template v-if="loading">
+          <div class="space-y-4">
+            <USkeleton class="h-12 w-full rounded-xl" />
+            <USkeleton class="h-12 w-full rounded-xl" />
+            <USkeleton class="h-24 w-full rounded-xl" />
+            <USkeleton class="h-12 w-full rounded-xl" />
+          </div>
+        </template>
 
-          <AdminEventForm
-            v-else-if="event"
-            :initial-value="event"
-            :venues="venues"
-            :genres="genres"
-            :formats="formats"
-            :submitting="submitting"
-            submit-label="Guardar cambios"
-            @submit="updateEvent"
-          />
-        </UiGlassPanel>
+        <AdminEventForm
+          v-else-if="event"
+          :initial-value="event"
+          :venues="venues"
+          :genres="genres"
+          :formats="formats"
+          :submitting="submitting"
+          submit-label="Guardar cambios"
+          @submit="updateEvent"
+        />
       </AdminOverviewPanel>
     </div>
   </AdminPageShell>

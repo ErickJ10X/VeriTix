@@ -23,13 +23,13 @@ export function useAdminEventsRepository() {
     const [venuesResponse, genresResponse, formatsResponse] = await Promise.all([
       apiRequest<PaginatedResponse<VenueOption>>('/venues', { method: 'GET' }),
       apiRequest<GenreOption[]>('/genres', { method: 'GET' }),
-      apiRequest<PaginatedResponse<AdminOption>>('/concert-formats', { method: 'GET' }),
+      apiRequest<AdminOption[]>('/concert-formats', { method: 'GET' }),
     ])
 
     return {
       venues: venuesResponse?.data ?? [],
       genres: genresResponse ?? [],
-      formats: formatsResponse?.data ?? [],
+      formats: formatsResponse ?? [],
     }
   }
 

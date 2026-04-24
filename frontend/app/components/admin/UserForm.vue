@@ -6,6 +6,7 @@ import type {
   AdminUserRecord,
 } from '~/types'
 import { z } from 'zod'
+import { normalizeCreateUserPayload, normalizeUpdateUserPayload } from '~/utils/admin/formSafeRails'
 
 interface RoleOption {
   value: UserRole
@@ -106,20 +107,24 @@ function applyInitialValue() {
 }
 
 function handleSubmit() {
+  if (props.submitting) {
+    return
+  }
+
   if (props.includePassword) {
-    emit('submit', {
+    emit('submit', normalizeCreateUserPayload({
       email: state.email.trim(),
       phone: state.phone.trim(),
       name: state.name.trim(),
       lastName: state.lastName.trim(),
       password: state.password,
       role: state.role,
-    })
+    }))
 
     return
   }
 
-  emit('submit', {
+  emit('submit', normalizeUpdateUserPayload({
     email: state.email.trim(),
     phone: state.phone.trim(),
     name: state.name.trim(),
@@ -128,7 +133,7 @@ function handleSubmit() {
     avatarUrl: state.avatarUrl.trim() || undefined,
     isActive: state.isActive,
     emailVerified: state.emailVerified,
-  })
+  }))
 }
 
 watch(() => props.initialValue, applyInitialValue, { immediate: true })
