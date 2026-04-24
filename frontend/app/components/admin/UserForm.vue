@@ -28,7 +28,10 @@ const props = withDefaults(defineProps<{
 
 const emit = defineEmits<{
   submit: [payload: AdminCreateUserPayload | AdminUpdateUserPayload]
+  emailBlur: [email: string]
 }>()
+
+const dirty = defineModel<boolean>('dirty', { default: false })
 
 const phonePattern = /^\+[1-9]\d{7,14}$/
 
@@ -94,6 +97,42 @@ const verificationValue = computed({
   },
 })
 
+const initialSnapshot = ref<AdminCreateUserPayload | AdminUpdateUserPayload | null>(null)
+
+function buildCurrentPayload(): AdminCreateUserPayload | AdminUpdateUserPayload {
+  if (props.includePassword) {
+    return normalizeCreateUserPayload({
+      email: state.email,
+      phone: state.phone,
+      name: state.name,
+      lastName: state.lastName,
+      password: state.password,
+      role: state.role,
+    })
+  }
+
+  return normalizeUpdateUserPayload({
+    email: state.email,
+    phone: state.phone,
+    name: state.name,
+    lastName: state.lastName,
+    role: state.role,
+    avatarUrl: state.avatarUrl,
+    isActive: state.isActive,
+    emailVerified: state.emailVerified,
+  })
+}
+
+function hasDirtyChanges() {
+  const currentPayload = buildCurrentPayload()
+
+  if (!initialSnapshot.value) {
+    return false
+  }
+
+  return JSON.stringify(currentPayload) !== JSON.stringify(initialSnapshot.value)
+}
+
 function applyInitialValue() {
   state.email = props.initialValue?.email ?? ''
   state.phone = props.initialValue?.phone ?? ''
@@ -104,6 +143,13 @@ function applyInitialValue() {
   state.avatarUrl = props.initialValue?.avatarUrl ?? ''
   state.isActive = props.initialValue?.isActive ?? true
   state.emailVerified = props.initialValue?.emailVerified ?? false
+
+  initialSnapshot.value = buildCurrentPayload()
+  dirty.value = false
+}
+
+function handleEmailBlur() {
+  emit('emailBlur', state.email.trim())
 }
 
 function handleSubmit() {
@@ -137,6 +183,9 @@ function handleSubmit() {
 }
 
 watch(() => props.initialValue, applyInitialValue, { immediate: true })
+watch(() => state, () => {
+  dirty.value = hasDirtyChanges()
+}, { deep: true })
 </script>
 
 <template>
@@ -147,7 +196,7 @@ watch(() => props.initialValue, applyInitialValue, { immediate: true })
     </div>
 
     <div class="grid gap-5 lg:grid-cols-2">
-      <BaseFormField v-model="state.email" name="email" label="Correo" type="email" required />
+      <BaseFormField v-model="state.email" name="email" label="Correo" type="email" required @blur="handleEmailBlur" />
       <BaseFormField
         v-model="state.phone"
         name="phone"

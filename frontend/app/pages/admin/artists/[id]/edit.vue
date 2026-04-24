@@ -20,9 +20,15 @@ const artist = ref<AdminArtistRecord | null>(null)
 const genres = ref<GenreOption[]>([])
 const loading = ref(true)
 const submitting = ref(false)
+const isFormDirty = ref(false)
 const errorMessage = ref('')
 const successMessage = ref('')
 const infoMessage = ref('')
+
+useUnsavedChangesGuard({
+  isDirty: isFormDirty,
+  isSubmitting: submitting,
+})
 
 async function loadGenres() {
   try {
@@ -80,6 +86,11 @@ async function updateArtist(payload: AdminArtistPayload) {
     successMessage.value = 'Artista actualizado correctamente.'
   }
   catch (error) {
+    if (getApiErrorStatus(error) === 409) {
+      errorMessage.value = 'Ya existe un artista con ese slug.'
+      return
+    }
+
     errorMessage.value = getApiErrorMessage(error, 'No pudimos actualizar el artista.')
   }
   finally {
@@ -131,6 +142,7 @@ onMounted(() => {
 
         <AdminArtistForm
           v-else-if="artist"
+          v-model:dirty="isFormDirty"
           :initial-value="artist"
           :genres="genres"
           :submitting="submitting"

@@ -19,7 +19,13 @@ const genres = ref<GenreOption[]>([])
 const formats = ref<AdminOption[]>([])
 const loading = ref(true)
 const submitting = ref(false)
+const isFormDirty = ref(false)
 const errorMessage = ref('')
+
+useUnsavedChangesGuard({
+  isDirty: isFormDirty,
+  isSubmitting: submitting,
+})
 
 async function loadOptions() {
   loading.value = true
@@ -107,6 +113,7 @@ onMounted(() => {
 
         <AdminEventForm
           v-else
+          v-model:dirty="isFormDirty"
           :venues="venues"
           :genres="genres"
           :formats="formats"

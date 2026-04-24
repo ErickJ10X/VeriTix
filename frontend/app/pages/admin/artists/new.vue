@@ -10,12 +10,18 @@ definePageMeta({ middleware: 'admin' })
 useSeoMeta({ title: 'Nuevo artista | Admin VeriTix' })
 
 const { createArtist: createAdminArtist, listGenres } = useAdminArtistsRepository()
-const { getApiErrorMessage } = useApiErrorMessage()
+const { getApiErrorMessage, getApiErrorStatus } = useApiErrorMessage()
 
 const genres = ref<GenreOption[]>([])
 const loading = ref(true)
 const submitting = ref(false)
+const isFormDirty = ref(false)
 const errorMessage = ref('')
+
+useUnsavedChangesGuard({
+  isDirty: isFormDirty,
+  isSubmitting: submitting,
+})
 
 async function loadGenres() {
   loading.value = true
@@ -47,6 +53,11 @@ async function createArtist(payload: AdminArtistPayload) {
     await navigateTo('/admin/artists')
   }
   catch (error) {
+    if (getApiErrorStatus(error) === 409) {
+      errorMessage.value = 'Ya existe un artista con ese slug.'
+      return
+    }
+
     errorMessage.value = getApiErrorMessage(error, 'No pudimos crear el artista.')
   }
   finally {
@@ -93,6 +104,7 @@ onMounted(() => {
 
         <AdminArtistForm
           v-else
+          v-model:dirty="isFormDirty"
           :genres="genres"
           :submitting="submitting"
           submit-label="Crear artista"

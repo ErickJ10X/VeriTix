@@ -24,9 +24,15 @@ const genres = ref<GenreOption[]>([])
 const formats = ref<AdminOption[]>([])
 const loading = ref(true)
 const submitting = ref(false)
+const isFormDirty = ref(false)
 const errorMessage = ref('')
 const successMessage = ref('')
 const infoMessage = ref('')
+
+useUnsavedChangesGuard({
+  isDirty: isFormDirty,
+  isSubmitting: submitting,
+})
 
 function getStatusTone(status: string) {
   if (status === 'PUBLISHED') {
@@ -151,6 +157,7 @@ onMounted(() => {
 
         <AdminEventForm
           v-else-if="event"
+          v-model:dirty="isFormDirty"
           :initial-value="event"
           :venues="venues"
           :genres="genres"

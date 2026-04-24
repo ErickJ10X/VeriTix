@@ -20,6 +20,8 @@ const emit = defineEmits<{
   submit: [payload: AdminEventPayload]
 }>()
 
+const dirty = defineModel<boolean>('dirty', { default: false })
+
 const NO_FORMAT_OPTION_VALUE = '__no-format__'
 
 const schema = z.object({
@@ -79,6 +81,8 @@ const genreOptions = computed(() => {
   return props.genres.map(genre => ({ label: genre.name, value: genre.id }))
 })
 
+const initialSnapshot = ref<AdminEventPayload | null>(null)
+
 function padDatePart(value: number): string {
   return String(value).padStart(2, '0')
 }
@@ -111,6 +115,33 @@ function toIsoDateTime(value: string): string | undefined {
   return date.toISOString()
 }
 
+function buildCurrentPayload(): AdminEventPayload {
+  return normalizeEventPayload({
+    name: state.name,
+    description: state.description,
+    eventDate: toIsoDateTime(state.eventDate) ?? '',
+    doorsOpenTime: toIsoDateTime(state.doorsOpenTime),
+    startSale: toIsoDateTime(state.startSale),
+    endSale: toIsoDateTime(state.endSale),
+    maxCapacity: Number(state.maxCapacity),
+    venueId: state.venueId,
+    imageUrl: state.imageUrl,
+    currency: state.currency,
+    formatId: state.formatId,
+    genreIds: state.genreIds,
+  })
+}
+
+function hasDirtyChanges() {
+  const currentPayload = buildCurrentPayload()
+
+  if (!initialSnapshot.value) {
+    return false
+  }
+
+  return JSON.stringify(currentPayload) !== JSON.stringify(initialSnapshot.value)
+}
+
 function applyInitialValue() {
   state.name = props.initialValue?.name ?? ''
   state.description = props.initialValue?.description ?? ''
@@ -124,6 +155,9 @@ function applyInitialValue() {
   state.currency = props.initialValue?.currency ?? 'EUR'
   state.formatId = props.initialValue?.format?.id ?? ''
   state.genreIds = props.initialValue?.genres?.map(genre => genre.id) ?? []
+
+  initialSnapshot.value = buildCurrentPayload()
+  dirty.value = false
 }
 
 function handleSubmit() {
@@ -148,6 +182,9 @@ function handleSubmit() {
 }
 
 watch(() => props.initialValue, applyInitialValue, { immediate: true })
+watch(() => state, () => {
+  dirty.value = hasDirtyChanges()
+}, { deep: true })
 </script>
 
 <template>

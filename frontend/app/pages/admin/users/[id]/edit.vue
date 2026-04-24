@@ -12,17 +12,81 @@ useSeoMeta({ title: 'Editar usuario | Admin VeriTix' })
 const route = useRoute()
 const userId = computed(() => String(route.params.id || ''))
 
-const { getUser: getAdminUser, updateUser: updateAdminUser } = useAdminUsersRepository()
+const { getUser: getAdminUser, updateUser: updateAdminUser, isEmailTaken } = useAdminUsersRepository()
 const { roleOptions } = useAdminApi()
 const { getApiErrorMessage, getApiErrorStatus } = useApiErrorMessage()
 
 const user = ref<AdminUserRecord | null>(null)
 const loading = ref(true)
 const submitting = ref(false)
+const isFormDirty = ref(false)
 const errorMessage = ref('')
+const emailConflictMessage = ref('')
 const successMessage = ref('')
 const infoMessage = ref('')
 const totalRoles = computed(() => roleOptions.length)
+
+useUnsavedChangesGuard({
+  isDirty: isFormDirty,
+  isSubmitting: submitting,
+})
+
+function resolveUserConflictMessage(error: unknown) {
+  const status = getApiErrorStatus(error)
+
+  if (status !== 409) {
+    return ''
+  }
+
+  const normalizedMessage = getApiErrorMessage(error, '').toLowerCase()
+
+  if (normalizedMessage.includes('phone') || normalizedMessage.includes('tel')) {
+    return 'Ya existe un usuario con ese teléfono.'
+  }
+
+  if (normalizedMessage.includes('email') || normalizedMessage.includes('correo')) {
+    return 'Ya existe un usuario con ese correo.'
+  }
+
+  return 'Ya existe un usuario con el mismo correo o teléfono.'
+}
+
+async function validateEmailAvailability(email: string) {
+  const normalizedEmail = email.trim()
+
+  if (!normalizedEmail || !user.value) {
+    emailConflictMessage.value = ''
+    return true
+  }
+
+  if (normalizedEmail.toLowerCase() === user.value.email.trim().toLowerCase()) {
+    emailConflictMessage.value = ''
+    return true
+  }
+
+  const emailExists = await isEmailTaken(normalizedEmail, userId.value)
+
+  if (emailExists) {
+    emailConflictMessage.value = 'Ya existe un usuario con ese correo.'
+    return false
+  }
+
+  emailConflictMessage.value = ''
+  return true
+}
+
+async function handleEmailBlur(email: string) {
+  if (submitting.value || !user.value) {
+    return
+  }
+
+  try {
+    await validateEmailAvailability(email)
+  }
+  catch {
+    emailConflictMessage.value = ''
+  }
+}
 
 async function loadUser() {
   loading.value = true
@@ -66,11 +130,24 @@ async function updateUser(payload: AdminUpdateUserPayload) {
   infoMessage.value = ''
 
   try {
+    const hasAvailableEmail = await validateEmailAvailability(normalizedPayload.email ?? '')
+
+    if (!hasAvailableEmail) {
+      return
+    }
+
     user.value = await updateAdminUser(userId.value, normalizedPayload)
 
     successMessage.value = 'Usuario actualizado correctamente.'
   }
   catch (error) {
+    const conflictMessage = resolveUserConflictMessage(error)
+
+    if (conflictMessage) {
+      errorMessage.value = conflictMessage
+      return
+    }
+
     errorMessage.value = getApiErrorMessage(error, 'No pudimos actualizar el usuario.')
   }
   finally {
@@ -92,6 +169,7 @@ onMounted(() => {
   >
     <div class="mx-auto max-w-5xl space-y-5">
       <BaseStatusMessage v-if="errorMessage" :message="errorMessage" />
+      <BaseStatusMessage v-if="emailConflictMessage" :message="emailConflictMessage" />
       <BaseStatusMessage v-if="infoMessage" tone="info" :message="infoMessage" />
       <BaseStatusMessage v-if="successMessage" tone="success" :message="successMessage" />
 
@@ -125,11 +203,13 @@ onMounted(() => {
 
         <AdminUserForm
           v-else-if="user"
+          v-model:dirty="isFormDirty"
           :initial-value="user"
           :role-options="roleOptions"
           :submitting="submitting"
           submit-label="Guardar cambios"
           :include-password="false"
+          @email-blur="handleEmailBlur"
           @submit="updateUser"
         />
       </AdminOverviewPanel>
