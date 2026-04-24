@@ -12,7 +12,7 @@ useSeoMeta({ title: 'Usuarios | Admin VeriTix' })
 
 const { listUsers, deleteUser } = useAdminUsersRepository()
 const { roleOptions } = useAdminApi()
-const { getApiErrorMessage } = useApiErrorMessage()
+const { getApiErrorMessage, isApiAuthError } = useApiErrorMessage()
 
 const users = ref<AdminUserRecord[]>([])
 const pending = ref(true)
@@ -49,18 +49,58 @@ const roleFilterOptions = computed(() => {
   }))
 })
 
-function roleBadgeColor(role: string) {
+function userInitials(user: AdminUserRecord) {
+  const initials = [user.name, user.lastName]
+    .map(value => value?.trim()?.charAt(0)?.toUpperCase() ?? '')
+    .join('')
+
+  if (initials) {
+    return initials
+  }
+
+  return user.email?.trim()?.charAt(0)?.toUpperCase() || 'U'
+}
+
+function roleLabel(role: string) {
   if (role === 'ADMIN') {
-    return 'error'
+    return 'Administrador'
   }
   if (role === 'CREATOR') {
-    return 'primary'
+    return 'Creador'
   }
   if (role === 'VALIDATOR') {
-    return 'warning'
+    return 'Validador'
+  }
+
+  return 'Usuario'
+}
+
+function roleBadgeColor(role: string) {
+  if (role === 'ADMIN') {
+    return 'primary'
+  }
+  if (role === 'CREATOR') {
+    return 'secondary'
+  }
+  if (role === 'VALIDATOR') {
+    return 'info'
   }
 
   return 'neutral'
+}
+
+function roleBadgeIcon(role: string) {
+  if (role === 'ADMIN') {
+    return 'i-lucide-shield'
+  }
+  if (role === 'CREATOR') {
+    return 'i-lucide-wand-sparkles'
+  }
+  if (role === 'VALIDATOR') {
+    return 'i-lucide-badge-check'
+  }
+
+  return 'i-lucide-user'
 }
 
 async function loadUsers(targetPage = page.value) {
@@ -81,6 +121,12 @@ async function loadUsers(targetPage = page.value) {
     page.value = response.meta.page
   }
   catch (error) {
+    if (isApiAuthError(error)) {
+      errorMessage.value = ''
+      await navigateTo('/login')
+      return
+    }
+
     errorMessage.value = getApiErrorMessage(error, 'No pudimos cargar los usuarios.')
   }
   finally {
@@ -117,6 +163,12 @@ async function removeUser(userId: string) {
     await loadUsers(page.value)
   }
   catch (error) {
+    if (isApiAuthError(error)) {
+      errorMessage.value = ''
+      await navigateTo('/login')
+      return
+    }
+
     errorMessage.value = getApiErrorMessage(error, 'No pudimos eliminar el usuario.')
   }
   finally {
@@ -170,6 +222,7 @@ onMounted(() => {
             search-label="Buscar usuario"
             search-placeholder="Nombre o correo"
             genre-label="Rol"
+            genre-all-label="Todos los roles"
             genre-name="role"
             format-label="Estado"
             format-name="isActive"
@@ -186,55 +239,86 @@ onMounted(() => {
             @change="goToPage"
           />
 
-          <div class="space-y-4">
-            <template v-if="pending">
-              <USkeleton v-for="index in 4" :key="index" class="h-28 rounded-2xl" />
-            </template>
+          <div v-if="pending" class="grid grid-cols-1 gap-6 md:grid-cols-2 xl:grid-cols-3">
+            <USkeleton v-for="index in 6" :key="index" class="h-80 rounded-2xl" />
+          </div>
 
-            <AdminEmptyState
-              v-else-if="users.length === 0"
-              icon="i-lucide-users"
-              title="Sin usuarios"
-              description="No encontramos usuarios para estos filtros."
-              action-label="Crear usuario"
-              action-to="/admin/users/new"
-            />
+          <AdminEmptyState
+            v-else-if="users.length === 0"
+            icon="i-lucide-users"
+            title="Sin usuarios"
+            description="No encontramos usuarios para estos filtros."
+            action-label="Crear usuario"
+            action-to="/admin/users/new"
+          />
 
+          <div v-else class="grid grid-cols-1 gap-6 md:grid-cols-2 xl:grid-cols-3">
             <AdminCard
               v-for="user in users"
-              v-else
               :key="user.id"
-              class="border-default/70 bg-elevated/20"
+              class="h-full border-default/65 bg-elevated/20"
             >
-              <div class="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
-                <div class="space-y-2">
-                  <p class="text-base font-semibold text-highlighted">
-                    {{ user.name }} {{ user.lastName }}
-                  </p>
-                  <p class="text-sm text-toned">
-                    {{ user.email }} · {{ user.phone }}
-                  </p>
-                  <div class="flex flex-wrap items-center gap-2">
-                    <BaseBadge kind="role" :color="roleBadgeColor(user.role)">
-                      {{ user.role }}
-                    </BaseBadge>
-                    <BaseBadge kind="status" :color="user.isActive ? 'success' : 'neutral'">
+              <div class="flex h-full flex-col gap-4">
+                <div class="flex items-start justify-between gap-3">
+                  <div class="flex min-w-0 items-center gap-3">
+                    <UAvatar
+                      :src="user.avatarUrl || undefined"
+                      :alt="`${user.name} ${user.lastName}`.trim() || user.email"
+                      :text="userInitials(user)"
+                      size="xl"
+                      class="ring-1 ring-default/60"
+                    />
+
+                    <div class="min-w-0 space-y-1">
+                      <p class="truncate text-base font-semibold text-highlighted">
+                        {{ user.name }} {{ user.lastName }}
+                      </p>
+                      <p class="truncate text-sm text-toned">
+                        {{ user.email }}
+                      </p>
+                    </div>
+                  </div>
+
+                  <BaseBadge
+                    kind="role"
+                    size="sm"
+                    :color="roleBadgeColor(user.role)"
+                    :icon="roleBadgeIcon(user.role)"
+                    leading
+                  >
+                    {{ roleLabel(user.role) }}
+                  </BaseBadge>
+                </div>
+
+                <div class="space-y-2 text-sm">
+                  <div class="flex items-center justify-between border-b border-default/60 pb-2">
+                    <span class="text-muted">Teléfono</span>
+                    <span class="truncate text-toned">{{ user.phone }}</span>
+                  </div>
+
+                  <div class="flex items-center justify-between border-b border-default/60 pb-2">
+                    <span class="text-muted">Estado</span>
+                    <span :class="user.isActive ? 'text-success' : 'text-muted'" class="font-medium">
                       {{ user.isActive ? 'Activo' : 'Inactivo' }}
-                    </BaseBadge>
-                    <BaseBadge kind="outline" :color="user.emailVerified ? 'success' : 'warning'">
+                    </span>
+                  </div>
+
+                  <div class="flex items-center justify-between">
+                    <span class="text-muted">Email</span>
+                    <span :class="user.emailVerified ? 'text-success' : 'text-warning'" class="font-medium">
                       {{ user.emailVerified ? 'Verificado' : 'Pendiente' }}
-                    </BaseBadge>
+                    </span>
                   </div>
                 </div>
 
-                <div class="flex items-center gap-2 self-start md:self-center">
-                  <BaseButton kind="secondary" size="sm" :to="`/admin/users/${user.id}/edit`">
+                <div class="mt-auto grid grid-cols-2 gap-2 border-t border-default/60 pt-3">
+                  <BaseButton kind="secondary" size="sm" block :to="`/admin/users/${user.id}/edit`">
                     Editar
                   </BaseButton>
                   <AdminDeleteAction
                     item-label="el usuario"
-                    trigger-kind="secondary"
-                    trigger-class="border-error/35 text-error hover:border-error/50 hover:bg-error/12 hover:text-error"
+                    trigger-kind="tertiary"
+                    trigger-class="w-full justify-center text-error hover:bg-error/10"
                     :pending="deletingId === user.id"
                     @confirm="removeUser(user.id)"
                   />

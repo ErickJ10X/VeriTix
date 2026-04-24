@@ -50,6 +50,17 @@ const genreFilterOptions = computed<AdminOption[]>(() => {
   }))
 })
 
+function artistInitials(artist: AdminArtistRecord) {
+  const initials = artist.name
+    .split(' ')
+    .filter(Boolean)
+    .slice(0, 2)
+    .map(part => part.charAt(0).toUpperCase())
+    .join('')
+
+  return initials || 'A'
+}
+
 async function loadGenres() {
   try {
     genres.value = await listGenres()
@@ -182,57 +193,91 @@ onMounted(() => {
             @change="goToPage"
           />
 
-          <div class="space-y-4">
-            <template v-if="pending">
-              <USkeleton v-for="index in 4" :key="index" class="h-28 rounded-2xl" />
-            </template>
+          <div v-if="pending" class="grid grid-cols-1 gap-6 md:grid-cols-2 xl:grid-cols-3">
+            <USkeleton v-for="index in 6" :key="index" class="h-80 rounded-2xl" />
+          </div>
 
-            <AdminEmptyState
-              v-else-if="artists.length === 0"
-              icon="i-lucide-mic-2"
-              title="Sin artistas"
-              description="No encontramos artistas para estos filtros."
-              action-label="Crear artista"
-              action-to="/admin/artists/new"
-            />
+          <AdminEmptyState
+            v-else-if="artists.length === 0"
+            icon="i-lucide-mic-2"
+            title="Sin artistas"
+            description="No encontramos artistas para estos filtros."
+            action-label="Crear artista"
+            action-to="/admin/artists/new"
+          />
 
+          <div v-else class="grid grid-cols-1 gap-6 md:grid-cols-2 xl:grid-cols-3">
             <AdminCard
               v-for="artist in artists"
-              v-else
               :key="artist.id"
-              class="border-default/70 bg-elevated/20"
+              class="h-full border-default/65 bg-elevated/20"
             >
-              <div class="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
-                <div class="space-y-2">
-                  <p class="text-base font-semibold text-highlighted">
-                    {{ artist.name }}
-                  </p>
-                  <p class="text-sm text-toned">
-                    {{ artist.slug }}
-                    <span v-if="artist.country"> · {{ artist.country }}</span>
-                  </p>
+              <div class="flex h-full flex-col gap-4">
+                <div class="flex items-start justify-between gap-3">
+                  <div class="flex min-w-0 items-center gap-3">
+                    <UAvatar
+                      :src="artist.imageUrl || undefined"
+                      :alt="artist.name"
+                      :text="artistInitials(artist)"
+                      size="xl"
+                      class="ring-1 ring-default/60"
+                    />
 
-                  <div class="flex flex-wrap items-center gap-2">
-                    <BaseBadge kind="status" :color="artist.isActive ? 'success' : 'neutral'">
-                      {{ artist.isActive ? 'Activo' : 'Inactivo' }}
-                    </BaseBadge>
-                    <BaseBadge v-for="genre in artist.genres.slice(0, 3)" :key="genre.id" kind="tag">
-                      {{ genre.name }}
-                    </BaseBadge>
-                    <BaseBadge v-if="artist.genres.length > 3" kind="outline">
-                      +{{ artist.genres.length - 3 }}
-                    </BaseBadge>
+                    <div class="min-w-0 space-y-1">
+                      <p class="truncate text-base font-semibold text-highlighted">
+                        {{ artist.name }}
+                      </p>
+                      <p class="truncate text-sm text-toned">
+                        {{ artist.slug }}
+                      </p>
+                    </div>
+                  </div>
+
+                  <span :class="artist.isActive ? 'text-success' : 'text-muted'" class="text-xs font-medium">
+                    {{ artist.isActive ? 'Activo' : 'Inactivo' }}
+                  </span>
+                </div>
+
+                <div class="space-y-2 text-sm">
+                  <div class="flex items-center justify-between border-b border-default/60 pb-2">
+                    <span class="text-muted">País</span>
+                    <span class="truncate text-toned">{{ artist.country || 'Sin definir' }}</span>
+                  </div>
+
+                  <div>
+                    <p class="mb-1.5 text-muted">Géneros</p>
+                    <div class="flex flex-wrap gap-1.5">
+                      <span
+                        v-for="genre in artist.genres.slice(0, 3)"
+                        :key="genre.id"
+                        class="rounded-full border border-default/60 px-2 py-0.5 text-xs font-medium text-toned"
+                      >
+                        {{ genre.name }}
+                      </span>
+                      <span
+                        v-if="artist.genres.length > 3"
+                        class="rounded-full border border-default/60 px-2 py-0.5 text-xs font-medium text-muted"
+                      >
+                        +{{ artist.genres.length - 3 }}
+                      </span>
+                      <span
+                        v-if="artist.genres.length === 0"
+                        class="text-xs text-muted"
+                      >
+                        Sin géneros asignados
+                      </span>
+                    </div>
                   </div>
                 </div>
 
-                <div class="flex items-center gap-2 self-start md:self-center">
-                  <BaseButton kind="secondary" size="sm" :to="`/admin/artists/${artist.id}/edit`">
+                <div class="mt-auto grid grid-cols-2 gap-2 border-t border-default/60 pt-3">
+                  <BaseButton kind="secondary" size="sm" block :to="`/admin/artists/${artist.id}/edit`">
                     Editar
                   </BaseButton>
                   <AdminDeleteAction
                     item-label="el artista"
-                    trigger-kind="secondary"
-                    trigger-class="border-error/35 text-error hover:border-error/50 hover:bg-error/12 hover:text-error"
+                    trigger-kind="tertiary"
+                    trigger-class="w-full justify-center text-error hover:bg-error/10"
                     :pending="deletingId === artist.id"
                     @confirm="removeArtist(artist.id)"
                   />
