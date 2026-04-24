@@ -12,13 +12,12 @@ useSeoMeta({ title: 'Usuarios | Admin VeriTix' })
 
 const { listUsers, deleteUser } = useAdminUsersRepository()
 const { roleOptions } = useAdminApi()
-const { getApiErrorMessage, isApiAuthError } = useApiErrorMessage()
+const { isApiAuthError } = useApiErrorMessage()
+const { notifyApiError, notifySuccess } = useAppNotifications()
 
 const users = ref<AdminUserRecord[]>([])
 const pending = ref(true)
 const deletingId = ref('')
-const errorMessage = ref('')
-const successMessage = ref('')
 
 const page = ref(1)
 const pageSize = ref(12)
@@ -105,7 +104,6 @@ function roleBadgeIcon(role: string) {
 
 async function loadUsers(targetPage = page.value) {
   pending.value = true
-  errorMessage.value = ''
 
   try {
     const response = await listUsers({
@@ -122,12 +120,11 @@ async function loadUsers(targetPage = page.value) {
   }
   catch (error) {
     if (isApiAuthError(error)) {
-      errorMessage.value = ''
       await navigateTo('/login')
       return
     }
 
-    errorMessage.value = getApiErrorMessage(error, 'No pudimos cargar los usuarios.')
+    notifyApiError(error, 'No pudimos cargar los usuarios.', { id: 'admin-users-load-error' })
   }
   finally {
     pending.value = false
@@ -153,23 +150,20 @@ function goToPage(nextPage: number) {
 
 async function removeUser(userId: string) {
   deletingId.value = userId
-  successMessage.value = ''
-  errorMessage.value = ''
 
   try {
     await deleteUser(userId)
 
-    successMessage.value = 'Usuario eliminado correctamente.'
+    notifySuccess('Usuario eliminado correctamente.', { id: `admin-users-delete-${userId}` })
     await loadUsers(page.value)
   }
   catch (error) {
     if (isApiAuthError(error)) {
-      errorMessage.value = ''
       await navigateTo('/login')
       return
     }
 
-    errorMessage.value = getApiErrorMessage(error, 'No pudimos eliminar el usuario.')
+    notifyApiError(error, 'No pudimos eliminar el usuario.', { id: `admin-users-delete-error-${userId}` })
   }
   finally {
     deletingId.value = ''
@@ -189,9 +183,6 @@ onMounted(() => {
     primary-action-label="Nuevo usuario"
   >
     <div class="mx-auto max-w-7xl space-y-8" data-testid="admin-users-page">
-      <BaseStatusMessage v-if="errorMessage" :message="errorMessage" />
-      <BaseStatusMessage v-if="successMessage" tone="success" :message="successMessage" />
-
       <AdminOverviewPanel
         eyebrow="Administración"
         title="Directorio de usuarios"

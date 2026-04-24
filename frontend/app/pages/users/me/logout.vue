@@ -8,19 +8,19 @@ useSeoMeta({
 })
 
 const { logout } = useAuth()
-const { getApiErrorMessage } = useApiErrorMessage()
+const { notifyApiError, notifySuccess } = useAppNotifications()
 const router = useRouter()
 
-const errorMessage = ref('')
 const loggingOut = ref(true)
 
 onMounted(async () => {
   try {
     await logout()
+    notifySuccess('Sesión cerrada correctamente.', { id: 'auth-logout-success' })
     await router.push('/')
   }
   catch (error) {
-    errorMessage.value = getApiErrorMessage(error, 'Error al cerrar sesion.')
+    notifyApiError(error, 'Error al cerrar sesion.', { id: 'auth-logout-error' })
     loggingOut.value = false
   }
 })
@@ -51,7 +51,7 @@ onMounted(async () => {
           Ha ocurrido un problema
         </p>
         <p class="mt-2 text-sm text-toned">
-          {{ errorMessage }}
+          No pudimos cerrar tu sesion. Volve a intentarlo.
         </p>
         <BaseButton
           kind="primary"

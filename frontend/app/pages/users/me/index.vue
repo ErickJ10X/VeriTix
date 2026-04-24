@@ -43,10 +43,6 @@ const passwordState = reactive({
   confirmPassword: '',
 })
 
-const profileErrorMessage = ref('')
-const profileSuccessMessage = ref('')
-const securityErrorMessage = ref('')
-const securitySuccessMessage = ref('')
 const initialized = ref(false)
 const profileSubmitting = ref(false)
 const passwordSubmitting = ref(false)
@@ -55,7 +51,7 @@ const showNewPassword = ref(false)
 const showConfirmPassword = ref(false)
 
 const { user, fetchProfile, updateProfile, changePassword } = useProfile()
-const { getApiErrorMessage } = useApiErrorMessage()
+const { notifyApiError, notifyInfo, notifySuccess } = useAppNotifications()
 
 const roleViews: Record<UserRole, { title: string, capabilities: string[] }> = {
   BUYER: {
@@ -131,14 +127,12 @@ function applyProfileState() {
 }
 
 async function loadProfile() {
-  profileErrorMessage.value = ''
-
   try {
     await fetchProfile()
     applyProfileState()
   }
   catch (error) {
-    profileErrorMessage.value = getApiErrorMessage(error, 'No pudimos cargar la cuenta.')
+    notifyApiError(error, 'No pudimos cargar la cuenta.', { id: 'profile-load-error' })
   }
   finally {
     initialized.value = true
@@ -147,11 +141,10 @@ async function loadProfile() {
 
 async function submitProfile() {
   if (!hasProfileChanges.value) {
+    notifyInfo('No hay cambios para guardar.', { id: 'profile-no-changes' })
     return
   }
 
-  profileErrorMessage.value = ''
-  profileSuccessMessage.value = ''
   profileSubmitting.value = true
 
   try {
@@ -163,10 +156,10 @@ async function submitProfile() {
     })
 
     applyProfileState()
-    profileSuccessMessage.value = 'Perfil actualizado.'
+    notifySuccess('Perfil actualizado.', { id: 'profile-update-success' })
   }
   catch (error) {
-    profileErrorMessage.value = getApiErrorMessage(error, 'No pudimos guardar el perfil.')
+    notifyApiError(error, 'No pudimos guardar el perfil.', { id: 'profile-update-error' })
   }
   finally {
     profileSubmitting.value = false
@@ -174,8 +167,6 @@ async function submitProfile() {
 }
 
 async function submitPassword() {
-  securityErrorMessage.value = ''
-  securitySuccessMessage.value = ''
   passwordSubmitting.value = true
 
   try {
@@ -187,10 +178,10 @@ async function submitPassword() {
     passwordState.currentPassword = ''
     passwordState.newPassword = ''
     passwordState.confirmPassword = ''
-    securitySuccessMessage.value = 'Contrasena actualizada.'
+    notifySuccess('Contrasena actualizada.', { id: 'security-update-success' })
   }
   catch (error) {
-    securityErrorMessage.value = getApiErrorMessage(error, 'No pudimos actualizar la contrasena.')
+    notifyApiError(error, 'No pudimos actualizar la contrasena.', { id: 'security-update-error' })
   }
   finally {
     passwordSubmitting.value = false
@@ -238,9 +229,6 @@ onMounted(() => {
             class="space-y-6 pt-6"
             @submit="submitProfile"
           >
-            <BaseStatusMessage v-if="profileErrorMessage" :message="profileErrorMessage" />
-            <BaseStatusMessage v-if="profileSuccessMessage" tone="success" :message="profileSuccessMessage" />
-
             <UsersProfileFields
               v-model:name="profileState.name"
               v-model:last-name="profileState.lastName"
@@ -287,9 +275,6 @@ onMounted(() => {
             class="space-y-6 pt-6"
             @submit="submitPassword"
           >
-            <BaseStatusMessage v-if="securityErrorMessage" :message="securityErrorMessage" />
-            <BaseStatusMessage v-if="securitySuccessMessage" tone="success" :message="securitySuccessMessage" />
-
             <UsersPasswordFields
               v-model:current-password="passwordState.currentPassword"
               v-model:new-password="passwordState.newPassword"

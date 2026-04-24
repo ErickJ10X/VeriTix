@@ -17,6 +17,7 @@ interface Props {
   pageSizeName?: string
   genreId?: string
   genreLabel?: string
+  genreAllLabel?: string
   genreName?: string
   formatId?: string
   formatLabel?: string
@@ -49,6 +50,7 @@ const props = withDefaults(defineProps<Props>(), {
   pageSizeName: 'pageSize',
   genreId: '',
   genreLabel: 'Género',
+  genreAllLabel: 'Todos los géneros',
   genreName: 'genreId',
   formatId: '',
   formatLabel: 'Formato',
@@ -79,7 +81,7 @@ const ALL_OPTION_VALUE = '__all__'
 
 const genreOptions = computed(() => {
   return [
-    { label: 'Todos los géneros', value: ALL_OPTION_VALUE },
+    { label: props.genreAllLabel, value: ALL_OPTION_VALUE },
     ...props.genres.map(g => ({ label: g.name, value: g.id })),
   ]
 })

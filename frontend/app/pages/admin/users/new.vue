@@ -12,11 +12,10 @@ useSeoMeta({ title: 'Nuevo usuario | Admin VeriTix' })
 const { createUser: createAdminUser, isEmailTaken } = useAdminUsersRepository()
 const { roleOptions } = useAdminApi()
 const { getApiErrorMessage, getApiErrorStatus } = useApiErrorMessage()
+const { notifyApiError, notifyError, notifySuccess } = useAppNotifications()
 
 const submitting = ref(false)
 const isFormDirty = ref(false)
-const errorMessage = ref('')
-const emailConflictMessage = ref('')
 const totalRoles = computed(() => roleOptions.length)
 
 useUnsavedChangesGuard({
@@ -48,18 +47,16 @@ async function validateEmailAvailability(email: string) {
   const normalizedEmail = email.trim()
 
   if (!normalizedEmail) {
-    emailConflictMessage.value = ''
     return true
   }
 
   const emailExists = await isEmailTaken(normalizedEmail)
 
   if (emailExists) {
-    emailConflictMessage.value = 'Ya existe un usuario con ese correo.'
+    notifyError('Ya existe un usuario con ese correo.', { id: 'admin-users-email-conflict' })
     return false
   }
 
-  emailConflictMessage.value = ''
   return true
 }
 
@@ -72,7 +69,6 @@ async function handleEmailBlur(email: string) {
     await validateEmailAvailability(email)
   }
   catch {
-    emailConflictMessage.value = ''
   }
 }
 
@@ -82,7 +78,6 @@ async function createUser(payload: AdminCreateUserPayload | AdminUpdateUserPaylo
   }
 
   submitting.value = true
-  errorMessage.value = ''
 
   try {
     if (!('password' in payload)) {
@@ -97,17 +92,18 @@ async function createUser(payload: AdminCreateUserPayload | AdminUpdateUserPaylo
 
     await createAdminUser(normalizeCreateUserPayload(payload))
 
+    notifySuccess('Usuario creado correctamente.', { id: 'admin-users-create-success' })
     await navigateTo('/admin/users')
   }
   catch (error) {
     const conflictMessage = resolveUserConflictMessage(error)
 
     if (conflictMessage) {
-      errorMessage.value = conflictMessage
+      notifyError(conflictMessage, { id: 'admin-users-create-conflict' })
       return
     }
 
-    errorMessage.value = getApiErrorMessage(error, 'No pudimos crear el usuario.')
+    notifyApiError(error, 'No pudimos crear el usuario.', { id: 'admin-users-create-error' })
   }
   finally {
     submitting.value = false
@@ -123,9 +119,6 @@ async function createUser(payload: AdminCreateUserPayload | AdminUpdateUserPaylo
     primary-action-label="Volver a usuarios"
   >
     <div class="mx-auto max-w-5xl space-y-5">
-      <BaseStatusMessage v-if="errorMessage" :message="errorMessage" />
-      <BaseStatusMessage v-if="emailConflictMessage" :message="emailConflictMessage" />
-
       <AdminOverviewPanel
         title="Datos del usuario"
         description="Completa identidad, contacto, rol y contraseña inicial."

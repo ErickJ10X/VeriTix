@@ -21,16 +21,13 @@ const state = reactive({
 })
 
 const form = useTemplateRef('form')
-const errorMessage = ref('')
 const { login, pending } = useAuth()
-const { getApiErrorMessage } = useApiErrorMessage()
+const { notifyApiError, notifySuccess } = useAppNotifications()
 
 async function onSubmit() {
   if (!form.value) {
     return
   }
-
-  errorMessage.value = ''
 
   try {
     await login({
@@ -38,10 +35,11 @@ async function onSubmit() {
       password: state.password,
     })
 
+    notifySuccess('Sesión iniciada correctamente.', { id: 'auth-login-success' })
     await navigateTo('/')
   }
   catch (error) {
-    errorMessage.value = getApiErrorMessage(error, 'Credenciales incorrectas. Por favor, intenta de nuevo.')
+    notifyApiError(error, 'Credenciales incorrectas. Por favor, intenta de nuevo.', { id: 'auth-login-error' })
   }
 }
 </script>
@@ -80,14 +78,6 @@ async function onSubmit() {
             class="flex flex-col gap-4"
             @submit="onSubmit"
           >
-            <!-- Error message -->
-            <p
-              v-if="errorMessage"
-              class="rounded-xl border border-[color-mix(in_srgb,var(--ui-error)_50%,transparent)] bg-[color-mix(in_srgb,var(--ui-error)_10%,transparent)] px-4 py-3 text-sm text-error"
-            >
-              {{ errorMessage }}
-            </p>
-
             <!-- Email -->
             <BaseFormField
               v-model="state.email"

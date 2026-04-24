@@ -11,12 +11,12 @@ useSeoMeta({ title: 'Nuevo artista | Admin VeriTix' })
 
 const { createArtist: createAdminArtist, listGenres } = useAdminArtistsRepository()
 const { getApiErrorMessage, getApiErrorStatus } = useApiErrorMessage()
+const { notifyApiError, notifyError, notifySuccess } = useAppNotifications()
 
 const genres = ref<GenreOption[]>([])
 const loading = ref(true)
 const submitting = ref(false)
 const isFormDirty = ref(false)
-const errorMessage = ref('')
 
 useUnsavedChangesGuard({
   isDirty: isFormDirty,
@@ -30,7 +30,7 @@ async function loadGenres() {
     genres.value = await listGenres()
   }
   catch (error) {
-    errorMessage.value = getApiErrorMessage(error, 'No pudimos cargar los géneros.')
+    notifyApiError(error, 'No pudimos cargar los géneros.', { id: 'admin-artists-load-genres-error' })
   }
   finally {
     loading.value = false
@@ -45,20 +45,20 @@ async function createArtist(payload: AdminArtistPayload) {
   const normalizedPayload = normalizeArtistPayload(payload)
 
   submitting.value = true
-  errorMessage.value = ''
 
   try {
     await createAdminArtist(normalizedPayload)
 
+    notifySuccess('Artista creado correctamente.', { id: 'admin-artists-create-success' })
     await navigateTo('/admin/artists')
   }
   catch (error) {
     if (getApiErrorStatus(error) === 409) {
-      errorMessage.value = 'Ya existe un artista con ese slug.'
+      notifyError('Ya existe un artista con ese slug.', { id: 'admin-artists-create-conflict' })
       return
     }
 
-    errorMessage.value = getApiErrorMessage(error, 'No pudimos crear el artista.')
+    notifyApiError(error, 'No pudimos crear el artista.', { id: 'admin-artists-create-error' })
   }
   finally {
     submitting.value = false
@@ -78,8 +78,6 @@ onMounted(() => {
     primary-action-label="Volver a artistas"
   >
     <div class="mx-auto max-w-5xl space-y-5">
-      <BaseStatusMessage v-if="errorMessage" :message="errorMessage" />
-
       <AdminOverviewPanel
         title="Datos del artista"
         description="Completa la ficha principal para catalogo y búsqueda."

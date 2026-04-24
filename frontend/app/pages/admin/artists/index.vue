@@ -12,14 +12,12 @@ definePageMeta({ middleware: 'admin' })
 useSeoMeta({ title: 'Artistas | Admin VeriTix' })
 
 const { deleteArtist: deleteAdminArtist, listArtists, listGenres } = useAdminArtistsRepository()
-const { getApiErrorMessage } = useApiErrorMessage()
+const { notifyApiError, notifySuccess } = useAppNotifications()
 
 const artists = ref<AdminArtistRecord[]>([])
 const genres = ref<GenreOption[]>([])
 const pending = ref(true)
 const deletingId = ref('')
-const errorMessage = ref('')
-const successMessage = ref('')
 
 const page = ref(1)
 const pageSize = ref(12)
@@ -72,7 +70,6 @@ async function loadGenres() {
 
 async function loadArtists(targetPage = page.value) {
   pending.value = true
-  errorMessage.value = ''
 
   try {
     const response = await listArtists({
@@ -88,7 +85,7 @@ async function loadArtists(targetPage = page.value) {
     page.value = response.meta.page
   }
   catch (error) {
-    errorMessage.value = getApiErrorMessage(error, 'No pudimos cargar los artistas.')
+    notifyApiError(error, 'No pudimos cargar los artistas.', { id: 'admin-artists-load-error' })
   }
   finally {
     pending.value = false
@@ -114,17 +111,15 @@ function goToPage(nextPage: number) {
 
 async function removeArtist(artistId: string) {
   deletingId.value = artistId
-  successMessage.value = ''
-  errorMessage.value = ''
 
   try {
     await deleteAdminArtist(artistId)
 
-    successMessage.value = 'Artista eliminado correctamente.'
+    notifySuccess('Artista eliminado correctamente.', { id: `admin-artists-delete-${artistId}` })
     await loadArtists(page.value)
   }
   catch (error) {
-    errorMessage.value = getApiErrorMessage(error, 'No pudimos eliminar el artista.')
+    notifyApiError(error, 'No pudimos eliminar el artista.', { id: `admin-artists-delete-error-${artistId}` })
   }
   finally {
     deletingId.value = ''
@@ -144,9 +139,6 @@ onMounted(() => {
     primary-action-label="Nuevo artista"
   >
     <div class="mx-auto max-w-7xl space-y-8" data-testid="admin-artists-page">
-      <BaseStatusMessage v-if="errorMessage" :message="errorMessage" />
-      <BaseStatusMessage v-if="successMessage" tone="success" :message="successMessage" />
-
       <AdminOverviewPanel
         eyebrow="Catálogo"
         title="Directorio de artistas"

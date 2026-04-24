@@ -27,15 +27,13 @@ definePageMeta({ middleware: 'admin' })
 useSeoMeta({ title: 'Operaciones de eventos | VeriTix' })
 
 const { deleteEvent: deleteAdminEvent, getFormOptions, listCatalog, listRequiresAttention } = useAdminEventsRepository()
-const { getApiErrorMessage } = useApiErrorMessage()
+const { notifyApiError, notifySuccess } = useAppNotifications()
 
 const catalogEvents = ref<AdminEventRecord[]>([])
 const genres = ref<GenreOption[]>([])
 const formats = ref<AdminOption[]>([])
 const requiresAttention = ref<AdminRequiresAttentionRecord[]>([])
 
-const errorMessage = ref('')
-const successMessage = ref('')
 const dashboardPending = ref(true)
 const catalogPending = ref(true)
 const filtersPending = ref(true)
@@ -116,7 +114,7 @@ async function loadFilterOptions() {
     formats.value = options.formats
   }
   catch (error) {
-    errorMessage.value = getApiErrorMessage(error, 'No pudimos cargar los filtros operativos.')
+    notifyApiError(error, 'No pudimos cargar los filtros operativos.', { id: 'admin-events-filters-error' })
   }
   finally {
     filtersPending.value = false
@@ -139,7 +137,7 @@ async function loadCatalog(targetPage = page.value) {
     page.value = response.meta.page
   }
   catch (error) {
-    errorMessage.value = getApiErrorMessage(error, 'No pudimos cargar el catálogo publicado.')
+    notifyApiError(error, 'No pudimos cargar el catálogo publicado.', { id: 'admin-events-catalog-error' })
   }
   finally {
     catalogPending.value = false
@@ -153,7 +151,7 @@ async function loadDashboard() {
     requiresAttention.value = await listRequiresAttention()
   }
   catch (error) {
-    errorMessage.value = getApiErrorMessage(error, 'No pudimos cargar el panel operativo de eventos.')
+    notifyApiError(error, 'No pudimos cargar el panel operativo de eventos.', { id: 'admin-events-dashboard-error' })
   }
   finally {
     dashboardPending.value = false
@@ -161,23 +159,20 @@ async function loadDashboard() {
 }
 
 async function refreshDashboard() {
-  errorMessage.value = ''
   await Promise.all([loadDashboard(), loadCatalog(page.value)])
 }
 
 async function removeEvent(eventId: string) {
   deletingEventId.value = eventId
-  successMessage.value = ''
-  errorMessage.value = ''
 
   try {
     await deleteAdminEvent(eventId)
 
-    successMessage.value = 'Evento cancelado correctamente.'
+    notifySuccess('Evento cancelado correctamente.', { id: `admin-events-delete-${eventId}` })
     await refreshDashboard()
   }
   catch (error) {
-    errorMessage.value = getApiErrorMessage(error, 'No pudimos cancelar el evento.')
+    notifyApiError(error, 'No pudimos cancelar el evento.', { id: `admin-events-delete-error-${eventId}` })
   }
   finally {
     deletingEventId.value = ''
@@ -236,9 +231,6 @@ onMounted(() => {
     primary-action-label="Nuevo evento"
   >
     <div class="mx-auto max-w-7xl space-y-8" data-testid="admin-events-page">
-      <BaseStatusMessage v-if="errorMessage" :message="errorMessage" />
-      <BaseStatusMessage v-if="successMessage" tone="success" :message="successMessage" />
-
       <AdminOverviewPanel
         eyebrow="Catálogo"
         :title="catalogSectionTitle"

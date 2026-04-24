@@ -32,17 +32,14 @@ const state = reactive({
 })
 
 const form = useTemplateRef('form')
-const errorMessage = ref('')
 const showPassword = ref(false)
 const { register, pending } = useAuth()
-const { getApiErrorMessage } = useApiErrorMessage()
+const { notifyApiError, notifySuccess } = useAppNotifications()
 
 async function onSubmit() {
   if (!form.value) {
     return
   }
-
-  errorMessage.value = ''
 
   try {
     await register({
@@ -53,10 +50,11 @@ async function onSubmit() {
       phone: state.phone.trim(),
     })
 
+    notifySuccess('Cuenta creada correctamente.', { id: 'auth-register-success' })
     await navigateTo('/')
   }
   catch (error) {
-    errorMessage.value = getApiErrorMessage(error, 'Error al crear la cuenta. Por favor, intenta de nuevo.')
+    notifyApiError(error, 'Error al crear la cuenta. Por favor, intenta de nuevo.', { id: 'auth-register-error' })
   }
 }
 </script>
@@ -95,14 +93,6 @@ async function onSubmit() {
             class="flex flex-col gap-4"
             @submit="onSubmit"
           >
-            <!-- Error message -->
-            <p
-              v-if="errorMessage"
-              class="rounded-xl border border-[color-mix(in_srgb,var(--ui-error)_50%,transparent)] bg-[color-mix(in_srgb,var(--ui-error)_10%,transparent)] px-4 py-3 text-sm text-error"
-            >
-              {{ errorMessage }}
-            </p>
-
             <!-- All fields stacked vertically with equal spacing -->
             <BaseFormField
               v-model="state.email"
