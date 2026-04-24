@@ -36,19 +36,19 @@ const dirty = defineModel<boolean>('dirty', { default: false })
 const phonePattern = /^\+[1-9]\d{7,14}$/
 
 const createSchema = z.object({
-  email: z.string().email('Ingresa un correo válido'),
-  phone: z.string().regex(phonePattern, 'Usa formato internacional (ej: +34958123456)'),
+  email: z.string().email('Ingresá un correo válido'),
+  phone: z.string().regex(phonePattern, 'Usá formato internacional (ej: +34958123456)'),
   name: z.string().min(1, 'El nombre es obligatorio'),
   lastName: z.string().min(1, 'El apellido es obligatorio'),
   password: z.string()
     .min(8, 'La contraseña debe tener al menos 8 caracteres')
-    .regex(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/, 'Incluye mayúscula, minúscula y número'),
+    .regex(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/, 'Incluí mayúscula, minúscula y número'),
   role: z.enum(['BUYER', 'CREATOR', 'VALIDATOR', 'ADMIN']),
 })
 
 const editSchema = z.object({
-  email: z.string().email('Ingresa un correo válido'),
-  phone: z.string().regex(phonePattern, 'Usa formato internacional (ej: +34958123456)'),
+  email: z.string().email('Ingresá un correo válido'),
+  phone: z.string().regex(phonePattern, 'Usá formato internacional (ej: +34958123456)'),
   name: z.string().min(1, 'El nombre es obligatorio'),
   lastName: z.string().min(1, 'El apellido es obligatorio'),
   role: z.enum(['BUYER', 'CREATOR', 'VALIDATOR', 'ADMIN']),

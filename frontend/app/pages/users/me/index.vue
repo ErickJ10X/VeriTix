@@ -14,19 +14,19 @@ useSeoMeta({
 const profileSchema = z.object({
   name: z.string().min(1, 'El nombre es obligatorio'),
   lastName: z.string().min(1, 'El apellido es obligatorio'),
-  phone: z.string().regex(/^\+[1-9]\d{7,14}$/, 'El telefono debe estar en formato E.164 (ej: +34958123456)').or(z.literal('')),
-  avatarUrl: z.string().url('Introduce una URL valida').or(z.literal('')),
+  phone: z.string().regex(/^\+[1-9]\d{7,14}$/, 'El teléfono debe estar en formato E.164 (ej: +34958123456)').or(z.literal('')),
+  avatarUrl: z.string().url('Ingresá una URL válida').or(z.literal('')),
 })
 
 const passwordSchema = z.object({
-  currentPassword: z.string().min(1, 'La contrasena actual es obligatoria'),
-  newPassword: z.string().min(8, 'La nueva contrasena debe tener al menos 8 caracteres').regex(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).+$/, 'Debe incluir mayuscula, minuscula y numero'),
-  confirmPassword: z.string().min(1, 'Confirma la nueva contrasena'),
+  currentPassword: z.string().min(1, 'La contraseña actual es obligatoria'),
+  newPassword: z.string().min(8, 'La nueva contraseña debe tener al menos 8 caracteres').regex(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).+$/, 'Debe incluir mayúscula, minúscula y número'),
+  confirmPassword: z.string().min(1, 'Confirmá la nueva contraseña'),
 }).refine(data => data.newPassword === data.confirmPassword, {
-  message: 'Las contrasenas no coinciden',
+  message: 'Las contraseñas no coinciden',
   path: ['confirmPassword'],
 }).refine(data => data.currentPassword !== data.newPassword, {
-  message: 'La nueva contrasena debe ser distinta a la actual',
+  message: 'La nueva contraseña debe ser distinta a la actual',
   path: ['newPassword'],
 })
 
@@ -57,7 +57,7 @@ const roleViews: Record<UserRole, { title: string, capabilities: string[] }> = {
   BUYER: {
     title: 'Acceso de comprador',
     capabilities: [
-      'Datos para compras y facturacion',
+      'Datos para compras y facturación',
       'Historial y uso de entradas',
       'Avisos relacionados con eventos',
     ],
@@ -66,23 +66,23 @@ const roleViews: Record<UserRole, { title: string, capabilities: string[] }> = {
     title: 'Acceso de creador',
     capabilities: [
       'Identidad comercial visible',
-      'Gestion de eventos publicados',
+      'Gestión de eventos publicados',
       'Soporte operativo del perfil',
     ],
   },
   VALIDATOR: {
     title: 'Acceso de validador',
     capabilities: [
-      'Asignacion operativa del perfil',
-      'Herramientas de validacion',
-      'Permisos segun operacion',
+      'Asignación operativa del perfil',
+      'Herramientas de validación',
+      'Permisos según la operación',
     ],
   },
   ADMIN: {
     title: 'Acceso de administrador',
     capabilities: [
       'Control de cuenta y seguridad',
-      'Paneles internos de gestion',
+      'Paneles internos de gestión',
       'Permisos ampliados de soporte',
     ],
   },
@@ -218,7 +218,7 @@ onMounted(() => {
               Datos personales
             </h2>
             <p class="max-w-2xl text-sm leading-relaxed text-toned">
-              Revisa la información visible de tu cuenta y mantén al día tus datos de contacto.
+              Revisá la información visible de tu cuenta y mantené al día tus datos de contacto.
             </p>
           </div>
 
@@ -264,7 +264,7 @@ onMounted(() => {
               Acceso a la cuenta
             </h2>
             <p class="max-w-2xl text-sm leading-relaxed text-toned">
-              Cambia tu contrasena y gestiona el cierre de sesion desde el mismo bloque de seguridad.
+              Cambiá tu contraseña y gestioná el cierre de sesión desde el mismo bloque de seguridad.
             </p>
           </div>
 

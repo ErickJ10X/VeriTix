@@ -134,7 +134,7 @@ onMounted(() => {
 <template>
   <AdminPageShell
     title="Artistas"
-    description="Gestiona catálogo de artistas, estado de publicación y metadatos curatoriales."
+    description="Gestioná el catálogo de artistas, el estado de publicación y los metadatos curatoriales."
     primary-action-to="/admin/artists/new"
     primary-action-label="Nuevo artista"
   >
@@ -142,7 +142,7 @@ onMounted(() => {
       <AdminOverviewPanel
         eyebrow="Catálogo"
         title="Directorio de artistas"
-        description="Busca por nombre y filtra por género o estado para mantener limpio el lineup."
+        description="Buscá por nombre y filtrá por género o estado para mantener limpio el lineup."
         tone="subtle"
       >
         <template #actions>

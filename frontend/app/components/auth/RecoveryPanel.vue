@@ -26,7 +26,7 @@
 
           <div class="space-y-4 text-center">
             <p class="text-sm leading-relaxed text-toned">
-              El restablecimiento automático de contraseña todavía no está habilitado. Si aún recuerdas tu clave, vuelve a iniciar sesión. Si conservas una sesión activa en otro dispositivo, cambia la contraseña desde seguridad dentro de tu cuenta.
+              El restablecimiento automático de contraseña todavía no está habilitado. Si aún recordás tu clave, volvé a iniciar sesión. Si conservás una sesión activa en otro dispositivo, cambiá la contraseña desde seguridad dentro de tu cuenta.
             </p>
 
             <div class="vtx-recovery-note">
@@ -39,7 +39,7 @@
 
           <div class="flex flex-col gap-3">
             <BaseButton kind="primary" to="/login" size="lg" block>
-              Volver a iniciar sesión
+              Volvé a iniciar sesión
             </BaseButton>
 
             <BaseButton kind="secondary" to="/" size="lg" block>

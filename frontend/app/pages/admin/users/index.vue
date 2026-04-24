@@ -178,7 +178,7 @@ onMounted(() => {
 <template>
   <AdminPageShell
     title="Usuarios"
-    description="Gestiona cuentas, roles y estado de acceso del equipo y compradores."
+    description="Gestioná cuentas, roles y estado de acceso del equipo y de los compradores."
     primary-action-to="/admin/users/new"
     primary-action-label="Nuevo usuario"
   >

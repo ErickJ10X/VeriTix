@@ -4,7 +4,7 @@ definePageMeta({
 })
 
 useSeoMeta({
-  title: 'Cerrando sesion | VeriTix',
+  title: 'Cerrando sesión | VeriTix',
 })
 
 const { logout } = useAuth()
