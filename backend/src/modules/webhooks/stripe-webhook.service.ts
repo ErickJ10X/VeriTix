@@ -50,12 +50,21 @@ export class StripeWebhookService {
   ): Promise<void> {
     const payment = await this.prisma.payment.findUnique({
       where: { providerSessionId: data.id },
-      select: { id: true, orderId: true },
+      select: { id: true, orderId: true, status: true },
     });
 
     if (!payment) {
       this.logger.warn(
         `checkout.session.completed: Payment no encontrado para session ${data.id}`,
+      );
+      return;
+    }
+
+    // Idempotency guard — Stripe entrega webhooks "at least once"
+    // Si ya procesamos este pago, no generamos tickets duplicados
+    if (payment.status === PaymentStatus.COMPLETED) {
+      this.logger.warn(
+        `checkout.session.completed: Payment ${payment.id} ya está COMPLETED — duplicado ignorado`,
       );
       return;
     }
@@ -137,12 +146,20 @@ export class StripeWebhookService {
   ): Promise<void> {
     const payment = await this.prisma.payment.findUnique({
       where: { providerSessionId: data.id },
-      select: { id: true, orderId: true },
+      select: { id: true, orderId: true, status: true },
     });
 
     if (!payment) {
       this.logger.warn(
         `checkout.session.expired: Payment no encontrado para session ${data.id}`,
+      );
+      return;
+    }
+
+    // Idempotency guard — no revertir stock dos veces
+    if (payment.status === PaymentStatus.FAILED) {
+      this.logger.warn(
+        `checkout.session.expired: Payment ${payment.id} ya está FAILED — duplicado ignorado`,
       );
       return;
     }
@@ -184,12 +201,24 @@ export class StripeWebhookService {
   ): Promise<void> {
     const payment = await this.prisma.payment.findUnique({
       where: { providerPaymentId: data.id },
-      select: { id: true, orderId: true },
+      select: { id: true, orderId: true, status: true },
     });
 
     if (!payment) {
       this.logger.warn(
         `payment_intent.payment_failed: Payment no encontrado para intent ${data.id}`,
+      );
+      return;
+    }
+
+    // Idempotency guard — no marcar FAILED si ya está en un estado terminal
+    if (
+      payment.status === PaymentStatus.FAILED ||
+      payment.status === PaymentStatus.COMPLETED ||
+      payment.status === PaymentStatus.REFUNDED
+    ) {
+      this.logger.warn(
+        `payment_intent.payment_failed: Payment ${payment.id} ya está ${payment.status} — duplicado ignorado`,
       );
       return;
     }
@@ -219,12 +248,20 @@ export class StripeWebhookService {
 
     const payment = await this.prisma.payment.findUnique({
       where: { providerPaymentId: data.payment_intent },
-      select: { id: true, orderId: true },
+      select: { id: true, orderId: true, status: true },
     });
 
     if (!payment) {
       this.logger.warn(
         `charge.refunded: Payment no encontrado para intent ${data.payment_intent}`,
+      );
+      return;
+    }
+
+    // Idempotency guard — no reembolsar dos veces
+    if (payment.status === PaymentStatus.REFUNDED) {
+      this.logger.warn(
+        `charge.refunded: Payment ${payment.id} ya está REFUNDED — duplicado ignorado`,
       );
       return;
     }
