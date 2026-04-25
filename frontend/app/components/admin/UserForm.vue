@@ -6,6 +6,7 @@ import type {
   AdminUserRecord,
 } from '~/types'
 import { z } from 'zod'
+import { normalizeCreateUserPayload, normalizeUpdateUserPayload } from '~/utils/admin/formSafeRails'
 
 interface RoleOption {
   value: UserRole
@@ -27,24 +28,27 @@ const props = withDefaults(defineProps<{
 
 const emit = defineEmits<{
   submit: [payload: AdminCreateUserPayload | AdminUpdateUserPayload]
+  emailBlur: [email: string]
 }>()
+
+const dirty = defineModel<boolean>('dirty', { default: false })
 
 const phonePattern = /^\+[1-9]\d{7,14}$/
 
 const createSchema = z.object({
-  email: z.string().email('Ingresa un correo válido'),
-  phone: z.string().regex(phonePattern, 'Usa formato internacional (ej: +34958123456)'),
+  email: z.string().email('Ingresá un correo válido'),
+  phone: z.string().regex(phonePattern, 'Usá formato internacional (ej: +34958123456)'),
   name: z.string().min(1, 'El nombre es obligatorio'),
   lastName: z.string().min(1, 'El apellido es obligatorio'),
   password: z.string()
     .min(8, 'La contraseña debe tener al menos 8 caracteres')
-    .regex(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/, 'Incluye mayúscula, minúscula y número'),
+    .regex(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/, 'Incluí mayúscula, minúscula y número'),
   role: z.enum(['BUYER', 'CREATOR', 'VALIDATOR', 'ADMIN']),
 })
 
 const editSchema = z.object({
-  email: z.string().email('Ingresa un correo válido'),
-  phone: z.string().regex(phonePattern, 'Usa formato internacional (ej: +34958123456)'),
+  email: z.string().email('Ingresá un correo válido'),
+  phone: z.string().regex(phonePattern, 'Usá formato internacional (ej: +34958123456)'),
   name: z.string().min(1, 'El nombre es obligatorio'),
   lastName: z.string().min(1, 'El apellido es obligatorio'),
   role: z.enum(['BUYER', 'CREATOR', 'VALIDATOR', 'ADMIN']),
@@ -93,6 +97,42 @@ const verificationValue = computed({
   },
 })
 
+const initialSnapshot = ref<AdminCreateUserPayload | AdminUpdateUserPayload | null>(null)
+
+function buildCurrentPayload(): AdminCreateUserPayload | AdminUpdateUserPayload {
+  if (props.includePassword) {
+    return normalizeCreateUserPayload({
+      email: state.email,
+      phone: state.phone,
+      name: state.name,
+      lastName: state.lastName,
+      password: state.password,
+      role: state.role,
+    })
+  }
+
+  return normalizeUpdateUserPayload({
+    email: state.email,
+    phone: state.phone,
+    name: state.name,
+    lastName: state.lastName,
+    role: state.role,
+    avatarUrl: state.avatarUrl,
+    isActive: state.isActive,
+    emailVerified: state.emailVerified,
+  })
+}
+
+function hasDirtyChanges() {
+  const currentPayload = buildCurrentPayload()
+
+  if (!initialSnapshot.value) {
+    return false
+  }
+
+  return JSON.stringify(currentPayload) !== JSON.stringify(initialSnapshot.value)
+}
+
 function applyInitialValue() {
   state.email = props.initialValue?.email ?? ''
   state.phone = props.initialValue?.phone ?? ''
@@ -103,23 +143,34 @@ function applyInitialValue() {
   state.avatarUrl = props.initialValue?.avatarUrl ?? ''
   state.isActive = props.initialValue?.isActive ?? true
   state.emailVerified = props.initialValue?.emailVerified ?? false
+
+  initialSnapshot.value = buildCurrentPayload()
+  dirty.value = false
+}
+
+function handleEmailBlur() {
+  emit('emailBlur', state.email.trim())
 }
 
 function handleSubmit() {
+  if (props.submitting) {
+    return
+  }
+
   if (props.includePassword) {
-    emit('submit', {
+    emit('submit', normalizeCreateUserPayload({
       email: state.email.trim(),
       phone: state.phone.trim(),
       name: state.name.trim(),
       lastName: state.lastName.trim(),
       password: state.password,
       role: state.role,
-    })
+    }))
 
     return
   }
 
-  emit('submit', {
+  emit('submit', normalizeUpdateUserPayload({
     email: state.email.trim(),
     phone: state.phone.trim(),
     name: state.name.trim(),
@@ -128,10 +179,13 @@ function handleSubmit() {
     avatarUrl: state.avatarUrl.trim() || undefined,
     isActive: state.isActive,
     emailVerified: state.emailVerified,
-  })
+  }))
 }
 
 watch(() => props.initialValue, applyInitialValue, { immediate: true })
+watch(() => state, () => {
+  dirty.value = hasDirtyChanges()
+}, { deep: true })
 </script>
 
 <template>
@@ -142,7 +196,7 @@ watch(() => props.initialValue, applyInitialValue, { immediate: true })
     </div>
 
     <div class="grid gap-5 lg:grid-cols-2">
-      <BaseFormField v-model="state.email" name="email" label="Correo" type="email" required />
+      <BaseFormField v-model="state.email" name="email" label="Correo" type="email" required @blur="handleEmailBlur" />
       <BaseFormField
         v-model="state.phone"
         name="phone"

@@ -5,6 +5,7 @@ import type {
   GenreOption,
 } from '~/types'
 import { z } from 'zod'
+import { normalizeArtistPayload } from '~/utils/admin/formSafeRails'
 
 const props = withDefaults(defineProps<{
   initialValue?: Partial<AdminArtistRecord>
@@ -20,6 +21,8 @@ const props = withDefaults(defineProps<{
 const emit = defineEmits<{
   submit: [payload: AdminArtistPayload]
 }>()
+
+const dirty = defineModel<boolean>('dirty', { default: false })
 
 const schema = z.object({
   name: z.string().min(1, 'El nombre es obligatorio'),
@@ -50,6 +53,31 @@ const genreOptions = computed(() => {
   }))
 })
 
+const initialSnapshot = ref<AdminArtistPayload | null>(null)
+
+function buildCurrentPayload(): AdminArtistPayload {
+  return normalizeArtistPayload({
+    name: state.name,
+    slug: state.slug,
+    bio: state.bio,
+    imageUrl: state.imageUrl,
+    country: state.country,
+    website: state.website,
+    genreIds: state.genreIds,
+    isActive: props.initialValue?.isActive,
+  })
+}
+
+function hasDirtyChanges() {
+  const currentPayload = buildCurrentPayload()
+
+  if (!initialSnapshot.value) {
+    return false
+  }
+
+  return JSON.stringify(currentPayload) !== JSON.stringify(initialSnapshot.value)
+}
+
 function applyInitialValue() {
   state.name = props.initialValue?.name ?? ''
   state.slug = props.initialValue?.slug ?? ''
@@ -58,10 +86,17 @@ function applyInitialValue() {
   state.country = props.initialValue?.country ?? ''
   state.website = props.initialValue?.website ?? ''
   state.genreIds = props.initialValue?.genres?.map(genre => genre.id) ?? []
+
+  initialSnapshot.value = buildCurrentPayload()
+  dirty.value = false
 }
 
 function handleSubmit() {
-  emit('submit', {
+  if (props.submitting) {
+    return
+  }
+
+  emit('submit', normalizeArtistPayload({
     name: state.name.trim(),
     slug: state.slug.trim(),
     bio: state.bio.trim() || undefined,
@@ -69,10 +104,13 @@ function handleSubmit() {
     country: state.country.trim() || undefined,
     website: state.website.trim() || undefined,
     genreIds: state.genreIds.length > 0 ? state.genreIds : undefined,
-  })
+  }))
 }
 
 watch(() => props.initialValue, applyInitialValue, { immediate: true })
+watch(() => state, () => {
+  dirty.value = hasDirtyChanges()
+}, { deep: true })
 </script>
 
 <template>
@@ -89,7 +127,7 @@ watch(() => props.initialValue, applyInitialValue, { immediate: true })
     </div>
 
     <UFormField name="bio" label="Biografía">
-      <UTextarea v-model="state.bio" :rows="5" placeholder="Describe al artista" />
+      <BaseFormTextarea v-model="state.bio" placeholder="Describí al artista" />
     </UFormField>
 
     <div class="grid gap-5 lg:grid-cols-3">
@@ -120,7 +158,7 @@ watch(() => props.initialValue, applyInitialValue, { immediate: true })
         v-model="state.genreIds"
         :items="genreOptions"
         multiple
-        placeholder="Selecciona géneros"
+        placeholder="Seleccioná géneros"
       />
     </UFormField>
 

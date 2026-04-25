@@ -1,4 +1,4 @@
-import type { AuthResponse, LoginRequest, RegisterRequest, UserProfile } from '~~/shared/types'
+import type { AuthResponse, LoginRequest, RegisterRequest, RegisterResponse, UserProfile } from '~~/shared/types'
 
 function buildAuthHeaders(accessToken: string | null): HeadersInit | undefined {
   if (!accessToken) {
@@ -72,12 +72,16 @@ export function useAuth() {
     pending.value = true
 
     try {
-      const response = await apiRequest<AuthResponse, RegisterRequest>('/auth/register', {
+      await apiRequest<RegisterResponse, RegisterRequest>('/auth/register', {
         method: 'POST',
         body: payload,
+        skipAuthRefresh: true,
       })
 
-      return applyAuth(response)
+      return await login({
+        email: payload.email,
+        password: payload.password,
+      })
     }
     finally {
       pending.value = false
@@ -91,6 +95,7 @@ export function useAuth() {
       const response = await apiRequest<AuthResponse, LoginRequest>('/auth/login', {
         method: 'POST',
         body: payload,
+        skipAuthRefresh: true,
       })
 
       return applyAuth(response)
@@ -105,6 +110,7 @@ export function useAuth() {
       const response = await apiRequest<AuthResponse>('/auth/refresh', {
         method: 'POST',
         headers: buildAuthHeaders(accessToken.value),
+        skipAuthRefresh: true,
       })
 
       return applyAuth(response)
@@ -123,6 +129,7 @@ export function useAuth() {
       await apiRequest<void>('/auth/logout', {
         method: 'POST',
         headers: buildAuthHeaders(accessToken.value),
+        skipAuthRefresh: true,
       })
     }
     finally {

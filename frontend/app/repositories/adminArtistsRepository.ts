@@ -42,14 +42,14 @@ export function useAdminArtistsRepository() {
   }
 
   async function getArtist(artistId: string): Promise<AdminArtistRecord> {
-    return apiRequest<AdminArtistRecord>(`/artists/${artistId}`, {
+    return apiRequest<AdminArtistRecord>(`/admin/artists/${artistId}`, {
       method: 'GET',
       headers: requireAdminHeaders(),
     })
   }
 
   async function createArtist(payload: AdminArtistPayload): Promise<AdminArtistRecord> {
-    return apiRequest<AdminArtistRecord, AdminArtistPayload>('/artists', {
+    return apiRequest<AdminArtistRecord, AdminArtistPayload>('/admin/artists', {
       method: 'POST',
       headers: requireAdminHeaders(),
       body: payload,
@@ -57,7 +57,7 @@ export function useAdminArtistsRepository() {
   }
 
   async function updateArtist(artistId: string, payload: AdminArtistPayload): Promise<AdminArtistRecord> {
-    return apiRequest<AdminArtistRecord, AdminArtistPayload>(`/artists/${artistId}`, {
+    return apiRequest<AdminArtistRecord, AdminArtistPayload>(`/admin/artists/${artistId}`, {
       method: 'PATCH',
       headers: requireAdminHeaders(),
       body: payload,

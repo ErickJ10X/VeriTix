@@ -27,15 +27,15 @@ const isEventsRoute = computed(() => {
 
           <div class="min-w-0">
             <p class="truncate font-display text-xl leading-none tracking-wide text-highlighted">
-              Veritix
+              VeriTix
             </p>
             <UiMetaLabel as="p" class="truncate text-dimmed/90">
-              progressive live atlas
+              Atlas progresivo de conciertos
             </UiMetaLabel>
           </div>
         </NuxtLink>
 
-        <nav class="flex items-center justify-center px-3" aria-label="Navegacion principal">
+        <nav class="flex items-center justify-center px-3" aria-label="Navegación principal">
           <NuxtLink
             to="/events"
             class="vtx-nav-link"
@@ -64,7 +64,7 @@ const isEventsRoute = computed(() => {
                 size="xs"
                 class="px-3.5 text-xs tracking-wide uppercase"
               >
-                Registrarse
+              Registrarse
               </BaseButton>
             </template>
 

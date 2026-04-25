@@ -11,12 +11,17 @@ interface Props {
   cityLabel?: string
   cityName?: string
   cityPlaceholder?: string
+  artistName?: string
+  artistLabel?: string
+  artistFieldName?: string
+  artistPlaceholder?: string
   pageSize?: number
   pageSizeOptions?: Array<{ label: string, value: string | number }>
   pageSizeLabel?: string
   pageSizeName?: string
   genreId?: string
   genreLabel?: string
+  genreAllLabel?: string
   genreName?: string
   formatId?: string
   formatLabel?: string
@@ -30,7 +35,7 @@ interface Props {
   genres?: Array<{ id: string, name: string }>
   formats?: Array<{ id: string, name: string }>
   loading?: boolean
-  visibleFilters?: Array<'city' | 'pageSize' | 'genre' | 'format' | 'dateRange'>
+  visibleFilters?: Array<'city' | 'artistName' | 'pageSize' | 'genre' | 'format' | 'dateRange'>
 }
 
 const props = withDefaults(defineProps<Props>(), {
@@ -43,12 +48,17 @@ const props = withDefaults(defineProps<Props>(), {
   cityLabel: 'Ciudad',
   cityName: 'city',
   cityPlaceholder: '',
+  artistName: '',
+  artistLabel: 'Artista',
+  artistFieldName: 'artistName',
+  artistPlaceholder: '',
   pageSize: 12,
   pageSizeOptions: () => [],
   pageSizeLabel: 'Por página',
   pageSizeName: 'pageSize',
   genreId: '',
   genreLabel: 'Género',
+  genreAllLabel: 'Todos los géneros',
   genreName: 'genreId',
   formatId: '',
   formatLabel: 'Formato',
@@ -62,12 +72,13 @@ const props = withDefaults(defineProps<Props>(), {
   genres: () => [],
   formats: () => [],
   loading: false,
-  visibleFilters: () => ['city', 'pageSize', 'genre', 'format', 'dateRange'],
+  visibleFilters: () => ['city', 'artistName', 'pageSize', 'genre', 'format', 'dateRange'],
 })
 
 const emit = defineEmits<{
   (e: 'update:search', value: string): void
   (e: 'update:city', value: string): void
+  (e: 'update:artistName', value: string): void
   (e: 'update:pageSize', value: number): void
   (e: 'update:genreId', value: string): void
   (e: 'update:formatId', value: string): void
@@ -79,7 +90,7 @@ const ALL_OPTION_VALUE = '__all__'
 
 const genreOptions = computed(() => {
   return [
-    { label: 'Todos los géneros', value: ALL_OPTION_VALUE },
+    { label: props.genreAllLabel, value: ALL_OPTION_VALUE },
     ...props.genres.map(g => ({ label: g.name, value: g.id })),
   ]
 })
@@ -102,15 +113,16 @@ const selectedFormatId = computed({
 })
 
 const showCity = computed(() => props.visibleFilters.includes('city'))
+const showArtistName = computed(() => props.visibleFilters.includes('artistName'))
 const showPageSize = computed(() => props.visibleFilters.includes('pageSize'))
 const showGenre = computed(() => props.visibleFilters.includes('genre'))
 const showFormat = computed(() => props.visibleFilters.includes('format'))
 const showDateRange = computed(() => props.visibleFilters.includes('dateRange'))
 
 const textFiltersGridClass = computed(() => {
-  const visibleColumns = 1 + Number(showCity.value) + Number(showPageSize.value)
+  const visibleColumns = 1 + Number(showCity.value) + Number(showArtistName.value) + Number(showPageSize.value)
 
-  if (visibleColumns === 3) {
+  if (visibleColumns >= 3) {
     return 'md:grid-cols-3'
   }
 
@@ -166,6 +178,17 @@ const secondaryFiltersGridClass = computed(() => {
         :placeholder="cityPlaceholder"
         :disabled="loading"
         @update:model-value="$emit('update:city', String($event ?? ''))"
+      />
+
+      <BaseFormField
+        v-if="showArtistName"
+        :name="artistFieldName"
+        :label="artistLabel"
+        :model-value="artistName"
+        icon="i-lucide-mic-2"
+        :placeholder="artistPlaceholder"
+        :disabled="loading"
+        @update:model-value="$emit('update:artistName', String($event ?? ''))"
       />
 
       <BaseFormSelect
