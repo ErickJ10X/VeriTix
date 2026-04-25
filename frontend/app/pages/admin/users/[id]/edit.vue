@@ -15,15 +15,12 @@ const userId = computed(() => String(route.params.id || ''))
 const { getUser: getAdminUser, updateUser: updateAdminUser, isEmailTaken } = useAdminUsersRepository()
 const { roleOptions } = useAdminApi()
 const { getApiErrorMessage, getApiErrorStatus } = useApiErrorMessage()
+const { notifyApiError, notifyError, notifyInfo, notifySuccess } = useAppNotifications()
 
 const user = ref<AdminUserRecord | null>(null)
 const loading = ref(true)
 const submitting = ref(false)
 const isFormDirty = ref(false)
-const errorMessage = ref('')
-const emailConflictMessage = ref('')
-const successMessage = ref('')
-const infoMessage = ref('')
 const totalRoles = computed(() => roleOptions.length)
 
 useUnsavedChangesGuard({
@@ -55,23 +52,20 @@ async function validateEmailAvailability(email: string) {
   const normalizedEmail = email.trim()
 
   if (!normalizedEmail || !user.value) {
-    emailConflictMessage.value = ''
     return true
   }
 
   if (normalizedEmail.toLowerCase() === user.value.email.trim().toLowerCase()) {
-    emailConflictMessage.value = ''
     return true
   }
 
   const emailExists = await isEmailTaken(normalizedEmail, userId.value)
 
   if (emailExists) {
-    emailConflictMessage.value = 'Ya existe un usuario con ese correo.'
+    notifyError('Ya existe un usuario con ese correo.', { id: 'admin-users-email-conflict-edit' })
     return false
   }
 
-  emailConflictMessage.value = ''
   return true
 }
 
@@ -84,13 +78,11 @@ async function handleEmailBlur(email: string) {
     await validateEmailAvailability(email)
   }
   catch {
-    emailConflictMessage.value = ''
   }
 }
 
 async function loadUser() {
   loading.value = true
-  errorMessage.value = ''
 
   try {
     user.value = await getAdminUser(userId.value)
@@ -103,7 +95,7 @@ async function loadUser() {
       })
     }
 
-    errorMessage.value = getApiErrorMessage(error, 'No pudimos cargar el usuario.')
+    notifyApiError(error, 'No pudimos cargar el usuario.', { id: 'admin-users-load-error-edit' })
   }
   finally {
     loading.value = false
@@ -118,16 +110,11 @@ async function updateUser(payload: AdminUpdateUserPayload) {
   const normalizedPayload = normalizeUpdateUserPayload(payload)
 
   if (!hasUserSemanticChanges(user.value, normalizedPayload)) {
-    errorMessage.value = ''
-    successMessage.value = ''
-    infoMessage.value = 'No hay cambios para guardar.'
+    notifyInfo('No hay cambios para guardar.', { id: 'admin-users-no-changes' })
     return
   }
 
   submitting.value = true
-  errorMessage.value = ''
-  successMessage.value = ''
-  infoMessage.value = ''
 
   try {
     const hasAvailableEmail = await validateEmailAvailability(normalizedPayload.email ?? '')
@@ -138,17 +125,17 @@ async function updateUser(payload: AdminUpdateUserPayload) {
 
     user.value = await updateAdminUser(userId.value, normalizedPayload)
 
-    successMessage.value = 'Usuario actualizado correctamente.'
+    notifySuccess('Usuario actualizado correctamente.', { id: 'admin-users-update-success' })
   }
   catch (error) {
     const conflictMessage = resolveUserConflictMessage(error)
 
     if (conflictMessage) {
-      errorMessage.value = conflictMessage
+      notifyError(conflictMessage, { id: 'admin-users-update-conflict' })
       return
     }
 
-    errorMessage.value = getApiErrorMessage(error, 'No pudimos actualizar el usuario.')
+    notifyApiError(error, 'No pudimos actualizar el usuario.', { id: 'admin-users-update-error' })
   }
   finally {
     submitting.value = false
@@ -168,11 +155,6 @@ onMounted(() => {
     primary-action-label="Volver a usuarios"
   >
     <div class="mx-auto max-w-5xl space-y-5">
-      <BaseStatusMessage v-if="errorMessage" :message="errorMessage" />
-      <BaseStatusMessage v-if="emailConflictMessage" :message="emailConflictMessage" />
-      <BaseStatusMessage v-if="infoMessage" tone="info" :message="infoMessage" />
-      <BaseStatusMessage v-if="successMessage" tone="success" :message="successMessage" />
-
       <AdminOverviewPanel
         title="Datos del usuario"
         description="Edita contacto, rol, estado y verificación de cuenta."

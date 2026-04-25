@@ -15,15 +15,13 @@ const artistId = computed(() => String(route.params.id || ''))
 
 const { getArtist: getAdminArtist, listGenres, updateArtist: updateAdminArtist } = useAdminArtistsRepository()
 const { getApiErrorMessage, getApiErrorStatus } = useApiErrorMessage()
+const { notifyApiError, notifyError, notifyInfo, notifySuccess } = useAppNotifications()
 
 const artist = ref<AdminArtistRecord | null>(null)
 const genres = ref<GenreOption[]>([])
 const loading = ref(true)
 const submitting = ref(false)
 const isFormDirty = ref(false)
-const errorMessage = ref('')
-const successMessage = ref('')
-const infoMessage = ref('')
 
 useUnsavedChangesGuard({
   isDirty: isFormDirty,
@@ -41,7 +39,6 @@ async function loadGenres() {
 
 async function loadArtist() {
   loading.value = true
-  errorMessage.value = ''
 
   try {
     artist.value = await getAdminArtist(artistId.value)
@@ -54,7 +51,7 @@ async function loadArtist() {
       })
     }
 
-    errorMessage.value = getApiErrorMessage(error, 'No pudimos cargar el artista.')
+    notifyApiError(error, 'No pudimos cargar el artista.', { id: 'admin-artists-load-error-edit' })
   }
   finally {
     loading.value = false
@@ -69,29 +66,24 @@ async function updateArtist(payload: AdminArtistPayload) {
   const normalizedPayload = normalizeArtistPayload(payload)
 
   if (!hasArtistSemanticChanges(artist.value, normalizedPayload)) {
-    errorMessage.value = ''
-    successMessage.value = ''
-    infoMessage.value = 'No hay cambios para guardar.'
+    notifyInfo('No hay cambios para guardar.', { id: 'admin-artists-no-changes' })
     return
   }
 
   submitting.value = true
-  errorMessage.value = ''
-  successMessage.value = ''
-  infoMessage.value = ''
 
   try {
     artist.value = await updateAdminArtist(artistId.value, normalizedPayload)
 
-    successMessage.value = 'Artista actualizado correctamente.'
+    notifySuccess('Artista actualizado correctamente.', { id: 'admin-artists-update-success' })
   }
   catch (error) {
     if (getApiErrorStatus(error) === 409) {
-      errorMessage.value = 'Ya existe un artista con ese slug.'
+      notifyError('Ya existe un artista con ese slug.', { id: 'admin-artists-update-conflict' })
       return
     }
 
-    errorMessage.value = getApiErrorMessage(error, 'No pudimos actualizar el artista.')
+    notifyApiError(error, 'No pudimos actualizar el artista.', { id: 'admin-artists-update-error' })
   }
   finally {
     submitting.value = false
@@ -111,10 +103,6 @@ onMounted(() => {
     primary-action-label="Volver a artistas"
   >
     <div class="mx-auto max-w-5xl space-y-5">
-      <BaseStatusMessage v-if="errorMessage" :message="errorMessage" />
-      <BaseStatusMessage v-if="infoMessage" tone="info" :message="infoMessage" />
-      <BaseStatusMessage v-if="successMessage" tone="success" :message="successMessage" />
-
       <AdminOverviewPanel
         title="Datos del artista"
         description="Edita identidad, metadata y clasificación por género."

@@ -17,6 +17,7 @@ const eventId = computed(() => String(route.params.id || ''))
 
 const { getFormOptions, getEvent: getAdminEvent, updateEvent: updateAdminEvent } = useAdminEventsRepository()
 const { getApiErrorMessage, getApiErrorStatus } = useApiErrorMessage()
+const { notifyApiError, notifyInfo, notifySuccess } = useAppNotifications()
 
 const event = ref<AdminEventDetail | null>(null)
 const venues = ref<VenueOption[]>([])
@@ -25,9 +26,6 @@ const formats = ref<AdminOption[]>([])
 const loading = ref(true)
 const submitting = ref(false)
 const isFormDirty = ref(false)
-const errorMessage = ref('')
-const successMessage = ref('')
-const infoMessage = ref('')
 
 useUnsavedChangesGuard({
   isDirty: isFormDirty,
@@ -58,7 +56,6 @@ async function loadOptions() {
 
 async function loadEvent() {
   loading.value = true
-  errorMessage.value = ''
 
   try {
     event.value = await getAdminEvent(eventId.value)
@@ -71,7 +68,7 @@ async function loadEvent() {
       })
     }
 
-    errorMessage.value = getApiErrorMessage(error, 'No pudimos cargar el evento.')
+    notifyApiError(error, 'No pudimos cargar el evento.', { id: 'admin-events-load-error-edit' })
   }
   finally {
     loading.value = false
@@ -86,24 +83,19 @@ async function updateEvent(payload: AdminEventPayload) {
   const normalizedPayload = normalizeEventPayload(payload)
 
   if (!hasEventSemanticChanges(event.value, normalizedPayload)) {
-    errorMessage.value = ''
-    successMessage.value = ''
-    infoMessage.value = 'No hay cambios para guardar.'
+    notifyInfo('No hay cambios para guardar.', { id: 'admin-events-no-changes' })
     return
   }
 
   submitting.value = true
-  errorMessage.value = ''
-  successMessage.value = ''
-  infoMessage.value = ''
 
   try {
     event.value = await updateAdminEvent(eventId.value, normalizedPayload)
 
-    successMessage.value = 'Evento actualizado correctamente.'
+    notifySuccess('Evento actualizado correctamente.', { id: 'admin-events-update-success' })
   }
   catch (error) {
-    errorMessage.value = getApiErrorMessage(error, 'No pudimos actualizar el evento.')
+    notifyApiError(error, 'No pudimos actualizar el evento.', { id: 'admin-events-update-error' })
   }
   finally {
     submitting.value = false
@@ -123,10 +115,6 @@ onMounted(() => {
     primary-action-label="Volver a eventos"
   >
     <div class="mx-auto max-w-5xl space-y-5">
-      <BaseStatusMessage v-if="errorMessage" :message="errorMessage" />
-      <BaseStatusMessage v-if="infoMessage" tone="info" :message="infoMessage" />
-      <BaseStatusMessage v-if="successMessage" tone="success" :message="successMessage" />
-
       <AdminOverviewPanel
         title="Datos del evento"
         description="Edita los campos principales del evento seleccionado."

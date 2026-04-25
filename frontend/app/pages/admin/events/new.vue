@@ -13,6 +13,7 @@ useSeoMeta({ title: 'Nuevo evento | Admin VeriTix' })
 
 const { createEvent: createAdminEvent, getFormOptions } = useAdminEventsRepository()
 const { getApiErrorMessage } = useApiErrorMessage()
+const { notifyApiError, notifySuccess } = useAppNotifications()
 
 const venues = ref<VenueOption[]>([])
 const genres = ref<GenreOption[]>([])
@@ -20,7 +21,6 @@ const formats = ref<AdminOption[]>([])
 const loading = ref(true)
 const submitting = ref(false)
 const isFormDirty = ref(false)
-const errorMessage = ref('')
 
 useUnsavedChangesGuard({
   isDirty: isFormDirty,
@@ -38,7 +38,7 @@ async function loadOptions() {
     formats.value = options.formats ?? []
   }
   catch (error) {
-    errorMessage.value = getApiErrorMessage(error, 'No pudimos cargar las opciones del evento.')
+    notifyApiError(error, 'No pudimos cargar las opciones del evento.', { id: 'admin-events-load-options-error' })
   }
   finally {
     loading.value = false
@@ -53,15 +53,15 @@ async function createEvent(payload: AdminEventPayload) {
   const normalizedPayload = normalizeEventPayload(payload)
 
   submitting.value = true
-  errorMessage.value = ''
 
   try {
     await createAdminEvent(normalizedPayload)
 
+    notifySuccess('Evento creado correctamente.', { id: 'admin-events-create-success' })
     await navigateTo('/admin/events')
   }
   catch (error) {
-    errorMessage.value = getApiErrorMessage(error, 'No pudimos crear el evento.')
+    notifyApiError(error, 'No pudimos crear el evento.', { id: 'admin-events-create-error' })
   }
   finally {
     submitting.value = false
@@ -81,8 +81,6 @@ onMounted(() => {
     primary-action-label="Volver a eventos"
   >
     <div class="mx-auto max-w-5xl space-y-5">
-      <BaseStatusMessage v-if="errorMessage" :message="errorMessage" />
-
       <AdminOverviewPanel
         title="Datos del evento"
         description="Completa los campos principales para crear la ficha."

@@ -64,6 +64,65 @@ export default defineAppConfig({
         body: 'p-5 sm:p-6',
       },
     },
+    toast: {
+      slots: {
+        root: 'relative flex gap-3 overflow-hidden rounded-2xl border border-default/70 bg-elevated/95 p-4 shadow-lg backdrop-blur-md focus:outline-none',
+        wrapper: 'min-w-0 flex-1 flex flex-col',
+        title: 'text-sm font-semibold text-highlighted',
+        description: 'mt-1 text-sm text-toned',
+        icon: 'mt-0.5 size-5 shrink-0',
+        avatar: 'shrink-0',
+        avatarSize: '2xl',
+        actions: 'mt-2 flex shrink-0 gap-1.5',
+        progress: 'absolute inset-x-0 bottom-0',
+        close: 'shrink-0',
+      },
+      variants: {
+        color: {
+          primary: {
+            root: 'border-primary/25 bg-primary/10',
+            icon: 'text-primary',
+          },
+          secondary: {
+            root: 'border-secondary/25 bg-secondary/10',
+            icon: 'text-secondary',
+          },
+          success: {
+            root: 'border-success/25 bg-success/10',
+            icon: 'text-success',
+          },
+          info: {
+            root: 'border-info/25 bg-info/10',
+            icon: 'text-info',
+          },
+          warning: {
+            root: 'border-warning/25 bg-warning/10',
+            icon: 'text-warning',
+          },
+          error: {
+            root: 'border-error/25 bg-error/10',
+            icon: 'text-error',
+          },
+          neutral: {
+            root: 'border-default/70 bg-default/90',
+            icon: 'text-highlighted',
+          },
+        },
+        orientation: {
+          horizontal: {
+            root: 'items-center',
+            actions: 'mt-0 items-center',
+          },
+          vertical: {
+            root: 'items-start',
+            actions: 'items-start',
+          },
+        },
+      },
+      defaultVariants: {
+        color: 'neutral',
+      },
+    },
     badge: {
       defaultVariants: {
         variant: 'soft',

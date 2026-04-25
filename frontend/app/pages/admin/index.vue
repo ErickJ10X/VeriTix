@@ -14,11 +14,10 @@ useSeoMeta({
 })
 
 const { listCatalog } = useAdminEventsRepository()
-const { getApiErrorMessage } = useApiErrorMessage()
+const { notifyApiError } = useAppNotifications()
 
 const events = ref<AdminEventRecord[]>([])
 const pending = ref(true)
-const errorMessage = ref('')
 
 const metrics = computed(() => {
   const scheduledEvents = events.value.filter(event => new Date(event.eventDate).getTime() >= Date.now()).length
@@ -125,7 +124,6 @@ function getStatusTone(status: string) {
 
 async function loadDashboard() {
   pending.value = true
-  errorMessage.value = ''
 
   try {
     const eventsResponse = await listCatalog({
@@ -145,7 +143,7 @@ async function loadDashboard() {
     events.value = eventsResponse.data
   }
   catch (error) {
-    errorMessage.value = getApiErrorMessage(error, 'No pudimos cargar el resumen del dashboard.')
+    notifyApiError(error, 'No pudimos cargar el resumen del dashboard.', { id: 'admin-dashboard-load-error' })
   }
   finally {
     pending.value = false
@@ -165,14 +163,6 @@ onMounted(() => {
     primary-action-label="Nuevo evento"
   >
     <div class="mx-auto max-w-7xl space-y-8">
-      <UAlert
-        v-if="errorMessage"
-        color="error"
-        variant="soft"
-        :title="errorMessage"
-        icon="i-lucide-alert-circle"
-      />
-
       <div class="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
         <template v-if="pending">
           <UiGlassPanel v-for="index in 4" :key="index" tone="subtle" radius="md" padding="md">

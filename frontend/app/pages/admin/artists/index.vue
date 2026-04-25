@@ -12,14 +12,12 @@ definePageMeta({ middleware: 'admin' })
 useSeoMeta({ title: 'Artistas | Admin VeriTix' })
 
 const { deleteArtist: deleteAdminArtist, listArtists, listGenres } = useAdminArtistsRepository()
-const { getApiErrorMessage } = useApiErrorMessage()
+const { notifyApiError, notifySuccess } = useAppNotifications()
 
 const artists = ref<AdminArtistRecord[]>([])
 const genres = ref<GenreOption[]>([])
 const pending = ref(true)
 const deletingId = ref('')
-const errorMessage = ref('')
-const successMessage = ref('')
 
 const page = ref(1)
 const pageSize = ref(12)
@@ -50,6 +48,17 @@ const genreFilterOptions = computed<AdminOption[]>(() => {
   }))
 })
 
+function artistInitials(artist: AdminArtistRecord) {
+  const initials = artist.name
+    .split(' ')
+    .filter(Boolean)
+    .slice(0, 2)
+    .map(part => part.charAt(0).toUpperCase())
+    .join('')
+
+  return initials || 'A'
+}
+
 async function loadGenres() {
   try {
     genres.value = await listGenres()
@@ -61,7 +70,6 @@ async function loadGenres() {
 
 async function loadArtists(targetPage = page.value) {
   pending.value = true
-  errorMessage.value = ''
 
   try {
     const response = await listArtists({
@@ -77,7 +85,7 @@ async function loadArtists(targetPage = page.value) {
     page.value = response.meta.page
   }
   catch (error) {
-    errorMessage.value = getApiErrorMessage(error, 'No pudimos cargar los artistas.')
+    notifyApiError(error, 'No pudimos cargar los artistas.', { id: 'admin-artists-load-error' })
   }
   finally {
     pending.value = false
@@ -103,17 +111,15 @@ function goToPage(nextPage: number) {
 
 async function removeArtist(artistId: string) {
   deletingId.value = artistId
-  successMessage.value = ''
-  errorMessage.value = ''
 
   try {
     await deleteAdminArtist(artistId)
 
-    successMessage.value = 'Artista eliminado correctamente.'
+    notifySuccess('Artista eliminado correctamente.', { id: `admin-artists-delete-${artistId}` })
     await loadArtists(page.value)
   }
   catch (error) {
-    errorMessage.value = getApiErrorMessage(error, 'No pudimos eliminar el artista.')
+    notifyApiError(error, 'No pudimos eliminar el artista.', { id: `admin-artists-delete-error-${artistId}` })
   }
   finally {
     deletingId.value = ''
@@ -128,18 +134,15 @@ onMounted(() => {
 <template>
   <AdminPageShell
     title="Artistas"
-    description="Gestiona catálogo de artistas, estado de publicación y metadatos curatoriales."
+    description="Gestioná el catálogo de artistas, el estado de publicación y los metadatos curatoriales."
     primary-action-to="/admin/artists/new"
     primary-action-label="Nuevo artista"
   >
     <div class="mx-auto max-w-7xl space-y-8" data-testid="admin-artists-page">
-      <BaseStatusMessage v-if="errorMessage" :message="errorMessage" />
-      <BaseStatusMessage v-if="successMessage" tone="success" :message="successMessage" />
-
       <AdminOverviewPanel
         eyebrow="Catálogo"
         title="Directorio de artistas"
-        description="Busca por nombre y filtra por género o estado para mantener limpio el lineup."
+        description="Buscá por nombre y filtrá por género o estado para mantener limpio el lineup."
         tone="subtle"
       >
         <template #actions>
@@ -182,63 +185,75 @@ onMounted(() => {
             @change="goToPage"
           />
 
-          <div class="space-y-4">
-            <template v-if="pending">
-              <USkeleton v-for="index in 4" :key="index" class="h-28 rounded-2xl" />
-            </template>
+          <div v-if="pending" class="grid grid-cols-1 gap-6 md:grid-cols-2 xl:grid-cols-3">
+            <USkeleton v-for="index in 6" :key="index" class="h-80 rounded-2xl" />
+          </div>
 
-            <AdminEmptyState
-              v-else-if="artists.length === 0"
-              icon="i-lucide-mic-2"
-              title="Sin artistas"
-              description="No encontramos artistas para estos filtros."
-              action-label="Crear artista"
-              action-to="/admin/artists/new"
-            />
+          <AdminEmptyState
+            v-else-if="artists.length === 0"
+            icon="i-lucide-mic-2"
+            title="Sin artistas"
+            description="No encontramos artistas para estos filtros."
+            action-label="Crear artista"
+            action-to="/admin/artists/new"
+          />
 
-            <AdminCard
+<div v-else class="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5">
+            <div
               v-for="artist in artists"
-              v-else
               :key="artist.id"
-              class="border-default/70 bg-elevated/20"
+              class="group relative block"
             >
-              <div class="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
-                <div class="space-y-2">
-                  <p class="text-base font-semibold text-highlighted">
-                    {{ artist.name }}
-                  </p>
-                  <p class="text-sm text-toned">
-                    {{ artist.slug }}
-                    <span v-if="artist.country"> · {{ artist.country }}</span>
-                  </p>
+              <NuxtLink
+                :to="`/admin/artists/${artist.id}/edit`"
+                class="block"
+              >
+                <div class="aspect-square overflow-hidden rounded-xl bg-elevated/30">
+                  <img
+                    v-if="artist.imageUrl"
+                    :src="artist.imageUrl"
+                    :alt="artist.name"
+                    class="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
+                  >
+                  <div
+                    v-else
+                    class="flex h-full items-center justify-center bg-gradient-to-br from-toned/25 to-toned/10"
+                  >
+                    <UAvatar
+                      :text="artistInitials(artist)"
+                      size="xl"
+                      class="!size-16"
+                    />
+                  </div>
 
-                  <div class="flex flex-wrap items-center gap-2">
-                    <BaseBadge kind="status" :color="artist.isActive ? 'success' : 'neutral'">
-                      {{ artist.isActive ? 'Activo' : 'Inactivo' }}
-                    </BaseBadge>
-                    <BaseBadge v-for="genre in artist.genres.slice(0, 3)" :key="genre.id" kind="tag">
-                      {{ genre.name }}
-                    </BaseBadge>
-                    <BaseBadge v-if="artist.genres.length > 3" kind="outline">
-                      +{{ artist.genres.length - 3 }}
-                    </BaseBadge>
+                  <!-- Status -->
+                  <div
+                    class="absolute left-2 top-2 rounded-full px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wider opacity-80"
+                    :class="artist.isActive ? 'bg-black/60 text-white' : 'bg-black/40 text-muted'"
+                  >
+                    {{ artist.isActive ? 'Activo' : 'Inactivo' }}
                   </div>
                 </div>
 
-                <div class="flex items-center gap-2 self-start md:self-center">
-                  <BaseButton kind="secondary" size="sm" :to="`/admin/artists/${artist.id}/edit`">
-                    Editar
-                  </BaseButton>
-                  <AdminDeleteAction
-                    item-label="el artista"
-                    trigger-kind="secondary"
-                    trigger-class="border-error/35 text-error hover:border-error/50 hover:bg-error/12 hover:text-error"
-                    :pending="deletingId === artist.id"
-                    @confirm="removeArtist(artist.id)"
-                  />
+                <div class="mt-2">
+                  <h3 class="truncate text-sm font-medium text-highlighted">
+                    {{ artist.name }}
+                  </h3>
+                  <p v-if="artist.genres.length" class="truncate text-xs text-toned">
+                    {{ artist.genres.map(g => g.name).join(', ') }}
+                  </p>
                 </div>
-              </div>
-            </AdminCard>
+              </NuxtLink>
+
+              <!-- Delete action -->
+              <AdminDeleteAction
+                item-label="el artista"
+                trigger-kind="tertiary"
+                trigger-class="absolute right-1 top-1 opacity-0 group-hover:opacity-100 bg-black/60 hover:bg-error/80 text-white p-1.5 rounded transition-opacity"
+                :pending="deletingId === artist.id"
+                @confirm="removeArtist(artist.id)"
+              />
+            </div>
           </div>
 
           <AdminPaginationBar

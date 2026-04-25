@@ -185,7 +185,7 @@ const eventErrorMessage = computed(() => {
             No pudimos preparar esta vista.
           </p>
           <p class="text-sm leading-relaxed text-toned">
-            Intenta recargar la página en unos segundos.
+            Intentá recargar la página en unos segundos.
           </p>
         </div>
       </div>

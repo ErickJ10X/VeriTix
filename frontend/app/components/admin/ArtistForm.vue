@@ -127,7 +127,7 @@ watch(() => state, () => {
     </div>
 
     <UFormField name="bio" label="Biografía">
-      <BaseFormTextarea v-model="state.bio" placeholder="Describe al artista" />
+      <BaseFormTextarea v-model="state.bio" placeholder="Describí al artista" />
     </UFormField>
 
     <div class="grid gap-5 lg:grid-cols-3">
@@ -158,7 +158,7 @@ watch(() => state, () => {
         v-model="state.genreIds"
         :items="genreOptions"
         multiple
-        placeholder="Selecciona géneros"
+        placeholder="Seleccioná géneros"
       />
     </UFormField>
 
