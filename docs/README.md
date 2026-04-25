@@ -2,7 +2,7 @@
 
 ## Fuente de verdad (regla principal)
 
-1. **Código del repo** (backend, frontend, Prisma) 
+1. **Código del repo** (backend, frontend, Prisma)
 2. `docs/tfg.md` **solo** para alcance/roadmap explícito
 3. Esta carpeta `docs/` como síntesis operativa
 
@@ -22,7 +22,7 @@ Si hay contradicción entre documentación y código, **manda el código**.
 
 - Empezá por `STATUS.md` para entender dónde está parado el proyecto.
 - Si vas a tocar arquitectura o integración, seguí con `ARCHITECHTURE.md` y `API.md`.
-- Si vas a tocar datos, usá `DATABASE.md` + `ERD.md`.
+- Si vas a tocar datos, usá `DATABASE.md`.
 - Si querés contrastar alcance funcional (hoy vs pendiente), usá `REQUIREMENTS.md`.
 
 ## Convención de verificación
