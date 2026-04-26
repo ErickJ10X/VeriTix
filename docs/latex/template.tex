@@ -104,9 +104,10 @@ $if(linestretch)$\setstretch{$linestretch$}$endif$
 \newcolumntype{C}[1]{>{\centering\arraybackslash}p{#1}}
 \newcolumntype{R}[1]{>{\raggedleft\arraybackslash}p{#1}}
 
-% Estilo de tablas: header azul oscuro texto blanco
-\newcommand{\foctheadrow}{\rowcolor{focblue}\color{white}\bfseries\sffamily}
-\newcommand{\foctophead}{\toprule\foctheadrow}
+% Estilo de tablas: helpers reutilizables para Markdown y LaTeX crudo
+\newcommand{\focheadcell}[1]{\cellcolor{focmid}\color{white}\textbf{#1}}
+\newcommand{\focheadrow}{\rowcolor{focblue}\color{white}\bfseries\sffamily}
+\newcommand{\foctheadrow}{\focheadrow} % alias legado
 
 \newcommand{\focapplytablestyle}{%
   \arrayrulecolor{foctableline}%
@@ -118,12 +119,11 @@ $if(linestretch)$\setstretch{$linestretch$}$endif$
   \arrayrulecolor{black}%
 }
 
-\AtBeginEnvironment{tabular}{\focapplytablestyle}
-\AtEndEnvironment{tabular}{\focresettablestyle}
-\AtBeginEnvironment{tabularx}{\focapplytablestyle}
-\AtEndEnvironment{tabularx}{\focresettablestyle}
-\AtBeginEnvironment{longtable}{\focapplytablestyle}
-\AtEndEnvironment{longtable}{\focresettablestyle}
+\AtBeginEnvironment{tabular}{\focapplytablestyle}%
+\AtEndEnvironment{tabular}{\focresettablestyle}%
+\AtBeginEnvironment{tabularx}{\focapplytablestyle}%
+\AtEndEnvironment{tabularx}{\focresettablestyle}%
+% longtable no usa zebra para evitar artefactos visuales (filas fantasma)
 
 % ── Listas ──────────────────────────────────────────────────
 \usepackage{enumitem}
@@ -275,18 +275,25 @@ $if(linestretch)$\setstretch{$linestretch$}$endif$
       % ── Barra decorativa superior (azul institucional) ──
       \fill[focblue]
         (current page.north west) rectangle
-        ($$(current page.north east)-(0,1.5cm)$$);
+        ($$(current page.north east)-(0,1.85cm)$$);
 
-      % ── Logo stylizado — dentro de la barra azul ──
+      % ── Marca institucional — logo + texto dentro de la barra azul ──
       \node[anchor=north west, inner sep=0pt]
-        at ($$(current page.north west)+(1cm,-0.75cm)$$) {
-          \color{white}\bfseries\sffamily\fontsize{16}{16}\selectfont Instituto Fomento Ocupacional
+        at ($$(current page.north west)+(0.95cm,-0.08cm)$$) {
+          \includegraphics[height=2.4cm]{assets/foc-logo.png}
+      };
+
+      \node[anchor=north west, inner sep=0pt]
+        at ($$(current page.north west)+(4.15cm,-0.08cm)$$) {
+          \parbox[c][2.4cm][c]{8.8cm}{%
+            \color{white}\bfseries\sffamily\fontsize{17}{17}\selectfont Instituto Fomento Ocupacional
+          }
       };
 
       % ── Línea divisoria sutil ──
       \draw[focblue, line width=0.5pt]
-        ($$(current page.north west)+(0,1.5cm)$$) --
-        ($$(current page.north east)+(0,1.5cm)$$);
+        ($$(current page.north west)+(0,1.85cm)$$) --
+        ($$(current page.north east)+(0,1.85cm)$$);
 
       % ── Título "VeriTix" — centrado,parte superior ──
       \node[anchor=center]

@@ -7,7 +7,7 @@
 La planificación original se definió en ocho fases. A continuación se refleja el grado de
 cumplimiento según el estado real del repositorio (abril de 2026).
 
-| \cellcolor{focmid}\color{white}\textbf{Fase} | \cellcolor{focmid}\color{white}\textbf{Contenido planificado} | \cellcolor{focmid}\color{white}\textbf{Estado actual} |
+| \focheadcell{Fase} | \focheadcell{Contenido planificado} | \focheadcell{Estado actual} |
 | :-------------------------------- | :-------------------------------------------------------- | :-------------------------------------------------------: |
 | 1. Análisis y diseño              | Requisitos, modelo de datos, contratos API, wireframes    | Completada                                                |
 | 2. Autenticación y usuarios       | Registro/login/refresh/roles                              | Completada (backend + frontend base)                      |
@@ -57,7 +57,7 @@ cumplimiento según el estado real del repositorio (abril de 2026).
 
 ### Asociación entre fases y recursos (materiales y humanos)
 
-| \cellcolor{focmid}\color{white}\textbf{Fase} | \cellcolor{focmid}\color{white}\textbf{Recursos materiales} | \cellcolor{focmid}\color{white}\textbf{Recursos humanos} |
+| \focheadcell{Fase} | \focheadcell{Recursos materiales} | \focheadcell{Recursos humanos} |
 | :-------------------------- | :------------------------------------------- | :-------------------------: |
 | Análisis/diseño             | Herramientas de modelado y documentación     | Equipo técnico del proyecto |
 | Desarrollo backend/frontend | IDE, control de versiones, servicios locales | Equipo técnico del proyecto |
@@ -87,7 +87,7 @@ del trabajo prolongado con pantallas, mitigables con pausas y condiciones de pue
 
 ### Presupuesto económico
 
-| \cellcolor{focmid}\color{white}\textbf{Concepto} | \cellcolor{focmid}\color{white}\textbf{Coste estimado} |
+| \focheadcell{Concepto} | \focheadcell{Coste estimado} |
 | :------------------------------------------- | -------------------------------: |
 | Desarrollo realizado por el equipo académico | 0€ (coste imputado no monetario) |
 | Dominio y hosting básico anual               | Bajo (dependiente de proveedor)  |
@@ -112,7 +112,7 @@ condicionado a formalización empresarial y plan financiero específico.
 VeriTix adopta arquitectura cliente-servidor desacoplada en monorepo. El frontend consume
 exclusivamente la API REST del backend.
 
-| \cellcolor{focmid}\color{white}\textbf{Aspecto} | \cellcolor{focmid}\color{white}\textbf{Backend} | \cellcolor{focmid}\color{white}\textbf{Frontend} |
+| \focheadcell{Aspecto} | \focheadcell{Backend} | \focheadcell{Frontend} |
 | :-------------------- | :----------------------------------------- | :------------------------------ |
 | Framework             | NestJS 11                                  | Nuxt 4 / Vue 3                  |
 | Puerto local habitual | 3001                                       | 3000                            |
@@ -138,35 +138,30 @@ Los contratos siguientes se extrajeron de controladores y DTOs del repositorio
 
 **Autenticación**
 
-\rowcolors{2}{foctableroweven}{foctablerowodd}
 
-| \cellcolor{focmid}\color{white}\textbf{Endpoint} | \cellcolor{focmid}\color{white}\textbf{Seguridad} | \cellcolor{focmid}\color{white}\textbf{Resumen funcional} |
+| \focheadcell{Endpoint} | \focheadcell{Seguridad} | \focheadcell{Resumen funcional} |
 | :-- | :-- | :-- |
 | POST /api/v1/auth/register | Pública | Alta usuario y devuelve mensaje de verificación |
 | POST /api/v1/auth/login | Pública | Recibe credenciales y devuelve token + cookie refresh |
 | POST /api/v1/auth/refresh | Cookie refresh válida | Emite nuevo access token y rota cookie |
 | POST /api/v1/auth/logout | JWT + cookie refresh | Revoca refresh token y limpia cookie (204) |
 
-\rowcolors{2}{}{}
 
 **Eventos y catálogo**
 
-\rowcolors{2}{foctableroweven}{foctablerowodd}
 
-| \cellcolor{focmid}\color{white}\textbf{Endpoint} | \cellcolor{focmid}\color{white}\textbf{Seguridad} | \cellcolor{focmid}\color{white}\textbf{Resumen funcional} |
+| \focheadcell{Endpoint} | \focheadcell{Seguridad} | \focheadcell{Resumen funcional} |
 | :-- | :-- | :-- |
 | GET /api/v1/events | Pública | Lista eventos con paginación y filtros |
 | POST /api/v1/events | JWT + rol ADMIN/CREATOR | Crea evento |
 | POST /api/v1/events/:id/publish | JWT + rol ADMIN/CREATOR | Publica evento existente |
 | POST /api/v1/events/:eventId/ticket-types | JWT + rol ADMIN/CREATOR | Crea tipo de ticket para un evento |
 
-\rowcolors{2}{}{}
 
 **Órdenes, tickets y pagos**
 
-\rowcolors{2}{foctableroweven}{foctablerowodd}
 
-| \cellcolor{focmid}\color{white}\textbf{Endpoint} | \cellcolor{focmid}\color{white}\textbf{Seguridad} | \cellcolor{focmid}\color{white}\textbf{Resumen funcional} |
+| \focheadcell{Endpoint} | \focheadcell{Seguridad} | \focheadcell{Resumen funcional} |
 | :-- | :-- | :-- |
 | POST /api/v1/orders | JWT usuario autenticado | Crea orden y retorna checkoutUrl cuando aplica |
 | GET /api/v1/orders/my | JWT usuario autenticado | Lista órdenes del comprador |
@@ -174,7 +169,6 @@ Los contratos siguientes se extrajeron de controladores y DTOs del repositorio
 | POST /api/v1/tickets/validate | JWT + rol ADMIN/VALIDATOR | Valida ticket por hash y registra trazabilidad |
 | POST /api/v1/webhooks/stripe | Firma stripe-signature válida | Procesa evento de pago/reembolso |
 
-\rowcolors{2}{}{}
 
 **Cobertura de flujo (backend vs frontend).**
 
@@ -193,9 +187,8 @@ El esquema Prisma (`backend/prisma/schema.prisma`) se organiza en dos bloques:
 
 **Relaciones principales verificables**
 
-\rowcolors{2}{foctableroweven}{foctablerowodd}
 
-| \cellcolor{focmid}\color{white}\textbf{Relación} | \cellcolor{focmid}\color{white}\textbf{Cardinalidad} |
+| \focheadcell{Relación} | \focheadcell{Cardinalidad} |
 |:--|:--:|
 | User (creator) con Event | 1:N |
 | Event con TicketType, Order y Ticket | 1:N |
@@ -206,7 +199,6 @@ El esquema Prisma (`backend/prisma/schema.prisma`) se organiza en dos bloques:
 | Event con Artist mediante EventArtist | N:M |
 | Event con Genre y Artist con Genre | N:M |
 
-\rowcolors{2}{}{}
 
 **Constraints e índices relevantes (extracto)**
 

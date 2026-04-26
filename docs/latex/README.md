@@ -44,16 +44,17 @@ Salida esperada: `build/memoria.pdf`.
 ## Cómo extender tooling
 
 1. **Cambios de formato visual**
-   - Editar `template.tex`.
+    - Editar `template.tex`.
+    - Para tablas Markdown, usar `\focheadcell{...}` en los encabezados y evitar LaTeX crudo repetido.
 2. **Cambios de metadatos o defaults de Pandoc**
-   - Editar `metadata.yml`.
+    - Editar `metadata.yml`.
 3. **Nuevos capítulos**
-   - Agregar archivo en `src/` con prefijo numérico (`05-...md`) para mantener orden.
+    - Agregar archivo en `src/` con prefijo numérico (`05-...md`) para mantener orden.
 4. **Nuevos targets**
-   - Agregar target en `Makefile` y, si aplica, función en `build.sh`.
+    - Agregar target en `Makefile` y, si aplica, función en `build.sh`.
 
 ## Convenciones
 
 - No mezclar documentación general del proyecto aquí; eso vive en `docs/markdown/`.
 - `build/` contiene artefactos generados, no fuente documental.
-- No ejecutar builds en CI/pipeline sin validar dependencias de LaTeX en el entorno.
+- El estilo de tablas debe vivir en `template.tex`; los `.md` solo declaran contenido y usan helpers.

@@ -4,9 +4,8 @@
 
 ### Identificación de riesgos
 
-\rowcolors{2}{foctableroweven}{foctablerowodd}
 
-| \cellcolor{focmid}\color{white}\textbf{ID} | \cellcolor{focmid}\color{white}\textbf{Riesgo} | \cellcolor{focmid}\color{white}\textbf{Probabilidad} | \cellcolor{focmid}\color{white}\textbf{Impacto} |
+| \focheadcell{ID} | \focheadcell{Riesgo} | \focheadcell{Probabilidad} | \focheadcell{Impacto} |
 |:--:|:--|:--:|:--:|
 | R01 | Desalineación entre funcionalidades backend y frontend | Media | Alto |
 | R02 | Errores en flujos de pago/webhook con efectos en órdenes y tickets | Media | Alto |
@@ -14,7 +13,6 @@
 | R04 | Degradación bajo concurrencia en compra de tickets | Media | Alto |
 | R05 | Desactualización documental respecto al código real | Alta | Medio |
 
-\rowcolors{2}{}{}
 
 ### Plan de prevención y mitigación
 

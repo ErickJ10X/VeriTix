@@ -40,9 +40,8 @@ scanner QR no está integrado en UI en el estado actual.
 > Nota metodológica: en esta auditoría NO se ejecutaron suites. El estado refleja evidencia en
 > código y scripts, no resultado de ejecución en tiempo real.
 
-\rowcolors{2}{foctableroweven}{foctablerowodd}
 
-| \cellcolor{focmid}\color{white}\textbf{ID} | \cellcolor{focmid}\color{white}\textbf{Evidencia (resumen)} | \cellcolor{focmid}\color{white}\textbf{Estado} |
+| \focheadcell{ID} | \focheadcell{Evidencia (resumen)} | \focheadcell{Estado} |
 |:--:|:--|:--:|
 | T01 | Unitaria backend: backend/src/.../tickets.generator.spec.ts | Disponible |
 | T02 | Unitaria backend: backend/src/.../tickets.service.spec.ts | Disponible |
@@ -57,13 +56,11 @@ scanner QR no está integrado en UI en el estado actual.
 | T11 | Ticket PDF UI: flujo frontend no implementado | Pendiente |
 | T12 | Scanner QR UI: pantalla/flujo final no integrado | Pendiente |
 
-\rowcolors{2}{}{}
 
 ## Evaluación de cumplimiento de objetivos
 
-\rowcolors{2}{foctableroweven}{foctablerowodd}
 
-| \cellcolor{focmid}\color{white}\textbf{Requisito} | \cellcolor{focmid}\color{white}\textbf{Verificación (resumen)} | \cellcolor{focmid}\color{white}\textbf{Estado} |
+| \focheadcell{Requisito} | \focheadcell{Verificación (resumen)} | \focheadcell{Estado} |
 |:--|:--|:--:|
 | OBJ-01 Gestión de eventos | CRUD y administración disponibles | Cumplido |
 | OBJ-02 Seguridad de tickets | Hash único + validación backend | Cumplido (backend) |
@@ -76,7 +73,6 @@ scanner QR no está integrado en UI en el estado actual.
 | OBJ-09 Prueba bajo carga | Scripts/suites declarados | Disponible (sin ejecución en auditoría) |
 | OBJ-10 Consistencia doc-código | Documentación alineada a estado real | Mejorada |
 
-\rowcolors{2}{}{}
 
 ## Soporte y mantenimiento
 
