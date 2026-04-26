@@ -58,3 +58,4 @@ Salida esperada: `build/memoria.pdf`.
 - No mezclar documentación general del proyecto aquí; eso vive en `docs/markdown/`.
 - `build/` contiene artefactos generados, no fuente documental.
 - El estilo de tablas debe vivir en `template.tex`; los `.md` solo declaran contenido y usan helpers.
+- El zebra striping está centralizado en `template.tex` y aplica a `tabular`, `tabularx` y `longtable`.

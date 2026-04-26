@@ -123,7 +123,9 @@ $if(linestretch)$\setstretch{$linestretch$}$endif$
 \AtEndEnvironment{tabular}{\focresettablestyle}%
 \AtBeginEnvironment{tabularx}{\focapplytablestyle}%
 \AtEndEnvironment{tabularx}{\focresettablestyle}%
-% longtable no usa zebra para evitar artefactos visuales (filas fantasma)
+\AtBeginEnvironment{longtable}{\focapplytablestyle}%
+% longtable no usa reset al final porque colortbl/longtable disparan \noalign fuera de la alineación
+% Zebra activa también en longtable; el encabezado sigue viniendo desde Markdown
 
 % ── Listas ──────────────────────────────────────────────────
 \usepackage{enumitem}
@@ -223,19 +225,24 @@ $if(linestretch)$\setstretch{$linestretch$}$endif$
 
 % ── Encabezado y pie de página ──────────────────────────────
 \clearpairofpagestyles
-\ohead{\small\color{focgray}\sffamily FOMENTO OCUPACIONAL FOC \textregistered}
+\setlength{\headheight}{18pt}
+\newcommand{\focpagebrand}{\makebox[\textwidth][r]{\small\color{focgray}\sffamily FOMENTO OCUPACIONAL FOC \textregistered}}
+\newcommand{\focpagefooter}{\makebox[\textwidth][r]{\footnotesize\color{focgray}\sffamily Página\hspace{0.35em}{\color{focblue}\thepage}}}
+\ohead{\focpagebrand}
+\ohead*{\focpagebrand}
 \ihead{}
-\ofoot{\small\color{focblue}\bfseries\sffamily PÁGINA \pagemark}
+\ihead*{}
+\ofoot{\focpagefooter}
 \ifoot{\small\color{focgray}\sffamily $if(footer-text)$$footer-text$$else$$for(author)$$author$$sep$ -- $endfor$$endif$}
 % También aplicar footer en páginas de estilo "plain" (inicio de capítulos, ToC, etc.)
-\ofoot*{\small\color{focblue}\bfseries\sffamily PÁGINA \pagemark}
+\ofoot*{\focpagefooter}
 \ifoot*{\small\color{focgray}\sffamily $if(footer-text)$$footer-text$$else$$for(author)$$author$$sep$ -- $endfor$$endif$}
 \KOMAoptions{headsepline=0.4pt}
 \addtokomafont{headsepline}{\color{focgray}}
 \pagestyle{scrheadings}
 
-% Capítulos sin header pero sí footer
-\renewcommand*{\chapterpagestyle}{plain.scrheadings}
+% Capítulos con el mismo header/footer que el resto del documento
+\renewcommand*{\chapterpagestyle}{scrheadings}
 
 % ── Índice ──────────────────────────────────────────────────
 \usepackage{tocloft}
@@ -283,10 +290,14 @@ $if(linestretch)$\setstretch{$linestretch$}$endif$
           \includegraphics[height=2.4cm]{assets/foc-logo.png}
       };
 
+      \draw[white, line width=0.8pt]
+        ($$(current page.north west)+(3.7cm,-0.28cm)$$) --
+        ($$(current page.north west)+(3.7cm,-1.6cm)$$);
+
       \node[anchor=north west, inner sep=0pt]
         at ($$(current page.north west)+(4.15cm,-0.08cm)$$) {
           \parbox[c][2.4cm][c]{8.8cm}{%
-            \color{white}\bfseries\sffamily\fontsize{17}{17}\selectfont Instituto Fomento Ocupacional
+            \color{white}\bfseries\sffamily\fontsize{17}{17}\selectfont \textsc{Instituto Fomento Ocupacional}
           }
       };
 

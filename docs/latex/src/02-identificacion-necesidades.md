@@ -121,11 +121,15 @@ exclusivamente la API REST del backend.
 
 #### Módulos backend (estado verificable)
 
-- `auth`, `users`
-- `events` (incluye submódulos `ticket-types` y `event-artists`)
-- `orders`, `tickets`, `webhooks`
-- `venues`, `artists`, `genres`, `concert-formats`
-- `notifications`, `queues`, `cache`
+La implementación backend se organiza en dominios funcionales claramente delimitados:
+
+| \focheadcell{Dominio funcional} | \focheadcell{Módulos} |
+| :------------------------------ | :-------------------- |
+| Identidad y acceso               | `auth`, `users` |
+| Catálogo y eventos               | `events` (incluye `ticket-types` y `event-artists`) |
+| Transacción y emisión            | `orders`, `tickets`, `webhooks` |
+| Infraestructura de dominio       | `venues`, `artists`, `genres`, `concert-formats` |
+| Soporte operativo                | `notifications`, `queues`, `cache` |
 
 #### API real del sistema
 
