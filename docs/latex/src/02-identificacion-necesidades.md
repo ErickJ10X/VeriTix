@@ -244,24 +244,6 @@ Para mantener legibilidad, el diagrama ER se presenta en vistas por dominio gene
 \includegraphics[width=\textwidth,trim=15mm 10mm 15mm 5mm,clip]{assets/er-core-transaccional.pdf}
 \end{center}
 
-**Dominio transaccional (ventas, órdenes, tickets y pagos)**
-
-\begin{center}
-includegraphics[width=\textwidth,trim=15mm 10mm 15mm 5mm,clip]{assets/er-core-transaccional.pdf}
-\end{center}
-
-**Dominio transaccional (ventas, órdenes, tickets y pagos)**
-
-\begin{center}
-includegraphics[width=\textwidth]{assets/er-core-transaccional.pdf}
-\end{center}
-
-**Dominio transaccional (ventas, órdenes, tickets y pagos)**
-
-\begin{center}
-\includegraphics[width=\textwidth,height=0.9\textheight,keepaspectratio]{assets/er-core-transaccional.pdf}
-\end{center}
-
 #### Seguridad y control de integridad
 
 - Access token JWT + refresh token rotativo.
