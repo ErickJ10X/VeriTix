@@ -10,7 +10,7 @@
   $if(papersize)$$papersize$paper,$endif$
   twoside=false,
   parskip=half               % espacio entre párrafos sin sangría (estilo técnico)
-]{scrreprt}                  % KOMA-Script: mejor base para docs académicos que 'report'
+]{$if(documentclass)$$documentclass$$else$scrreprt$endif$}                  % KOMA-Script: mejor base para docs académicos que 'report'
 
 % ── Codificación y tipografía ───────────────────────────────
 \usepackage{fontspec}        % fuentes OpenType/TrueType con XeLaTeX
@@ -18,14 +18,34 @@
 \setdefaultlanguage[variant=spanish]{spanish}
 \frenchspacing               % espaciado uniforme tras punto (norma española)
 
+\defaultfontfeatures{Ligatures=TeX}
+
 $if(mainfont)$
-  \setmainfont{$mainfont$}
+  \IfFontExistsTF{$mainfont$}{
+    \setmainfont[Numbers=OldStyle]{$mainfont$}
+  }{
+    \setmainfont[Numbers=OldStyle]{TeX Gyre Pagella}
+  }
+$else$
+  \setmainfont[Numbers=OldStyle]{TeX Gyre Pagella}
 $endif$
 $if(sansfont)$
-  \setsansfont{$sansfont$}
+  \IfFontExistsTF{$sansfont$}{
+    \setsansfont[Scale=MatchLowercase]{$sansfont$}
+  }{
+    \setsansfont[Scale=MatchLowercase]{TeX Gyre Heros}
+  }
+$else$
+  \setsansfont[Scale=MatchLowercase]{TeX Gyre Heros}
 $endif$
 $if(monofont)$
-  \setmonofont[Scale=0.85]{$monofont$}
+  \IfFontExistsTF{$monofont$}{
+    \setmonofont[Scale=MatchLowercase]{$monofont$}
+  }{
+    \setmonofont[Scale=MatchLowercase]{TeX Gyre Cursor}
+  }
+$else$
+  \setmonofont[Scale=MatchLowercase]{TeX Gyre Cursor}
 $endif$
 
 % ── Geometría ───────────────────────────────────────────────
@@ -33,8 +53,8 @@ $endif$
 
 % ── Colores institucionales FOC ─────────────────────────────
 \usepackage{xcolor}
-\definecolor{focblue}{HTML}{1B3A6B}    % azul oscuro FOC
-\definecolor{focmid}{HTML}{2E75B6}     % azul medio (subtítulos, links)
+\definecolor{focblue}{HTML}{1F497D}    % azul base institucional
+\definecolor{focmid}{HTML}{1F497D}     % unificado al azul base
 \definecolor{foclight}{HTML}{BDD7EE}   % azul claro (filas alternas tablas)
 \definecolor{focgray}{HTML}{595959}    % gris oscuro (header página)
 \definecolor{focbg}{HTML}{F5F5F5}      % fondo bloques de código
@@ -42,6 +62,10 @@ $endif$
 % ── Interlineado ────────────────────────────────────────────
 \usepackage{setspace}
 $if(linestretch)$\setstretch{$linestretch$}$endif$
+\setlength{\emergencystretch}{2em} % evita overfulls y cortes feos de línea
+\clubpenalty=10000               % evita líneas huérfanas al inicio de página
+\widowpenalty=10000              % evita líneas viudas al final de párrafo
+\displaywidowpenalty=10000
 
 % ── Microtipoografía ────────────────────────────────────────
 \usepackage[final]{microtype}  % con XeLaTeX solo actúa sobre tracking
@@ -58,6 +82,22 @@ $if(linestretch)$\setstretch{$linestretch$}$endif$
 \usepackage{array}
 \usepackage{tabularx}
 \usepackage{colortbl}        % colores en celdas
+\usepackage{etoolbox}        % hooks de entorno
+\setlength{\LTleft}{0pt}
+\setlength{\LTright}{0pt}
+
+% Ajustes visuales de tablas académicas (legibilidad)
+\definecolor{foctablerowodd}{HTML}{FFFFFF}
+\definecolor{foctableroweven}{HTML}{EAF2FC}
+\definecolor{foctableline}{HTML}{BFD0E3}
+
+\setlength{\heavyrulewidth}{0.09em}
+\setlength{\lightrulewidth}{0.05em}
+\setlength{\cmidrulewidth}{0.04em}
+\setlength{\aboverulesep}{0.45ex}
+\setlength{\belowrulesep}{0.35ex}
+\renewcommand{\arraystretch}{1.17}
+\setlength{\tabcolsep}{5.5pt}
 
 % Columnas con alineación y ancho definido
 \newcolumntype{L}[1]{>{\raggedright\arraybackslash}p{#1}}
@@ -66,6 +106,24 @@ $if(linestretch)$\setstretch{$linestretch$}$endif$
 
 % Estilo de tablas: header azul oscuro texto blanco
 \newcommand{\foctheadrow}{\rowcolor{focblue}\color{white}\bfseries\sffamily}
+\newcommand{\foctophead}{\toprule\foctheadrow}
+
+\newcommand{\focapplytablestyle}{%
+  \arrayrulecolor{foctableline}%
+  \rowcolors{2}{foctableroweven}{foctablerowodd}%
+}
+
+\newcommand{\focresettablestyle}{%
+  \rowcolors{2}{}{}%
+  \arrayrulecolor{black}%
+}
+
+\AtBeginEnvironment{tabular}{\focapplytablestyle}
+\AtEndEnvironment{tabular}{\focresettablestyle}
+\AtBeginEnvironment{tabularx}{\focapplytablestyle}
+\AtEndEnvironment{tabularx}{\focresettablestyle}
+\AtBeginEnvironment{longtable}{\focapplytablestyle}
+\AtEndEnvironment{longtable}{\focresettablestyle}
 
 % ── Listas ──────────────────────────────────────────────────
 \usepackage{enumitem}
@@ -76,6 +134,7 @@ $if(linestretch)$\setstretch{$linestretch$}$endif$
 % ── Gráficos y figuras ──────────────────────────────────────
 \usepackage{graphicx}
 \usepackage{float}
+\usepackage{pdflscape}
 \usepackage{caption}
 \captionsetup{
   font=small,
@@ -124,6 +183,7 @@ $if(linestretch)$\setstretch{$linestretch$}$endif$
 
 % ── Títulos de sección — KOMA-Script ────────────────────────
 \usepackage{scrlayer-scrpage}  % encabezados KOMA
+\usepackage{needspace}         % evita títulos al final de página sin contenido
 
 % Personalización de títulos con scrreprt
 \addtokomafont{chapter}{\color{focblue}\sffamily}
@@ -144,24 +204,32 @@ $if(linestretch)$\setstretch{$linestretch$}$endif$
 \titleformat{\section}[block]
   {\color{focmid}\bfseries\large\sffamily}
   {\thesection.}{0.5em}{}
-\titlespacing*{\section}{0pt}{1em}{0.5em}
+\titlespacing*{\section}{0pt}{1.2em}{0.65em}
 
 \titleformat{\subsection}[block]
   {\color{focmid}\bfseries\normalsize\sffamily}
   {\thesubsection.}{0.5em}{}
-\titlespacing*{\subsection}{0pt}{0.8em}{0.3em}
+\titlespacing*{\subsection}{0pt}{0.95em}{0.45em}
 
 \titleformat{\subsubsection}[block]
   {\bfseries\normalsize\sffamily}
   {}{0pt}{}
-\titlespacing*{\subsubsection}{0pt}{0.6em}{0.2em}
+\titlespacing*{\subsubsection}{0pt}{0.8em}{0.35em}
+
+% Evita encabezados "colgados" al pie de página (política más estricta)
+\preto\section{\Needspace{12\baselineskip}}
+\preto\subsection{\Needspace{10\baselineskip}}
+\preto\subsubsection{\Needspace{7\baselineskip}}
 
 % ── Encabezado y pie de página ──────────────────────────────
 \clearpairofpagestyles
 \ohead{\small\color{focgray}\sffamily FOMENTO OCUPACIONAL FOC \textregistered}
 \ihead{}
 \ofoot{\small\color{focblue}\bfseries\sffamily PÁGINA \pagemark}
-\ifoot{\small\color{focgray}\sffamily Erick Quispe -- Juan Rangel \textbar{} DAW/DAM}
+\ifoot{\small\color{focgray}\sffamily $if(footer-text)$$footer-text$$else$$for(author)$$author$$sep$ -- $endfor$$endif$}
+% También aplicar footer en páginas de estilo "plain" (inicio de capítulos, ToC, etc.)
+\ofoot*{\small\color{focblue}\bfseries\sffamily PÁGINA \pagemark}
+\ifoot*{\small\color{focgray}\sffamily $if(footer-text)$$footer-text$$else$$for(author)$$author$$sep$ -- $endfor$$endif$}
 \KOMAoptions{headsepline=0.4pt}
 \addtokomafont{headsepline}{\color{focgray}}
 \pagestyle{scrheadings}
@@ -186,15 +254,10 @@ $if(linestretch)$\setstretch{$linestretch$}$endif$
 % ── hyperref — SIEMPRE AL FINAL del preámbulo ───────────────
 \usepackage{hyperref}
 \hypersetup{
-  colorlinks  = true,
-  linkcolor   = focblue,
-  urlcolor    = focmid,
-  citecolor   = focmid,
-  pdfauthor   = {Erick Quispe -- Juan Rangel},
-  pdftitle    = {VeriTix -- Proyecto Fin de Ciclo},
-  pdfsubject  = {DAM/DAW -- Fomento Ocupacional FOC},
-  pdfkeywords = {VeriTix, tickets, eventos, NestJS, Nuxt},
-  pdfcreator  = {XeLaTeX + Pandoc},
+  colorlinks  = $if(colorlinks)$$colorlinks$$else$true$endif$,
+  linkcolor   = $if(linkcolor)$$linkcolor$$else$focblue$endif$,
+  urlcolor    = $if(urlcolor)$$urlcolor$$else$focmid$endif$,
+  citecolor   = $if(citecolor)$$citecolor$$else$focmid$endif$,
 }
 \usepackage{bookmark}        % mejor manejo de bookmarks PDF (carga después de hyperref)
 
@@ -209,70 +272,69 @@ $if(linestretch)$\setstretch{$linestretch$}$endif$
       % Fondo blanco completo
       \fill[white] (current page.south west) rectangle (current page.north east);
 
-      % ── Ondas FOC: U suave, tres capas bien diferenciadas ──
-      % Extremos altos, handles bajos → curva real hacia abajo en el centro.
-      % Cada capa tiene sus extremos y handles calibrados independientemente.
-
-      % Capa 1: azul oscuro — la que más se ve, extremos ~9cm, baja al centro a ~5cm
+      % ── Barra decorativa superior (azul institucional) ──
       \fill[focblue]
-        ($$(current page.south west)+(0,9)$$)
-        .. controls
-           ($$(current page.south west)+(6,5)$$) and
-           ($$(current page.south east)+(-6,5)$$) ..
-           ($$(current page.south east)+(0,9)$$)
-        -- (current page.south east)
-        -- (current page.south west)
-        -- cycle;
+        (current page.north west) rectangle
+        ($$(current page.north east)-(0,1.5cm)$$);
 
-      % Capa 2: azul medio — extremos ~7cm, baja al centro a ~3.5cm
-      \fill[focmid]
-        ($$(current page.south west)+(0,7)$$)
-        .. controls
-           ($$(current page.south west)+(6,3.5)$$) and
-           ($$(current page.south east)+(-6,3.5)$$) ..
-           ($$(current page.south east)+(0,7)$$)
-        -- (current page.south east)
-        -- (current page.south west)
-        -- cycle;
-
-      % Capa 3: azul claro — extremos ~5cm, baja al centro a ~2cm
-      \fill[foclight]
-        ($$(current page.south west)+(0,5)$$)
-        .. controls
-           ($$(current page.south west)+(6,2)$$) and
-           ($$(current page.south east)+(-6,2)$$) ..
-           ($$(current page.south east)+(0,5)$$)
-        -- (current page.south east)
-        -- (current page.south west)
-        -- cycle;
-
-      % ── Logo FOC — arriba izquierda, más grande ──
+      % ── Logo stylizado — dentro de la barra azul ──
       \node[anchor=north west, inner sep=0pt]
-        at ($$(current page.north west)+(1.5cm,-1.2cm)$$) {
-          \includegraphics[width=5cm]{assets/foc-logo.png}
-        };
+        at ($$(current page.north west)+(1cm,-0.75cm)$$) {
+          \color{white}\bfseries\sffamily\fontsize{16}{16}\selectfont Instituto Fomento Ocupacional
+      };
 
-      % ── "PROYECTO FIN DE CICLO / DAM/DAW" — derecha, alineado al borde inferior del logo ──
-      \node[anchor=east, inner sep=0pt, align=right]
-        at ($$(current page.north east)+(-1.5cm,-4.8cm)$$) {
-          \color{focblue}\bfseries\Large\sffamily PROYECTO FIN DE CICLO\\[0.4em]
-          \color{focblue}\bfseries\Large\sffamily DAM/DAW
-        };
+      % ── Línea divisoria sutil ──
+      \draw[focblue, line width=0.5pt]
+        ($$(current page.north west)+(0,1.5cm)$$) --
+        ($$(current page.north east)+(0,1.5cm)$$);
 
-      % ── Título "VeriTix" — centrado, mitad superior ──
+      % ── Título "VeriTix" — centrado,parte superior ──
       \node[anchor=center]
-        at ($$(current page.center)+(0,4cm)$$) {
-          \color{focblue}\fontsize{64}{68}\selectfont\bfseries\sffamily VeriTix
-        };
+        at ($$(current page.center)+(0,3cm)$$) {
+          \color{focblue}\fontsize{72}{76}\selectfont\bfseries\sffamily VeriTix
+      };
 
-      % ── Fase y autores — azul oscuro, ENCIMA de las ondas en zona blanca ──
-      \node[anchor=center, inner sep=0pt, align=center]
-        at ($$(current page.south)+(0,11cm)$$) {
-          \color{focblue}\bfseries\LARGE\sffamily
-          $if(phase)$$phase$$endif$\\[0.7em]
-          \color{focblue}\bfseries\LARGE\sffamily
-          $for(author)$$author$$sep$ -- $endfor$
-        };
+      % ── Subtítulo — debajo del título ──
+      \node[anchor=center, inner sep=0pt]
+        at ($$(current page.center)+(0,0.5cm)$$) {
+          \color{focblue}\fontsize{18}{20}\selectfont\sffamily
+          Sistema de Gestión de Eventos y Tickets Digitales
+      };
+
+      % ── Línea horizontal decorativa ──
+      \draw[focblue, line width=1pt]
+        ($$(current page.center)+(-5cm, -1.5cm)$$) --
+        ($$(current page.center)+(5cm, -1.5cm)$$);
+
+      % ── Fase del proyecto ──
+      \node[anchor=center, inner sep=0pt]
+        at ($$(current page.center)+(0,-3cm)$$) {
+          \color{focblue}\bfseries\sffamily\Large
+          $if(phase)$$phase$$endif$
+      };
+
+      % ── Autores ──
+      \node[anchor=center, inner sep=0pt]
+        at ($$(current page.center)+(0,-5cm)$$) {
+          \color{focblue}\sffamily\large
+          $for(author)$$author$$sep$ ~~·~~ $endfor$
+      };
+
+      % ── Ciclo y fecha — esquina inferior derecha ──
+      \node[anchor=south east, inner sep=0pt, align=right]
+        at ($$(current page.south east)+(-2cm,2cm)$$) {
+          \color{focblue}\bfseries\sffamily\large
+          DAM/DAW\\[0.3em]
+          \color{focblue}\sffamily\normalsize
+          2026
+      };
+
+      % ── Footer institucional — esquina inferior izquierda ──
+      \node[anchor=south west, inner sep=0pt]
+        at ($$(current page.south west)+(2cm,2cm)$$) {
+          \color{focblue}\sffamily\small
+          Proyecto Fin de Ciclo
+      };
 
     \end{tikzpicture}
 
@@ -325,6 +387,7 @@ $if(linestretch)$\setstretch{$linestretch$}$endif$
 % Índice
 {
   \hypersetup{linkcolor=focblue}
+  \setcounter{tocdepth}{$if(toc-depth)$$toc-depth$$else$3$endif$}
   \tableofcontents
   \newpage
 }

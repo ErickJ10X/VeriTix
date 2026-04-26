@@ -26,6 +26,7 @@ Desde `docs/latex/`:
 ```bash
 make build
 make watch
+make erd
 make clean
 ```
 
@@ -34,6 +35,7 @@ Alternativa directa:
 ```bash
 ./build.sh build
 ./build.sh watch
+./build.sh erd
 ./build.sh clean
 ```
 

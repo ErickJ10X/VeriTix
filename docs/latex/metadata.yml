@@ -11,7 +11,7 @@ date: "2026"
 lang: es-ES
 
 # Pandoc PDF settings
-documentclass: report
+documentclass: scrreprt
 papersize: a4
 fontsize: 11pt
 linestretch: 1.15
@@ -25,17 +25,19 @@ geometry:
 # Table of contents
 toc: true
 toc-depth: 3
-numbersections: true
 number-sections: true
 
 # Font (XeLaTeX)
-mainfont: "Liberation Serif"
-sansfont: "Liberation Sans"
-monofont: "Liberation Mono"
+mainfont: "TeX Gyre Pagella"
+sansfont: "TeX Gyre Heros"
+monofont: "TeX Gyre Cursor"
 
 # Hyperlinks
 colorlinks: true
 linkcolor: "focblue"
 urlcolor: "focblue"
 citecolor: "focblue"
+
+# Footer institucional/autores
+footer-text: "Erick Quispe -- Juan Rangel | DAW/DAM"
 ---
