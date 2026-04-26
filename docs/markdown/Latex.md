@@ -1,5 +1,7 @@
 # Flujo para pasar doc2.md a documentación LaTeX
 
+> ⚠️ Archivo histórico (transcripción). Puede contener rutas obsoletas previas a la reorganización actual de `docs/`.
+
 **Session ID:** ses_23ae26249ffeF8V98Wv7tw37p8
 **Created:** 4/25/2026, 4:49:05 PM
 **Updated:** 4/25/2026, 4:52:56 PM
@@ -456,4 +458,3 @@ Para tu proyecto de instituto:
 Es más mantenible, más estable, y más fácil de corregir rápido antes de entregar.
 
 ---
-

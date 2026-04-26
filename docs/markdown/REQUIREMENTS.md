@@ -1,11 +1,11 @@
 # REQUIREMENTS — Implementado vs pendiente
 
-Base de alcance: `docs/tfg.md`.
+Base de alcance: `docs/markdown/tfg.md`.
 
 ## Criterio
 
 - **Implementado**: existe evidencia en código ejecutable (backend/frontend).
-- **Pendiente**: solo se marca si el punto está explícito en `docs/tfg.md`.
+- **Pendiente**: solo se marca si el punto está explícito en `docs/markdown/tfg.md`.
 
 ## Requerimientos funcionales del TFG
 
