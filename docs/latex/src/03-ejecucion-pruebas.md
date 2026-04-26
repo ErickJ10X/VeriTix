@@ -16,29 +16,87 @@
 
 ### Plan de prevención y mitigación
 
-- **R01:** mantener matriz de estado funcional por capa (backend/frontend) y actualizarla en cada hito.
-- **R02:** pruebas de integración y e2e específicas de órdenes, tickets y webhooks.
-- **R03:** validación estricta de entorno, revisión de permisos y rotación de credenciales.
-- **R04:** mantener y ampliar suites de concurrencia (`test:concurrency`) y stress.
-- **R05:** auditorías documentales periódicas con trazabilidad a archivos de código.
+| \focheadcell{Riesgo} | \focheadcell{Mitigación} |
+| :------------------- | :----------------------- |
+| R01 | Mantener matriz de estado funcional por capa (backend/frontend) y actualizarla en cada hito. |
+| R02 | Pruebas de integración y e2e específicas de órdenes, tickets y webhooks. |
+| R03 | Validación estricta de entorno, revisión de permisos y rotación de credenciales. |
+| R04 | Mantener y ampliar suites de concurrencia (`test:concurrency`) y stress. |
+| R05 | Auditorías documentales periódicas con trazabilidad a archivos de código. |
 
 ## Documentación de ejecución
 
 ### Necesidades legales
 
-En el contexto académico no se requieren licencias de actividad física. Para explotación comercial
-sí aplica cumplimiento en protección de datos, comercio electrónico y obligaciones fiscales.
+En el contexto académico no se requieren licencias de actividad. Para explotación comercial sí
+aplica cumplimiento en protección de datos, comercio electrónico y obligaciones fiscales.
 
 ### Ejecución del proyecto (estado verificable)
 
 **Ficheros de configuración relevantes:**
 
-- **`backend/.env.example`:** variables necesarias del backend (`DATABASE_URL`, secrets JWT,
+- `backend/.env.example`: variables necesarias del backend (`DATABASE_URL`, secrets JWT,
   Stripe, Resend, Redis, CORS, etc.).
-- **`backend/src/config/env.validation.ts`:** validación Joi de variables críticas en arranque.
-- **`backend/prisma/schema.prisma`:** modelo de datos y restricciones.
-- **`backend/docker-compose.yml` y `frontend/docker-compose.yml`:** configuración de contenedores
+- `backend/src/config/env.validation.ts`: validación Joi de variables críticas en arranque.
+- `backend/prisma/schema.prisma`: modelo de datos y restricciones.
+- `backend/docker-compose.yml` y `frontend/docker-compose.yml`: configuración de contenedores
   por paquete. (No existe un `docker-compose.yml` único en la raíz).
+
+### Contenerización y despliegue operativo
+
+La solución está containerizada y preparada para operarse en una VPS con servicios aislados.
+El backend levanta PostgreSQL, Redis y la API en contenedores separados; el frontend usa un
+`Dockerfile` multi-stage con runtime no-root.
+
+**Frontend (Dockerfile multi-stage)**
+
+```dockerfile
+FROM oven/bun:1-alpine AS base
+WORKDIR /app
+
+FROM base AS deps
+COPY package.json bun.lock ./
+RUN bun install --frozen-lockfile
+
+FROM deps AS builder
+COPY . .
+RUN bun run build
+
+FROM oven/bun:1-alpine AS production
+WORKDIR /app
+ENV NODE_ENV=production
+ENV NITRO_HOST=0.0.0.0
+ENV NITRO_PORT=3000
+USER nuxt
+EXPOSE 3000
+CMD ["bun", ".output/server/index.mjs"]
+```
+
+**Backend (orquestación de servicios)**
+
+```yaml
+services:
+  postgres:
+    image: postgres:18-alpine
+    restart: unless-stopped
+    ports:
+      - '127.0.0.1:5432:5432'
+
+  redis:
+    image: redis:8-alpine
+    restart: unless-stopped
+    ports:
+      - '127.0.0.1:6379:6379'
+
+  backend:
+    build:
+      dockerfile: Dockerfile.dev
+    ports:
+      - '3001:3001'
+```
+
+Los fragmentos anteriores se muestran como código resaltado en LaTeX; no hace falta usar captura
+de pantalla para documentar este tipo de artefacto.
 
 **Aspectos técnicos confirmados:**
 
@@ -55,7 +113,8 @@ Estado de madurez documental en este punto:
 - **Manual de instalación consolidado:** parcial (hay documentación técnica dispersa).
 - **Manual de administración/operación:** parcial.
 
-Se recomienda consolidar estos tres manuales como entregables separados y versionados.
+Se recomienda consolidarlos como entregables separados y versionados, cubriendo compra, validación,
+despliegue y operación real del repositorio.
 
 ## Incidencias
 

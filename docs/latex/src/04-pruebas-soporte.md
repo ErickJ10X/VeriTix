@@ -3,7 +3,8 @@
 ## Documento de pruebas a realizar
 
 La estrategia de pruebas se estructura por niveles y distingue entre evidencia existente en
-repositorio y cobertura aún pendiente de integración funcional.
+repositorio, contratos del backend, esquema Prisma y cobertura aún pendiente de integración
+funcional en frontend.
 
 ### Trazabilidad con contratos API y modelo de datos
 

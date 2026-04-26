@@ -36,12 +36,14 @@ cumplimiento según el estado real del repositorio (abril de 2026).
 
 **Stack software real del proyecto**
 
-- **Backend:** NestJS 11, Prisma 7, PostgreSQL, Redis, BullMQ.
-- **Frontend:** Nuxt 4, Vue 3, Nuxt UI, Tailwind 4.
-- **Auth:** JWT + refresh token HTTP-only con rotación.
-- **Pagos:** Stripe Checkout + webhook (`/api/v1/webhooks/stripe`).
-- **Notificaciones:** Resend (emails) + colas BullMQ.
-- **Testing:** Jest, Supertest y suites de concurrencia.
+| \focheadcell{Capa / dominio} | \focheadcell{Tecnologías y mecanismos} |
+| :--------------------------- | :------------------------------------- |
+| Backend | NestJS 11, Prisma 7, PostgreSQL, Redis, BullMQ. |
+| Frontend | Nuxt 4, Vue 3, Nuxt UI, Tailwind 4. |
+| Auth | JWT + refresh token HTTP-only con rotación. |
+| Pagos | Stripe Checkout + webhook (`/api/v1/webhooks/stripe`). |
+| Notificaciones | Resend (emails) + colas BullMQ. |
+| Testing | Jest, Supertest y suites de concurrencia. |
 
 ### Especificar recursos materiales y personales
 
@@ -52,8 +54,10 @@ cumplimiento según el estado real del repositorio (abril de 2026).
 
 **Recursos personales**
 
-- Dos desarrolladores responsables de backend, frontend y base de datos.
-- Tutor de seguimiento técnico y validación académica.
+| \focheadcell{Rol} | \focheadcell{Responsabilidad} |
+| :--------------- | :---------------------------- |
+| Equipo de desarrollo | Backend, frontend y base de datos. |
+| Tutor | Seguimiento técnico y validación académica. |
 
 ### Asociación entre fases y recursos (materiales y humanos)
 
@@ -176,18 +180,19 @@ Los contratos siguientes se extrajeron de controladores y DTOs del repositorio
 
 **Cobertura de flujo (backend vs frontend).**
 
-- Backend: contratos de auth, eventos, órdenes, tickets y webhook Stripe implementados, con suites
-  de pruebas en `backend/test/` y `backend/src/**/*.spec.ts`.
-- Frontend: existe cobertura para autenticación, catálogo público de eventos y área administrativa;
-  los flujos de compra de órdenes, consumo de tickets del comprador y scanner/validación final en
-  UI permanecen parciales o pendientes (sin páginas dedicadas en `frontend/app/pages/`).
+| \focheadcell{Capa} | \focheadcell{Estado verificable} |
+| :---------------- | :------------------------------- |
+| Backend | Contratos de auth, eventos, órdenes, tickets y webhook Stripe implementados, con suites de pruebas en `backend/test/` y `backend/src/**/*.spec.ts`. |
+| Frontend | Cobertura para autenticación, catálogo público de eventos y área administrativa; los flujos de compra de órdenes, consumo de tickets del comprador y scanner/validación final en UI permanecen parciales o pendientes. |
 
 #### Modelo de datos y constraints
 
 El esquema Prisma (`backend/prisma/schema.prisma`) se organiza en dos bloques:
 
-- **Núcleo transaccional:** User, RefreshToken, Event, TicketType, Order, OrderItem, Ticket, Payment.
-- **Catálogos y soporte:** Venue, Artist, Genre, ConcertFormat, EventArtist.
+| \focheadcell{Bloque} | \focheadcell{Entidades} |
+| :------------------- | :---------------------- |
+| Núcleo transaccional | User, RefreshToken, Event, TicketType, Order, OrderItem, Ticket, Payment. |
+| Catálogos y soporte | Venue, Artist, Genre, ConcertFormat, EventArtist. |
 
 **Relaciones principales verificables**
 
@@ -206,23 +211,21 @@ El esquema Prisma (`backend/prisma/schema.prisma`) se organiza en dos bloques:
 
 **Constraints e índices relevantes (extracto)**
 
-- **Unicidad:** users.email, users.phone, tickets.hash, venues.slug, artists.slug,
-  genres.name/slug, concert_formats.name/slug, event_artists(event_id, artist_id).
-- **Integridad referencial (FK):** presente en las relaciones críticas (event_id, buyer_id,
-  order_id, etc.).
-- **Cascadas de borrado:** RefreshToken→User, EventArtist→Event, TicketType→Event,
-  OrderItem→Order, Ticket→Event.
-- **Índices de consulta:** events(status, eventDate), orders(buyerId, createdAt),
-  orders(eventId, status), tickets(buyerId, status), tickets(eventId, status).
-- **Enums de dominio:** Role, EventStatus, OrderStatus, TicketStatus, PaymentStatus.
+| \focheadcell{Tipo de restricción} | \focheadcell{Detalle} |
+| :------------------------------- | :-------------------- |
+| Unicidad | `users.email`, `users.phone`, `tickets.hash`, `venues.slug`, `artists.slug`, `genres.name/slug`, `concert_formats.name/slug`, `event_artists(event_id, artist_id)`. |
+| Integridad referencial (FK) | Presente en las relaciones críticas (`event_id`, `buyer_id`, `order_id`, etc.). |
+| Cascadas de borrado | `RefreshToken→User`, `EventArtist→Event`, `TicketType→Event`, `OrderItem→Order`, `Ticket→Event`. |
+| Índices de consulta | `events(status, eventDate)`, `orders(buyerId, createdAt)`, `orders(eventId, status)`, `tickets(buyerId, status)`, `tickets(eventId, status)`. |
+| Enums de dominio | `Role`, `EventStatus`, `OrderStatus`, `TicketStatus`, `PaymentStatus`. |
 
 **Limitaciones actuales del esquema (a considerar)**
 
-- No se observan CHECK constraints en BD para invariantes como:
-  availableQuantity >= 0, totalQuantity >= availableQuantity,
-  saleStartDate <= saleEndDate.
-- currency se modela como String (no enum/referencia); requiere validación estricta de ISO.
-- En algunas FKs no se declara onDelete explícito; conviene revisar políticas de borrado para producción.
+| \focheadcell{Limitación} | \focheadcell{Implicación} |
+| :----------------------- | :------------------------ |
+| Ausencia de CHECK constraints | No se observan restricciones como `availableQuantity >= 0`, `totalQuantity >= availableQuantity` o `saleStartDate <= saleEndDate`. |
+| `currency` como String | Requiere validación estricta de ISO. |
+| FKs sin `onDelete` explícito en algunos casos | Conviene revisar políticas de borrado para producción. |
 
 #### Diagrama entidad-relación (resumen)
 
@@ -231,29 +234,33 @@ Para mantener legibilidad, el diagrama ER se presenta en vistas por dominio gene
 **Vista general (overview)**
 
 \begin{center}
-\includegraphics[width=\textwidth,trim=20mm 10mm 20mm 5mm,clip]{assets/er-overview.pdf}
+\includegraphics[width=\textwidth,trim=10pt 492pt 10pt 10pt,clip]{assets/er-overview.pdf}
 \end{center}
 
-**Dominio transaccional (ventas, órdenes, tickets y pagos)**
-
+\Needspace{16\baselineskip}
+\par\noindent\textbf{Dominio transaccional (ventas, órdenes, tickets y pagos)}\par
 \begin{center}
-\includegraphics[width=\textwidth,trim=15mm 10mm 15mm 5mm,clip]{assets/er-core-transaccional.pdf}
+\includegraphics[width=\textwidth,trim=10pt 286pt 10pt 10pt,clip]{assets/er-core-transaccional.pdf}
 \end{center}
 
 #### Seguridad y control de integridad
 
-- Access token JWT + refresh token rotativo.
-- Validación de variables de entorno con Joi (`env.validation.ts`).
-- Operaciones críticas de compra dentro de `prisma.$transaction()`.
-- Generación de hash SHA-256 por ticket; el `qrPayload` actual contiene dicho hash.
+| \focheadcell{Mecanismo} | \focheadcell{Función} |
+| :---------------------- | :-------------------- |
+| JWT + refresh token rotativo | Autenticación y renovación segura de sesión. |
+| Joi en `env.validation.ts` | Validación de variables de entorno críticas. |
+| `prisma.$transaction()` | Aislamiento de operaciones críticas de compra. |
+| Hash SHA-256 por ticket | Identificación y validación del ticket vía `qrPayload`. |
 
 ### Puntos de control para validación del proyecto
 
-- Integridad y unicidad del ticket en validación.
-- Prevención de sobreventa bajo concurrencia.
-- Control de acceso por rol en endpoints protegidos.
-- Registro de auditoría de validación (`validatedAt`, `validatedBy`).
-- Confirmación de pago por webhook y emisión de notificaciones.
+| \focheadcell{Punto de control} | \focheadcell{Verificación} |
+| :----------------------------- | :------------------------ |
+| Integridad y unicidad del ticket | Validación de uso único en acceso. |
+| Prevención de sobreventa | Consistencia bajo concurrencia. |
+| Control de acceso por rol | Protección de endpoints sensibles. |
+| Auditoría de validación | Registro de `validatedAt` y `validatedBy`. |
+| Confirmación de pago | Webhook y emisión de notificaciones. |
 
 > Esta sección describe el diseño implementado y evita afirmar resultados no ejecutados en la
 > presente auditoría.

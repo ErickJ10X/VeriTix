@@ -21,31 +21,37 @@ y resistente a intentos de reutilización de entradas.
 
 ## Ejemplo de estructura organizativa del sector
 
-Una ticketera digital de tamaño medio suele organizarse en:
+Una ticketera digital de tamaño medio suele organizarse en la siguiente matriz funcional:
 
-- **Dirección:** estrategia y priorización de negocio.
-- **Operaciones:** relación con organizadores y operación de eventos.
-- **Tecnología:** backend, frontend, base de datos, seguridad y despliegue.
-- **Comercial/marketing:** captación de organizadores y promoción.
-- **Atención al cliente:** incidencias de compra y acceso.
-- **Validación en campo:** control de acceso durante el evento.
+| \focheadcell{Área funcional} | \focheadcell{Responsabilidad principal} |
+| :--------------------------- | :-------------------------------------- |
+| Dirección | Estrategia y priorización de negocio. |
+| Operaciones | Relación con organizadores y operación de eventos. |
+| Tecnología | Backend, frontend, base de datos, seguridad y despliegue. |
+| Comercial/marketing | Captación de organizadores y promoción. |
+| Atención al cliente | Incidencias de compra y acceso. |
+| Validación en campo | Control de acceso durante el evento. |
 
 ## Necesidades que cubre VeriTix
 
 VeriTix aborda necesidades reales del sector con alcance verificable en el repositorio:
 
-- **Centralización operativa:** gestión de eventos, catálogos y usuarios desde una API unificada.
-- **Control de stock y sobreventa:** compra con transacciones atómicas en PostgreSQL/Prisma.
-- **Trazabilidad del acceso:** tickets con hash único y registro de validación (`validatedAt`, `validatedBy`).
-- **Automatización del flujo de cobro:** integración con Stripe Checkout + webhooks.
-- **Notificación transaccional:** envío de emails de verificación y confirmación mediante Resend y BullMQ.
+| \focheadcell{Necesidad del sector} | \focheadcell{Implementación verificable en VeriTix} |
+| :---------------------------------- | :-------------------------------------------------- |
+| Centralización operativa | Gestión de eventos, catálogos y usuarios desde una API unificada. |
+| Control de stock y sobreventa | Compra con transacciones atómicas en PostgreSQL/Prisma. |
+| Trazabilidad del acceso | Tickets con hash único y registro de validación (`validatedAt`, `validatedBy`). |
+| Automatización del flujo de cobro | Integración con Stripe Checkout + webhooks. |
+| Notificación transaccional | Envío de emails de verificación y confirmación mediante Resend y BullMQ. |
 
 ## Descripción del proyecto
 
 VeriTix es un monorepo con dos aplicaciones desacopladas:
 
-- **Backend:** NestJS 11 + TypeScript + Prisma 7 + PostgreSQL + Redis.
-- **Frontend:** Nuxt 4 + Vue 3 + Nuxt UI + Tailwind 4.
+| \focheadcell{Componente} | \focheadcell{Tecnología} |
+| :---------------------- | :---------------------- |
+| Backend | NestJS 11 + TypeScript + Prisma 7 + PostgreSQL + Redis. |
+| Frontend | Nuxt 4 + Vue 3 + Nuxt UI + Tailwind 4. |
 
 La autenticación se basa en JWT (access token de corta vida y refresh token en cookie HTTP-only
 con rotación). El dominio contempla roles `BUYER`, `CREATOR`, `VALIDATOR` y `ADMIN`.
@@ -54,18 +60,22 @@ con rotación). El dominio contempla roles `BUYER`, `CREATOR`, `VALIDATOR` y `AD
 
 Se selecciona arquitectura web desacoplada (API REST + cliente web SSR/SPA) por:
 
-- **Escalabilidad operativa:** separación de backend y frontend para evolucionar cada capa.
-- **Mantenibilidad:** módulos de dominio en NestJS y tipado fuerte extremo a extremo.
-- **Portabilidad:** la API puede reutilizarse por otros clientes (ej. app móvil).
-- **Accesibilidad:** acceso multiplataforma sin instalación de software cliente nativo.
+| \focheadcell{Criterio} | \focheadcell{Justificación técnica} |
+| :--------------------- | :----------------------------------- |
+| Escalabilidad operativa | Separación de backend y frontend para evolucionar cada capa. |
+| Mantenibilidad | Módulos de dominio en NestJS y tipado fuerte extremo a extremo. |
+| Portabilidad | La API puede reutilizarse por otros clientes (ej. app móvil). |
+| Accesibilidad | Acceso multiplataforma sin instalación de software cliente nativo. |
 
 ## Características principales del sistema
 
-- **Autenticación y roles por servidor** con validación de permisos por endpoint.
-- **Compra transaccional con Stripe**, confirmación por webhook y generación de tickets.
-- **Validación por hash único** con trazabilidad de uso y auditoría de acceso.
-- **Catálogos de dominio** (artistas, recintos, géneros y formatos).
-- **Caché con Redis** para consultas frecuentes.
+| \focheadcell{Capacidad} | \focheadcell{Implementación actual} |
+| :---------------------- | :---------------------------------- |
+| Autenticación y roles por servidor | Validación de permisos por endpoint. |
+| Compra transaccional con Stripe | Confirmación por webhook y generación de tickets. |
+| Validación por hash único | Trazabilidad de uso y auditoría de acceso. |
+| Catálogos de dominio | Artistas, recintos, géneros y formatos. |
+| Caché con Redis | Optimización de consultas frecuentes. |
 
 > Nota de alcance: las capacidades descritas corresponden al estado verificable del código fuente.
 > Cuando una funcionalidad no está integrada en frontend, se declara explícitamente como pendiente.

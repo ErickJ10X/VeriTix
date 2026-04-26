@@ -57,7 +57,18 @@ $endif$
 \definecolor{focmid}{HTML}{1F497D}     % unificado al azul base
 \definecolor{foclight}{HTML}{BDD7EE}   % azul claro (filas alternas tablas)
 \definecolor{focgray}{HTML}{595959}    % gris oscuro (header página)
-\definecolor{focbg}{HTML}{F5F5F5}      % fondo bloques de código
+\definecolor{focorange}{HTML}{C97A00}  % aviso/advertencia en código
+
+% ── Esquema One Dark para código ────────────────────────────
+\definecolor{foccodebg}{HTML}{282C34}
+\definecolor{foccodefg}{HTML}{ABB2BF}
+\definecolor{foccodecomment}{HTML}{5C6370}
+\definecolor{foccodekeyword}{HTML}{C678DD}
+\definecolor{foccodestring}{HTML}{98C379}
+\definecolor{foccodefunc}{HTML}{61AFEF}
+\definecolor{foccodetype}{HTML}{E5C07B}
+\definecolor{foccodeconst}{HTML}{D19A66}
+\definecolor{foccodeaccent}{HTML}{56B6C2}
 
 % ── Interlineado ────────────────────────────────────────────
 \usepackage{setspace}
@@ -148,35 +159,67 @@ $if(linestretch)$\setstretch{$linestretch$}$endif$
 % ── Código fuente ───────────────────────────────────────────
 \usepackage{listings}
 \lstset{
-  basicstyle=\small\ttfamily,
+  basicstyle=\small\ttfamily\color{foccodefg},
   breaklines=true,
   breakatwhitespace=true,
   frame=single,
-  rulecolor=\color{focmid},
-  backgroundcolor=\color{focbg},
-  commentstyle=\color{focgray}\itshape,
-  keywordstyle=\color{focblue}\bfseries,
-  stringstyle=\color{focmid},
+  rulecolor=\color{foccodekeyword},
+  backgroundcolor=\color{foccodebg},
+  commentstyle=\color{foccodecomment}\itshape,
+  keywordstyle=\color{foccodekeyword}\bfseries,
+  stringstyle=\color{foccodestring},
   numbers=left,
-  numberstyle=\tiny\color{focgray},
+  numberstyle=\tiny\color{foccodecomment},
   numbersep=8pt,
   xleftmargin=12pt,
   showstringspaces=false,
 }
 
-% Bloques Shaded de pandoc (```código```)
+% Bloques Shaded de pandoc (```código```) 
 \usepackage{framed}
-\definecolor{shadecolor}{HTML}{F5F5F5}
+\definecolor{shadecolor}{HTML}{282C34}
 \newenvironment{Shaded}{\begin{snugshade}}{\end{snugshade}}
 \usepackage{fancyvrb}
 \newcommand{\VerbBar}{|}
 \newcommand{\VERB}{\Verb[commandchars=\\\{\}]}
+% Macros de resaltado generadas por Pandoc
+\newcommand{\NormalTok}[1]{\textcolor{foccodefg}{#1}}
+\newcommand{\KeywordTok}[1]{\textcolor{foccodekeyword}{\bfseries #1}}
+\newcommand{\DataTypeTok}[1]{\textcolor{foccodetype}{#1}}
+\newcommand{\DecValTok}[1]{\textcolor{foccodeconst}{#1}}
+\newcommand{\BaseNTok}[1]{\textcolor{foccodeconst}{#1}}
+\newcommand{\FloatTok}[1]{\textcolor{foccodeconst}{#1}}
+\newcommand{\CharTok}[1]{\textcolor{foccodestring}{#1}}
+\newcommand{\StringTok}[1]{\textcolor{foccodestring}{#1}}
+\newcommand{\CommentTok}[1]{\textcolor{foccodecomment}{\itshape #1}}
+\newcommand{\OtherTok}[1]{#1}
+\newcommand{\FunctionTok}[1]{\textcolor{foccodefunc}{#1}}
+\newcommand{\VariableTok}[1]{\textcolor{foccodefg}{#1}}
+\newcommand{\ControlFlowTok}[1]{\textcolor{foccodekeyword}{\bfseries #1}}
+\newcommand{\OperatorTok}[1]{\textcolor{foccodeaccent}{#1}}
+\newcommand{\BuiltInTok}[1]{\textcolor{foccodefunc}{#1}}
+\newcommand{\ExtensionTok}[1]{\textcolor{foccodeaccent}{#1}}
+\newcommand{\PreprocessorTok}[1]{\textcolor{foccodecomment}{#1}}
+\newcommand{\AttributeTok}[1]{\textcolor{foccodetype}{#1}}
+\newcommand{\InformationTok}[1]{\textcolor{foccodeaccent}{#1}}
+\newcommand{\WarningTok}[1]{\textcolor{focorange}{#1}}
+\newcommand{\AlertTok}[1]{\textcolor{red}{\bfseries #1}}
+\newcommand{\ErrorTok}[1]{\textcolor{red}{\bfseries #1}}
+\newcommand{\AnnotationTok}[1]{\textcolor{foccodecomment}{#1}}
+\newcommand{\CommentVarTok}[1]{\textcolor{foccodecomment}{\itshape #1}}
+\newcommand{\DocumentationTok}[1]{\textcolor{foccodecomment}{\itshape #1}}
+\newcommand{\ConstantTok}[1]{\textcolor{foccodeconst}{#1}}
+\newcommand{\RegionMarkerTok}[1]{\textcolor{foccodeaccent}{#1}}
+\newcommand{\SpecialCharTok}[1]{\textcolor{foccodeaccent}{#1}}
+\newcommand{\VerbatimStringTok}[1]{\textcolor{foccodestring}{#1}}
+\newcommand{\SpecialStringTok}[1]{\textcolor{foccodestring}{#1}}
+\newcommand{\ImportTok}[1]{\textcolor{focblue}{#1}}
 \DefineVerbatimEnvironment{Highlighting}{Verbatim}{
   commandchars=\\\{\},
   fontsize=\small,
   frame=single,
   rulecolor=\color{focmid},
-  fillcolor=\color{focbg},
+  fillcolor=\color{foccodebg},
 }
 
 % ── TikZ para portada ───────────────────────────────────────
