@@ -6,13 +6,6 @@ La estrategia de pruebas se estructura por niveles y distingue entre evidencia e
 repositorio, contratos del backend, esquema Prisma y cobertura aún pendiente de integración
 funcional en frontend.
 
-### Trazabilidad con contratos API y modelo de datos
-
-La identificación de endpoints reales, constraints de datos y resumen entidad-relación se documenta
-en `docs/latex/src/02-identificacion-necesidades.md` (subsecciones: _API real del sistema_,
-_Modelo de datos y constraints_ y _Diagrama entidad-relación (resumen)_). Esta referencia permite
-alinear criterios de prueba con contratos efectivamente implementados en backend.
-
 ### Pruebas unitarias (backend)
 
 Cobertura de servicios y controladores en módulos críticos (auth, events, orders, tickets, webhooks,
@@ -36,7 +29,7 @@ Validación de autenticación JWT, permisos por rol y comportamiento de validaci
 Frontend con tests unitarios/nuxt/e2e vía Vitest; no obstante, el flujo completo de compra y
 scanner QR no está integrado en UI en el estado actual.
 
-## Registro de pruebas (evidencia documental)
+## Registro de pruebas
 
 | ID  | Evidencia (resumen)                                               |   Estado   |
 | :-: | :---------------------------------------------------------------- | :--------: |

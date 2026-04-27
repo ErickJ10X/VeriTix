@@ -46,7 +46,9 @@ VeriTix aborda necesidades reales del sector con alcance verificable en el repos
 
 ## Descripción del proyecto
 
-VeriTix es un monorepo con dos aplicaciones desacopladas:
+VeriTix es un monorepo con dos aplicaciones desacopladas orientado a la gestión integral de eventos y
+ticketing. El backend concentra la lógica transaccional, la seguridad y la persistencia; el frontend
+ofrece la experiencia de compra, administración y consulta para usuarios finales y creadores.
 
 | Componente | Tecnología                                              |
 | :--------- | :------------------------------------------------------ |
@@ -54,7 +56,9 @@ VeriTix es un monorepo con dos aplicaciones desacopladas:
 | Frontend   | Nuxt 4 + Vue 3 + Nuxt UI + Tailwind 4.                  |
 
 La autenticación se basa en JWT (access token de corta vida y refresh token en cookie HTTP-only
-con rotación). El dominio contempla roles `BUYER`, `CREATOR`, `VALIDATOR` y `ADMIN`.
+con rotación). El flujo cubre publicación de eventos, compra transaccional, emisión de tickets
+digitales con QR/hash único, validación de acceso y trazabilidad operativa. El dominio contempla
+roles `BUYER`, `CREATOR`, `VALIDATOR` y `ADMIN`.
 
 ## Justificación del tipo de solución
 
@@ -69,10 +73,12 @@ Se selecciona arquitectura web desacoplada (API REST + cliente web SSR/SPA) por:
 
 ## Características principales del sistema
 
-| Capacidad                          | Implementación actual                             |
-| :--------------------------------- | :------------------------------------------------ |
-| Autenticación y roles por servidor | Validación de permisos por endpoint.              |
-| Compra transaccional con Stripe    | Confirmación por webhook y generación de tickets. |
-| Validación por hash único          | Trazabilidad de uso y auditoría de acceso.        |
-| Catálogos de dominio               | Artistas, recintos, géneros y formatos.           |
-| Caché con Redis                    | Optimización de consultas frecuentes.             |
+| Capacidad                          | Implementación actual                                      |
+| :--------------------------------- | :--------------------------------------------------------- |
+| Autenticación y roles por servidor | Validación de permisos por endpoint.                       |
+| Compra transaccional con Stripe    | Confirmación por webhook y generación de tickets.          |
+| Tickets digitales con QR y hash    | Trazabilidad de uso, validación de acceso y auditoría.     |
+| Catálogos de dominio               | Artistas, recintos, géneros y formatos.                    |
+| Panel administrativo               | Gestión operativa desde el frontend.                       |
+| Caché con Redis                    | Optimización de consultas frecuentes.                       |
+| Notificaciones transaccionales     | Verificación, confirmación y avisos por email.             |

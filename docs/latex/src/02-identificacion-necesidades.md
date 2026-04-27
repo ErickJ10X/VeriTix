@@ -123,7 +123,7 @@ exclusivamente la API REST del backend.
 | Responsabilidad       | Lógica de negocio, seguridad, persistencia | UI, navegación y consumo de API |
 | Persistencia          | Prisma 7 + PostgreSQL                      | Sin acceso directo a BD         |
 
-#### Módulos backend (estado verificable)
+#### Módulos backend
 
 La implementación backend se organiza en dominios funcionales claramente delimitados:
 
@@ -141,8 +141,8 @@ El backend aplica prefijo global configurable mediante `API_PREFIX` y, en ausenc
 entorno, utiliza `api/v1` (`backend/src/main.ts`). Por tanto, las rutas públicas/protegidas se
 consumen como `/api/v1/...`.
 
-Los contratos siguientes se extrajeron de controladores y DTOs del repositorio
-(`backend/src/modules/**`). Se rediseñan en tablas compactas para mantener legibilidad en PDF.
+Los contratos siguientes se extrajeron de controladores y DTOs del repositorio. Se resumen en
+tablas compactas para mantener la legibilidad del PDF.
 
 **Autenticación**
 
@@ -164,20 +164,14 @@ Los contratos siguientes se extrajeron de controladores y DTOs del repositorio
 
 **Órdenes, tickets y pagos**
 
-| Endpoint                      | Seguridad                     | Resumen funcional                              |
-| :---------------------------- | :---------------------------- | :--------------------------------------------- |
-| POST /api/v1/orders           | JWT usuario autenticado       | Crea orden y retorna checkoutUrl cuando aplica |
-| GET /api/v1/orders/my         | JWT usuario autenticado       | Lista órdenes del comprador                    |
-| GET /api/v1/tickets/mine      | JWT usuario autenticado       | Lista tickets del comprador                    |
-| POST /api/v1/tickets/validate | JWT + rol ADMIN/VALIDATOR     | Valida ticket por hash y registra trazabilidad |
-| POST /api/v1/webhooks/stripe  | Firma stripe-signature válida | Procesa evento de pago/reembolso               |
+| Endpoint                     | Seguridad                     | Resumen funcional                              |
+| :--------------------------- | :---------------------------- | :--------------------------------------------- |
+| POST /api/v1/orders          | JWT usuario autenticado       | Crea orden y retorna checkoutUrl cuando aplica |
+| GET /api/v1/orders/my        | JWT usuario autenticado       | Lista órdenes del comprador                    |
+| GET /api/v1/tickets/mine     | JWT usuario autenticado       | Lista tickets del comprador                    |
+| POST /api/v1/tickets/validate | JWT + rol ADMIN/VALIDATOR    | Valida ticket por hash y registra trazabilidad |
+| POST /api/v1/webhooks/stripe | Firma stripe-signature válida | Procesa evento de pago/reembolso               |
 
-**Cobertura de flujo (backend vs frontend).**
-
-| Capa     | Estado verificable                                                                                                                                                                                                     |
-| :------- | :--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Backend  | Contratos de auth, eventos, órdenes, tickets y webhook Stripe implementados, con suites de pruebas en `backend/test/` y `backend/src/**/*.spec.ts`.                                                                    |
-| Frontend | Cobertura para autenticación, catálogo público de eventos y área administrativa; los flujos de compra de órdenes, consumo de tickets del comprador y scanner/validación final en UI permanecen parciales o pendientes. |
 
 #### Modelo de datos y constraints
 
@@ -201,7 +195,7 @@ El esquema Prisma (`backend/prisma/schema.prisma`) se organiza en dos bloques:
 | Event con Artist mediante EventArtist |      N:M       |
 | Event con Genre y Artist con Genre    |      N:M       |
 
-**Constraints e índices relevantes (extracto)**
+**Constraints e índices relevantes**
 
 | Tipo de restricción         | Detalle                                                                                                                                                             |
 | :-------------------------- | :------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
@@ -210,16 +204,9 @@ El esquema Prisma (`backend/prisma/schema.prisma`) se organiza en dos bloques:
 | Cascadas de borrado         | `RefreshToken→User`, `EventArtist→Event`, `TicketType→Event`, `OrderItem→Order`, `Ticket→Event`.                                                                    |
 | Índices de consulta         | `events(status, eventDate)`, `orders(buyerId, createdAt)`, `orders(eventId, status)`, `tickets(buyerId, status)`, `tickets(eventId, status)`.                       |
 | Enums de dominio            | `Role`, `EventStatus`, `OrderStatus`, `TicketStatus`, `PaymentStatus`.                                                                                              |
+                                                                            |
 
-**Limitaciones actuales del esquema (a considerar)**
-
-| Limitación                                    | Implicación                                                                                                                        |
-| :-------------------------------------------- | :--------------------------------------------------------------------------------------------------------------------------------- |
-| Ausencia de CHECK constraints                 | No se observan restricciones como `availableQuantity >= 0`, `totalQuantity >= availableQuantity` o `saleStartDate <= saleEndDate`. |
-| `currency` como String                        | Requiere validación estricta de ISO.                                                                                               |
-| FKs sin `onDelete` explícito en algunos casos | Conviene revisar políticas de borrado para producción.                                                                             |
-
-#### Diagrama entidad-relación (resumen)
+#### Diagrama entidad-relación
 
 ::: {.latex-figure}
 
