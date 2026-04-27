@@ -390,29 +390,47 @@ $if(linestretch)$\setstretch{$linestretch$}$endif$
           $for(author)$$author$$sep$ ~~·~~ $endfor$
 };
 
-      % ── Decoración inferior — doble acento corporativo ──
-      \fill[foclight, opacity=0.18]
-        (current page.south west) rectangle ([yshift=1.55cm] current page.south east);
+      % ── Decoración inferior — doble acento orgánico y premium ──
+      \fill[foclight, opacity=0.11]
+        (current page.south west) rectangle ([yshift=1.25cm] current page.south east);
 
       % Esquina inferior izquierda
-      \fill[focblue, opacity=0.95]
-        ([xshift=-6.6cm, yshift=-0.95cm] current page.south west) ellipse (7.9cm and 4.25cm);
+      \fill[focblue, opacity=0.86]
+        ([xshift=-7.2cm, yshift=-1.16cm] current page.south west) ellipse (9.4cm and 5.4cm);
 
-      \fill[focmid, opacity=0.26]
-        ([xshift=-8.8cm, yshift=-0.55cm] current page.south west) ellipse (5.1cm and 2.9cm);
+      \fill[focblue, opacity=0.18]
+        ([xshift=-3.6cm, yshift=0.98cm] current page.south west) ellipse (5.4cm and 2.45cm);
 
-      \fill[foclight, opacity=0.42]
-        ([xshift=-10.2cm, yshift=-0.10cm] current page.south west) ellipse (2.7cm and 1.55cm);
+      \fill[focblue, opacity=0.22]
+        ([xshift=-4.0cm, yshift=0.88cm] current page.south west) ellipse (4.9cm and 2.25cm);
+
+      \fill[focmid, opacity=0.24]
+        ([xshift=-10.1cm, yshift=-0.92cm] current page.south west) ellipse (6.8cm and 3.65cm);
+
+      \fill[foclight, opacity=0.36]
+        ([xshift=-11.3cm, yshift=-0.28cm] current page.south west) ellipse (3.7cm and 2.1cm);
+
+      \fill[foclight, opacity=0.18]
+        ([xshift=-2.0cm, yshift=0.38cm] current page.south west) ellipse (2.5cm and 1.05cm);
 
       % Esquina inferior derecha
-      \fill[focblue, opacity=0.95]
-        ([xshift=7.8cm, yshift=-0.85cm] current page.south east) ellipse (9.1cm and 4.9cm);
+      \fill[focblue, opacity=0.86]
+        ([xshift=8.8cm, yshift=-1.10cm] current page.south east) ellipse (10.9cm and 6.1cm);
 
-      \fill[focmid, opacity=0.28]
-        ([xshift=9.9cm, yshift=-0.45cm] current page.south east) ellipse (5.9cm and 3.3cm);
+      \fill[focblue, opacity=0.18]
+        ([xshift=4.1cm, yshift=1.06cm] current page.south east) ellipse (5.8cm and 2.6cm);
 
-      \fill[foclight, opacity=0.46]
-        ([xshift=11.4cm, yshift=-0.05cm] current page.south east) ellipse (3.1cm and 1.75cm);
+      \fill[focblue, opacity=0.20]
+        ([xshift=4.3cm, yshift=0.98cm] current page.south east) ellipse (5.3cm and 2.35cm);
+
+      \fill[focmid, opacity=0.27]
+        ([xshift=11.5cm, yshift=-0.84cm] current page.south east) ellipse (7.5cm and 4.15cm);
+
+      \fill[foclight, opacity=0.42]
+        ([xshift=13.2cm, yshift=-0.15cm] current page.south east) ellipse (4.1cm and 2.3cm);
+
+      \fill[foclight, opacity=0.16]
+        ([xshift=2.3cm, yshift=0.34cm] current page.south east) ellipse (2.7cm and 1.1cm);
 
     \end{tikzpicture}
 
