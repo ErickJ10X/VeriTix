@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-# Build/Watch para la documentación LaTeX (Markdown -> PDF)
+# Build para la documentación LaTeX (Markdown -> PDF)
 set -euo pipefail
 
 LATEX_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
@@ -12,6 +12,7 @@ FILTER="$LATEX_DIR/filters/cleanup.lua"
 OUTPUT="$BUILD_DIR/memoria.pdf"
 BACKEND_DIR="$LATEX_DIR/../../backend"
 LOGO_SOURCE="$LATEX_DIR/assets/foc-logo.png"
+ASSET_BUILD_DIR="$BUILD_DIR/assets"
 
 GREEN='\033[0;32m'
 YELLOW='\033[1;33m'
@@ -25,65 +26,18 @@ require_cmd() {
   fi
 }
 
-convert_svg_to_pdf() {
-  local input_svg="$1"
-  local output_pdf="$2"
-
-  python3 - "$input_svg" "$output_pdf" <<'PY'
-import os
-import re
-import subprocess
-import sys
-import tempfile
-import shutil
-
-svg, pdf = sys.argv[1], sys.argv[2]
-os.makedirs(os.path.dirname(pdf), exist_ok=True)
-
-tmp = tempfile.NamedTemporaryFile(suffix='.pdf', delete=False)
-tmp.close()
-
-subprocess.run(['mutool', 'draw', '-q', '-F', 'pdf', '-o', tmp.name, svg, '1'], check=True)
-
-bbox = subprocess.run(
-    ['gs', '-q', '-dNOPAUSE', '-dBATCH', '-sDEVICE=bbox', tmp.name],
-    stderr=subprocess.PIPE,
-    stdout=subprocess.PIPE,
-    text=True,
-    check=True,
-)
-
-match = re.search(r'%%HiResBoundingBox:\s+([\d.]+)\s+([\d.]+)\s+([\d.]+)\s+([\d.]+)', bbox.stderr)
-if not match:
-    raise SystemExit(1)
-
-llx, lly, urx, ury = match.groups()
-
-subprocess.run(
-    [
-        'gs', '-q', '-dNOPAUSE', '-dBATCH', '-sDEVICE=pdfwrite',
-        '-dCompatibilityLevel=1.4', '-o', pdf,
-        '-c', f'[/CropBox [{llx} {lly} {urx} {ury}] /TrimBox [{llx} {lly} {urx} {ury}] /PAGES pdfmark',
-        '-f', tmp.name,
-    ],
-    check=True,
-)
-
-try:
-    os.unlink(tmp.name)
-except OSError:
-    pass
-PY
-}
-
-prepare_svg_erd_assets() {
-  shopt -s nullglob
-  local files=("$LATEX_DIR"/assets/er-*.svg)
-  shopt -u nullglob
+ensure_erd_png_assets() {
+  local files=(
+    "$ASSET_BUILD_DIR/er-overview.png"
+    "$ASSET_BUILD_DIR/er-core-transaccional.png"
+  )
 
   for file in "${files[@]}"; do
-    local basename="$(basename "$file" .svg)"
-    convert_svg_to_pdf "$file" "$LATEX_DIR/assets/$basename.pdf"
+    if [ ! -s "$file" ]; then
+      echo -e "${YELLOW}⚠ Falta ERD generado: $file${NC}"
+      echo -e "${YELLOW}  Ejecutá primero: make erd${NC}"
+      exit 1
+    fi
   done
 }
 
@@ -155,8 +109,6 @@ build() {
   require_cmd pandoc
   require_cmd xelatex
   require_cmd python3
-  require_cmd mutool
-  require_cmd gs
 
   mkdir -p "$BUILD_DIR"
 
@@ -167,7 +119,7 @@ build() {
     echo -e "${YELLOW}⚠ Logo inválido o no disponible, se usará fallback tipográfico en portada${NC}"
   fi
 
-  prepare_svg_erd_assets
+  ensure_erd_png_assets
 
   mapfile -t src_files < <(collect_sources)
 
@@ -192,24 +144,6 @@ build() {
   echo -e "${GREEN}✓ PDF generado: $OUTPUT${NC}"
 }
 
-watch() {
-  require_cmd inotifywait
-  build
-
-  echo -e "${YELLOW}👁  Watch activo en $SRC_DIR${NC}"
-  echo "  Presioná Ctrl+C para salir"
-
-  while true; do
-    inotifywait -q -r -e modify,create,delete \
-      "$SRC_DIR" \
-      "$METADATA" \
-      "$TEMPLATE"
-
-    echo -e "${YELLOW}⟳ Cambio detectado, recompilando...${NC}"
-    build
-  done
-}
-
 clean() {
   rm -rf "$BUILD_DIR"
   echo -e "${GREEN}✓ Build limpiado: $BUILD_DIR${NC}"
@@ -224,20 +158,17 @@ erd() {
   fi
 
   echo -e "${YELLOW}▶ Generando diagrama ER desde Prisma...${NC}"
+  mkdir -p "$ASSET_BUILD_DIR"
   (
     cd "$BACKEND_DIR"
     bunx prisma generate
   )
-  prepare_svg_erd_assets
-  echo -e "${GREEN}✓ ER generado en docs/latex/assets/ (SVG y PDF recortado)${NC}"
+  echo -e "${GREEN}✓ ER generado en docs/latex/build/assets/ (PNG)${NC}"
 }
 
 case "${1:-build}" in
   build)
     build
-    ;;
-  watch)
-    watch
     ;;
   clean)
     clean
@@ -246,7 +177,7 @@ case "${1:-build}" in
     erd
     ;;
   *)
-    echo "Uso: $(basename "$0") [build|watch|clean|erd]"
+    echo "Uso: $(basename "$0") [build|clean|erd]"
     exit 1
     ;;
 esac

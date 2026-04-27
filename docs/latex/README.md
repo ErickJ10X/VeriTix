@@ -8,25 +8,23 @@ Este módulo encapsula TODO lo necesario para compilar la memoria PDF a partir d
 - `filters/`: filtros Lua para limpiar Markdown y centralizar transformaciones
 - `template.tex`: plantilla visual/institucional
 - `metadata.yml`: metadatos globales (título, autores, idioma, etc.)
-- `assets/`: recursos gráficos fuente del documento (SVG de Prisma ERD y PDFs derivados, logos, etc.)
-- `build.sh`: script principal (build/watch/clean)
+- `assets/`: recursos gráficos del documento (logo y otros assets estáticos)
+- `build/assets/`: diagramas ER derivados en PNG (generados por Prisma ERD)
+- `build.sh`: script principal (build/clean/erd)
 - `Makefile`: fachada simple sobre `build.sh`
 - `build/`: artefactos de salida
 
-Nota: los ERD fuente se generan como SVG en `assets/` y se convierten automáticamente a PDF recortado en `assets/` para incrustarlos en LaTeX.
+Nota: los ERD se generan directamente como PNG en `build/assets/` desde Prisma ERD (`make erd`).
 
 ## Requisitos
 
 - `pandoc`
 - `xelatex` (TeX Live)
-- `mutool` y `ghostscript` para recortar los diagramas ER
-- `inotifywait` (solo para watch)
-
 ## Instalacion de requisitos en ubuntu
 
 ```bash
 sudo apt update
-sudo apt install pandoc texlive-xetex inotify-tools
+sudo apt install pandoc texlive-xetex
 ```
 
 ## Uso
@@ -35,7 +33,6 @@ Desde `docs/latex/`:
 
 ```bash
 make build
-make watch
 make erd
 make clean
 ```
@@ -44,12 +41,12 @@ Alternativa directa:
 
 ```bash
 ./build.sh build
-./build.sh watch
 ./build.sh erd
 ./build.sh clean
 ```
 
 Salida esperada: `build/memoria.pdf`.
+Para compilar, primero ejecutá `make erd` para generar `build/assets/er-*.png`.
 
 ## Cómo extender tooling
 

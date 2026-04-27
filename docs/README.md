@@ -23,8 +23,9 @@ Contiene todo el tooling para generar PDF académico desde Markdown:
 - `filters/` → transformaciones Lua para limpiar Markdown
 - `template.tex` → plantilla LaTeX
 - `metadata.yml` → metadatos globales
-- `build.sh` + `Makefile` → build/watch/clean
-- `assets/` → recursos gráficos del PDF
+- `build.sh` + `Makefile` → build/clean/erd
+- `assets/` → recursos gráficos estáticos del PDF
+- `build/assets/` → diagramas ER generados por Prisma (PNG)
 - `build/` → salida de compilación
 
 Guía operativa: [`docs/latex/README.md`](./latex/README.md).

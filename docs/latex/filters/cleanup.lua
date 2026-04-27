@@ -90,33 +90,28 @@ function Div(div)
     return nil
   end
 
-  local trim = div.attributes.trim or ''
   local needspace = div.attributes.needspace or ''
   local width = div.attributes.width or '0.92\\linewidth'
   local image_src = image.src
   local caption = pandoc.utils.stringify(image.caption or {})
-  local is_pdf = image_src:match('%.pdf$') ~= nil
 
   local lines = {}
   if needspace ~= '' then
     table.insert(lines, '\\Needspace{' .. needspace .. '\\baselineskip}')
   end
 
-  table.insert(lines, '\\begin{figure}[H]')
+  table.insert(lines, '\\begin{center}')
   table.insert(lines, '\\centering')
 
   local includegraphics = '\\includegraphics[width=' .. width
-  if (not is_pdf) and trim ~= '' then
-    includegraphics = includegraphics .. ',trim=' .. trim .. ',clip'
-  end
   includegraphics = includegraphics .. ']'
   includegraphics = includegraphics .. '{' .. escape_latex(image_src) .. '}'
 
   table.insert(lines, includegraphics)
   if caption ~= '' then
-    table.insert(lines, '\\caption{' .. escape_latex(caption) .. '}')
+    table.insert(lines, '\\captionof{figure}{' .. escape_latex(caption) .. '}')
   end
-  table.insert(lines, '\\end{figure}')
+  table.insert(lines, '\\end{center}')
 
   return { pandoc.RawBlock('latex', table.concat(lines, '\n')) }
 end
