@@ -100,7 +100,7 @@ function Div(div)
     table.insert(lines, '\\Needspace{' .. needspace .. '\\baselineskip}')
   end
 
-  table.insert(lines, '\\begin{center}')
+  table.insert(lines, '\\begin{figure}[!htbp]')
   table.insert(lines, '\\centering')
 
   local includegraphics = '\\includegraphics[width=' .. width
@@ -109,9 +109,9 @@ function Div(div)
 
   table.insert(lines, includegraphics)
   if caption ~= '' then
-    table.insert(lines, '\\captionof{figure}{' .. escape_latex(caption) .. '}')
+    table.insert(lines, '\\caption{' .. escape_latex(caption) .. '}')
   end
-  table.insert(lines, '\\end{center}')
+  table.insert(lines, '\\end{figure}')
 
   return { pandoc.RawBlock('latex', table.concat(lines, '\n')) }
 end

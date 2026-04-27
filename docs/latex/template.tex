@@ -228,36 +228,18 @@ $if(linestretch)$\setstretch{$linestretch$}$endif$
 \usepackage{scrlayer-scrpage}  % encabezados KOMA
 \usepackage{needspace}         % evita títulos al final de página sin contenido
 
-% Personalización de títulos con scrreprt
-\addtokomafont{chapter}{\color{focblue}\sffamily}
-\addtokomafont{section}{\color{focmid}\sffamily}
-\addtokomafont{subsection}{\color{focmid}\sffamily}
-\addtokomafont{subsubsection}{\sffamily\bfseries}
-\addtokomafont{chapterprefix}{\color{focblue}}
+% Personalización de títulos con scrreprt (KOMA-first)
+\setkomafont{disposition}{\bfseries\sffamily}
+\setkomafont{chapter}{\Huge\bfseries\sffamily\color{focblue}}
+\setkomafont{section}{\Large\bfseries\sffamily\color{focmid}}
+\setkomafont{subsection}{\large\bfseries\sffamily\color{focmid}}
+\setkomafont{subsubsection}{\normalsize\bfseries\sffamily}
 
-% Línea decorativa bajo cada chapter
-\usepackage{titlesec}
-\titleformat{\chapter}[block]
-  {\color{focblue}\bfseries\Large\sffamily}
-  {\thechapter.}{0.6em}{}
-  [{\color{focblue}\vspace{2pt}\hrule height 0.5pt}]
-
-\titlespacing*{\chapter}{0pt}{0.5em}{1.2em}
-
-\titleformat{\section}[block]
-  {\color{focmid}\bfseries\large\sffamily}
-  {\thesection.}{0.5em}{}
-\titlespacing*{\section}{0pt}{1.2em}{0.65em}
-
-\titleformat{\subsection}[block]
-  {\color{focmid}\bfseries\normalsize\sffamily}
-  {\thesubsection.}{0.5em}{}
-\titlespacing*{\subsection}{0pt}{0.95em}{0.45em}
-
-\titleformat{\subsubsection}[block]
-  {\bfseries\normalsize\sffamily}
-  {}{0pt}{}
-\titlespacing*{\subsubsection}{0pt}{0.8em}{0.35em}
+% Espaciados verticales de títulos (KOMA, sin titlesec)
+\RedeclareSectionCommand[beforeskip=0.5em,afterskip=1.2em]{chapter}
+\RedeclareSectionCommand[beforeskip=1.2em,afterskip=0.65em]{section}
+\RedeclareSectionCommand[beforeskip=0.95em,afterskip=0.45em]{subsection}
+\RedeclareSectionCommand[beforeskip=0.8em,afterskip=0.35em]{subsubsection}
 
 % Evita encabezados "colgados" al pie de página (política más estricta)
 \preto\section{\Needspace{12\baselineskip}}
@@ -285,15 +267,9 @@ $if(linestretch)$\setstretch{$linestretch$}$endif$
 % Capítulos con el mismo header/footer que el resto del documento
 \renewcommand*{\chapterpagestyle}{scrheadings}
 
-% ── Índice ──────────────────────────────────────────────────
-\usepackage{tocloft}
-\renewcommand{\cfttoctitlefont}{\Large\bfseries\color{focblue}\sffamily}
-\renewcommand{\cftchapfont}{\bfseries\color{focblue}\sffamily}
-\renewcommand{\cftchappagefont}{\bfseries\color{focblue}\sffamily}
-\renewcommand{\cftsecfont}{\color{focmid}\sffamily}
-\renewcommand{\cftsecpagefont}{\color{focmid}\sffamily}
-\renewcommand{\cftsubsecfont}{\sffamily}
-\setlength{\cftbeforetoctitleskip}{0pt}
+% ── Índice (KOMA) ───────────────────────────────────────────
+\setkomafont{chapterentry}{\bfseries\sffamily\color{focblue}}
+\setkomafont{chapterentrypagenumber}{\bfseries\sffamily\color{focblue}}
 
 % ── Utilidades pandoc ───────────────────────────────────────
 \providecommand{\tightlist}{%
