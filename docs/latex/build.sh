@@ -8,6 +8,7 @@ SRC_DIR="$LATEX_DIR/src"
 BUILD_DIR="$LATEX_DIR/build"
 TEMPLATE="$LATEX_DIR/template.tex"
 METADATA="$LATEX_DIR/metadata.yml"
+FILTER="$LATEX_DIR/filters/cleanup.lua"
 OUTPUT="$BUILD_DIR/memoria.pdf"
 BACKEND_DIR="$LATEX_DIR/../../backend"
 LOGO_SOURCE="$LATEX_DIR/assets/foc-logo.png"
@@ -111,9 +112,10 @@ build() {
   done
 
   pandoc "${src_files[@]}" \
-    --from markdown+smart+pipe_tables+fenced_code_blocks \
+    --from markdown+smart+pipe_tables+fenced_code_blocks+fenced_divs \
     --metadata-file="$METADATA" \
     --template="$TEMPLATE" \
+    --lua-filter="$FILTER" \
     "${pandoc_logo_args[@]}" \
     --pdf-engine=xelatex \
     --toc \

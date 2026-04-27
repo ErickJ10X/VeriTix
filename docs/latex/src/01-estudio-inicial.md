@@ -23,35 +23,35 @@ y resistente a intentos de reutilización de entradas.
 
 Una ticketera digital de tamaño medio suele organizarse en la siguiente matriz funcional:
 
-| \focheadcell{Área funcional} | \focheadcell{Responsabilidad principal}                   |
-| :--------------------------- | :-------------------------------------------------------- |
-| Dirección                    | Estrategia y priorización de negocio.                     |
-| Operaciones                  | Relación con organizadores y operación de eventos.        |
-| Tecnología                   | Backend, frontend, base de datos, seguridad y despliegue. |
-| Comercial/marketing          | Captación de organizadores y promoción.                   |
-| Atención al cliente          | Incidencias de compra y acceso.                           |
-| Validación en campo          | Control de acceso durante el evento.                      |
+| Área funcional      | Responsabilidad principal                                 |
+| :------------------ | :-------------------------------------------------------- |
+| Dirección           | Estrategia y priorización de negocio.                     |
+| Operaciones         | Relación con organizadores y operación de eventos.        |
+| Tecnología          | Backend, frontend, base de datos, seguridad y despliegue. |
+| Comercial/marketing | Captación de organizadores y promoción.                   |
+| Atención al cliente | Incidencias de compra y acceso.                           |
+| Validación en campo | Control de acceso durante el evento.                      |
 
 ## Necesidades que cubre VeriTix
 
 VeriTix aborda necesidades reales del sector con alcance verificable en el repositorio:
 
-| \focheadcell{Necesidad del sector} | \focheadcell{Implementación verificable en VeriTix}                             |
-| :--------------------------------- | :------------------------------------------------------------------------------ |
-| Centralización operativa           | Gestión de eventos, catálogos y usuarios desde una API unificada.               |
-| Control de stock y sobreventa      | Compra con transacciones atómicas en PostgreSQL/Prisma.                         |
-| Trazabilidad del acceso            | Tickets con hash único y registro de validación (`validatedAt`, `validatedBy`). |
-| Automatización del flujo de cobro  | Integración con Stripe Checkout + webhooks.                                     |
-| Notificación transaccional         | Envío de emails de verificación y confirmación mediante Resend y BullMQ.        |
+| Necesidad del sector              | Implementación verificable en VeriTix                                           |
+| :-------------------------------- | :------------------------------------------------------------------------------ |
+| Centralización operativa          | Gestión de eventos, catálogos y usuarios desde una API unificada.               |
+| Control de stock y sobreventa     | Compra con transacciones atómicas en PostgreSQL/Prisma.                         |
+| Trazabilidad del acceso           | Tickets con hash único y registro de validación (`validatedAt`, `validatedBy`). |
+| Automatización del flujo de cobro | Integración con Stripe Checkout + webhooks.                                     |
+| Notificación transaccional        | Envío de emails de verificación y confirmación mediante Resend y BullMQ.        |
 
 ## Descripción del proyecto
 
 VeriTix es un monorepo con dos aplicaciones desacopladas:
 
-| \focheadcell{Componente} | \focheadcell{Tecnología}                                |
-| :----------------------- | :------------------------------------------------------ |
-| Backend                  | NestJS 11 + TypeScript + Prisma 7 + PostgreSQL + Redis. |
-| Frontend                 | Nuxt 4 + Vue 3 + Nuxt UI + Tailwind 4.                  |
+| Componente | Tecnología                                              |
+| :--------- | :------------------------------------------------------ |
+| Backend    | NestJS 11 + TypeScript + Prisma 7 + PostgreSQL + Redis. |
+| Frontend   | Nuxt 4 + Vue 3 + Nuxt UI + Tailwind 4.                  |
 
 La autenticación se basa en JWT (access token de corta vida y refresh token en cookie HTTP-only
 con rotación). El dominio contempla roles `BUYER`, `CREATOR`, `VALIDATOR` y `ADMIN`.
@@ -60,7 +60,7 @@ con rotación). El dominio contempla roles `BUYER`, `CREATOR`, `VALIDATOR` y `AD
 
 Se selecciona arquitectura web desacoplada (API REST + cliente web SSR/SPA) por:
 
-| \focheadcell{Criterio}  | \focheadcell{Justificación técnica}                                |
+| Criterio                | Justificación técnica                                              |
 | :---------------------- | :----------------------------------------------------------------- |
 | Escalabilidad operativa | Separación de backend y frontend para evolucionar cada capa.       |
 | Mantenibilidad          | Módulos de dominio en NestJS y tipado fuerte extremo a extremo.    |
@@ -69,7 +69,7 @@ Se selecciona arquitectura web desacoplada (API REST + cliente web SSR/SPA) por:
 
 ## Características principales del sistema
 
-| \focheadcell{Capacidad}            | \focheadcell{Implementación actual}               |
+| Capacidad                          | Implementación actual                             |
 | :--------------------------------- | :------------------------------------------------ |
 | Autenticación y roles por servidor | Validación de permisos por endpoint.              |
 | Compra transaccional con Stripe    | Confirmación por webhook y generación de tickets. |

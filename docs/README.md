@@ -20,6 +20,7 @@ Solo archivos `.md` de documentación funcional/técnica (sin scripts ni configu
 Contiene todo el tooling para generar PDF académico desde Markdown:
 
 - `src/` → capítulos fuente
+- `filters/` → transformaciones Lua para limpiar Markdown
 - `template.tex` → plantilla LaTeX
 - `metadata.yml` → metadatos globales
 - `build.sh` + `Makefile` → build/watch/clean

@@ -4,23 +4,23 @@
 
 ### Identificación de riesgos
 
-| \focheadcell{ID} | \focheadcell{Riesgo}                                               | \focheadcell{Probabilidad} | \focheadcell{Impacto} |
-| :--------------: | :----------------------------------------------------------------- | :------------------------: | :-------------------: |
-|       R01        | Desalineación entre funcionalidades backend y frontend             |           Media            |         Alto          |
-|       R02        | Errores en flujos de pago/webhook con efectos en órdenes y tickets |           Media            |         Alto          |
-|       R03        | Defectos de seguridad en autenticación o manejo de secrets         |            Baja            |       Muy alto        |
-|       R04        | Degradación bajo concurrencia en compra de tickets                 |           Media            |         Alto          |
-|       R05        | Desactualización documental respecto al código real                |            Alta            |         Medio         |
+| ID  | Riesgo                                                             | Probabilidad | Impacto  |
+| :-: | :----------------------------------------------------------------- | :----------: | :------: |
+| R01 | Desalineación entre funcionalidades backend y frontend             |    Media     |   Alto   |
+| R02 | Errores en flujos de pago/webhook con efectos en órdenes y tickets |    Media     |   Alto   |
+| R03 | Defectos de seguridad en autenticación o manejo de secrets         |     Baja     | Muy alto |
+| R04 | Degradación bajo concurrencia en compra de tickets                 |    Media     |   Alto   |
+| R05 | Desactualización documental respecto al código real                |     Alta     |  Medio   |
 
 ### Plan de prevención y mitigación
 
-| \focheadcell{Riesgo} | \focheadcell{Mitigación}                                                                     |
-| :------------------- | :------------------------------------------------------------------------------------------- |
-| R01                  | Mantener matriz de estado funcional por capa (backend/frontend) y actualizarla en cada hito. |
-| R02                  | Pruebas de integración y e2e específicas de órdenes, tickets y webhooks.                     |
-| R03                  | Validación estricta de entorno, revisión de permisos y rotación de credenciales.             |
-| R04                  | Mantener y ampliar suites de concurrencia (`test:concurrency`) y stress.                     |
-| R05                  | Auditorías documentales periódicas con trazabilidad a archivos de código.                    |
+| Riesgo | Mitigación                                                                                   |
+| :----- | :------------------------------------------------------------------------------------------- |
+| R01    | Mantener matriz de estado funcional por capa (backend/frontend) y actualizarla en cada hito. |
+| R02    | Pruebas de integración y e2e específicas de órdenes, tickets y webhooks.                     |
+| R03    | Validación estricta de entorno, revisión de permisos y rotación de credenciales.             |
+| R04    | Mantener y ampliar suites de concurrencia (`test:concurrency`) y stress.                     |
+| R05    | Auditorías documentales periódicas con trazabilidad a archivos de código.                    |
 
 ## Documentación de ejecución
 
