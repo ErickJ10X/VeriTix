@@ -25,6 +25,68 @@ require_cmd() {
   fi
 }
 
+convert_svg_to_pdf() {
+  local input_svg="$1"
+  local output_pdf="$2"
+
+  python3 - "$input_svg" "$output_pdf" <<'PY'
+import os
+import re
+import subprocess
+import sys
+import tempfile
+import shutil
+
+svg, pdf = sys.argv[1], sys.argv[2]
+os.makedirs(os.path.dirname(pdf), exist_ok=True)
+
+tmp = tempfile.NamedTemporaryFile(suffix='.pdf', delete=False)
+tmp.close()
+
+subprocess.run(['mutool', 'draw', '-q', '-F', 'pdf', '-o', tmp.name, svg, '1'], check=True)
+
+bbox = subprocess.run(
+    ['gs', '-q', '-dNOPAUSE', '-dBATCH', '-sDEVICE=bbox', tmp.name],
+    stderr=subprocess.PIPE,
+    stdout=subprocess.PIPE,
+    text=True,
+    check=True,
+)
+
+match = re.search(r'%%HiResBoundingBox:\s+([\d.]+)\s+([\d.]+)\s+([\d.]+)\s+([\d.]+)', bbox.stderr)
+if not match:
+    raise SystemExit(1)
+
+llx, lly, urx, ury = match.groups()
+
+subprocess.run(
+    [
+        'gs', '-q', '-dNOPAUSE', '-dBATCH', '-sDEVICE=pdfwrite',
+        '-dCompatibilityLevel=1.4', '-o', pdf,
+        '-c', f'[/CropBox [{llx} {lly} {urx} {ury}] /TrimBox [{llx} {lly} {urx} {ury}] /PAGES pdfmark',
+        '-f', tmp.name,
+    ],
+    check=True,
+)
+
+try:
+    os.unlink(tmp.name)
+except OSError:
+    pass
+PY
+}
+
+prepare_svg_erd_assets() {
+  shopt -s nullglob
+  local files=("$LATEX_DIR"/assets/er-*.svg)
+  shopt -u nullglob
+
+  for file in "${files[@]}"; do
+    local basename="$(basename "$file" .svg)"
+    convert_svg_to_pdf "$file" "$LATEX_DIR/assets/$basename.pdf"
+  done
+}
+
 collect_sources() {
   shopt -s nullglob
   local files=("$SRC_DIR"/*.md)
@@ -93,6 +155,8 @@ build() {
   require_cmd pandoc
   require_cmd xelatex
   require_cmd python3
+  require_cmd mutool
+  require_cmd gs
 
   mkdir -p "$BUILD_DIR"
 
@@ -102,6 +166,8 @@ build() {
   else
     echo -e "${YELLOW}⚠ Logo inválido o no disponible, se usará fallback tipográfico en portada${NC}"
   fi
+
+  prepare_svg_erd_assets
 
   mapfile -t src_files < <(collect_sources)
 
@@ -162,7 +228,8 @@ erd() {
     cd "$BACKEND_DIR"
     bunx prisma generate
   )
-  echo -e "${GREEN}✓ ER generado en docs/latex/assets/${NC}"
+  prepare_svg_erd_assets
+  echo -e "${GREEN}✓ ER generado en docs/latex/assets/ (SVG y PDF recortado)${NC}"
 }
 
 case "${1:-build}" in

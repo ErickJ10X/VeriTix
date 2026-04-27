@@ -38,6 +38,11 @@ local function first_image_in_blocks(blocks)
           return inline
         end
       end
+    elseif block.t == 'Figure' then
+      local image = first_image_in_blocks(block.content or block.c or {})
+      if image then
+        return image
+      end
     end
   end
 
@@ -88,23 +93,30 @@ function Div(div)
   local trim = div.attributes.trim or ''
   local needspace = div.attributes.needspace or ''
   local width = div.attributes.width or '0.92\\linewidth'
+  local image_src = image.src
+  local caption = pandoc.utils.stringify(image.caption or {})
+  local is_pdf = image_src:match('%.pdf$') ~= nil
 
   local lines = {}
   if needspace ~= '' then
     table.insert(lines, '\\Needspace{' .. needspace .. '\\baselineskip}')
   end
 
-  table.insert(lines, '\\begin{center}')
+  table.insert(lines, '\\begin{figure}[H]')
+  table.insert(lines, '\\centering')
 
   local includegraphics = '\\includegraphics[width=' .. width
-  if trim ~= '' then
+  if (not is_pdf) and trim ~= '' then
     includegraphics = includegraphics .. ',trim=' .. trim .. ',clip'
   end
   includegraphics = includegraphics .. ']'
-  includegraphics = includegraphics .. '{' .. escape_latex(image.src) .. '}'
+  includegraphics = includegraphics .. '{' .. escape_latex(image_src) .. '}'
 
   table.insert(lines, includegraphics)
-  table.insert(lines, '\\end{center}')
+  if caption ~= '' then
+    table.insert(lines, '\\caption{' .. escape_latex(caption) .. '}')
+  end
+  table.insert(lines, '\\end{figure}')
 
   return { pandoc.RawBlock('latex', table.concat(lines, '\n')) }
 end

@@ -221,17 +221,11 @@ El esquema Prisma (`backend/prisma/schema.prisma`) se organiza en dos bloques:
 
 #### Diagrama entidad-relación (resumen)
 
-Para mantener legibilidad, el diagrama ER se presenta en vistas por dominio generadas automáticamente desde Prisma.
-
-**Vista general (overview)**
-
 ::: {.latex-figure trim="10pt 492pt 10pt 10pt"}
 
 ![Vista general del diagrama ER](assets/er-overview.pdf)
 
 :::
-
-**Dominio transaccional (ventas, órdenes, tickets y pagos)**
 
 ::: {.latex-figure trim="10pt 286pt 10pt 10pt" needspace="16"}
 

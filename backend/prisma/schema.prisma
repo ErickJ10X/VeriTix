@@ -5,14 +5,14 @@ generator client {
 
 generator erd_overview {
   provider = "prisma-erd-generator"
-  output   = "../../docs/latex/assets/er-overview.pdf"
+  output   = "../../docs/latex/assets/er-overview.svg"
   theme    = "default"
   tableOnly = true
 }
 
 generator erd_core {
   provider      = "prisma-erd-generator"
-  output        = "../../docs/latex/assets/er-core-transaccional.pdf"
+  output        = "../../docs/latex/assets/er-core-transaccional.svg"
   theme         = "default"
   tableOnly     = true
   ignorePattern = "Venue,ConcertFormat,Genre,Artist,EventArtist,RefreshToken"
@@ -20,7 +20,7 @@ generator erd_core {
 
 generator erd_catalog {
   provider      = "prisma-erd-generator"
-  output        = "../../docs/latex/assets/er-catalogos.pdf"
+  output        = "../../docs/latex/assets/er-catalogos.svg"
   theme         = "default"
   tableOnly     = true
   ignorePattern = "RefreshToken,Order,OrderItem,Ticket,Payment"
@@ -28,7 +28,7 @@ generator erd_catalog {
 
 generator erd_auth {
   provider      = "prisma-erd-generator"
-  output        = "../../docs/latex/assets/er-auth.pdf"
+  output        = "../../docs/latex/assets/er-auth.svg"
   theme         = "default"
   tableOnly     = true
   ignorePattern = "Venue,ConcertFormat,Genre,Artist,EventArtist,Event,TicketType,Order,OrderItem,Ticket,Payment"

@@ -8,15 +8,18 @@ Este módulo encapsula TODO lo necesario para compilar la memoria PDF a partir d
 - `filters/`: filtros Lua para limpiar Markdown y centralizar transformaciones
 - `template.tex`: plantilla visual/institucional
 - `metadata.yml`: metadatos globales (título, autores, idioma, etc.)
-- `assets/`: recursos gráficos del documento
+- `assets/`: recursos gráficos fuente del documento (SVG de Prisma ERD y PDFs derivados, logos, etc.)
 - `build.sh`: script principal (build/watch/clean)
 - `Makefile`: fachada simple sobre `build.sh`
 - `build/`: artefactos de salida
+
+Nota: los ERD fuente se generan como SVG en `assets/` y se convierten automáticamente a PDF recortado en `assets/` para incrustarlos en LaTeX.
 
 ## Requisitos
 
 - `pandoc`
 - `xelatex` (TeX Live)
+- `mutool` y `ghostscript` para recortar los diagramas ER
 - `inotifywait` (solo para watch)
 
 ## Instalacion de requisitos en ubuntu
