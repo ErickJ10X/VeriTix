@@ -9,8 +9,8 @@ funcional en frontend.
 ### Trazabilidad con contratos API y modelo de datos
 
 La identificación de endpoints reales, constraints de datos y resumen entidad-relación se documenta
-en `docs/latex/src/02-identificacion-necesidades.md` (subsecciones: *API real del sistema*,
-*Modelo de datos y constraints* y *Diagrama entidad-relación (resumen)*). Esta referencia permite
+en `docs/latex/src/02-identificacion-necesidades.md` (subsecciones: _API real del sistema_,
+_Modelo de datos y constraints_ y _Diagrama entidad-relación (resumen)_). Esta referencia permite
 alinear criterios de prueba con contratos efectivamente implementados en backend.
 
 ### Pruebas unitarias (backend)
@@ -38,42 +38,35 @@ scanner QR no está integrado en UI en el estado actual.
 
 ## Registro de pruebas (evidencia documental)
 
-> Nota metodológica: en esta auditoría NO se ejecutaron suites. El estado refleja evidencia en
-> código y scripts, no resultado de ejecución en tiempo real.
-
-
-| \focheadcell{ID} | \focheadcell{Evidencia (resumen)} | \focheadcell{Estado} |
-|:--:|:--|:--:|
-| T01 | Unitaria backend: backend/src/.../tickets.generator.spec.ts | Disponible |
-| T02 | Unitaria backend: backend/src/.../tickets.service.spec.ts | Disponible |
-| T03 | Integración/e2e auth: backend/test/auth.e2e-spec.ts | Disponible |
-| T04 | Integración/e2e events: backend/test/events.e2e-spec.ts | Disponible |
-| T05 | Integración/e2e orders: backend/test/orders.e2e-spec.ts | Disponible |
-| T06 | Integración/e2e tickets: backend/test/tickets.e2e-spec.ts | Disponible |
-| T07 | Concurrencia: backend/test/concurrency/orders.concurrency.spec.ts | Disponible |
-| T08 | Seguridad config: backend/src/config/env.validation.ts | Disponible |
-| T09 | Frontend tests: scripts Vitest en frontend/package.json | Disponible |
-| T10 | Compra E2E UI: sin rutas frontend de órdenes/tickets | Pendiente |
-| T11 | Ticket PDF UI: flujo frontend no implementado | Pendiente |
-| T12 | Scanner QR UI: pantalla/flujo final no integrado | Pendiente |
-
+| \focheadcell{ID} | \focheadcell{Evidencia (resumen)}                                 | \focheadcell{Estado} |
+| :--------------: | :---------------------------------------------------------------- | :------------------: |
+|       T01        | Unitaria backend: backend/src/.../tickets.generator.spec.ts       |      Disponible      |
+|       T02        | Unitaria backend: backend/src/.../tickets.service.spec.ts         |      Disponible      |
+|       T03        | Integración/e2e auth: backend/test/auth.e2e-spec.ts               |      Disponible      |
+|       T04        | Integración/e2e events: backend/test/events.e2e-spec.ts           |      Disponible      |
+|       T05        | Integración/e2e orders: backend/test/orders.e2e-spec.ts           |      Disponible      |
+|       T06        | Integración/e2e tickets: backend/test/tickets.e2e-spec.ts         |      Disponible      |
+|       T07        | Concurrencia: backend/test/concurrency/orders.concurrency.spec.ts |      Disponible      |
+|       T08        | Seguridad config: backend/src/config/env.validation.ts            |      Disponible      |
+|       T09        | Frontend tests: scripts Vitest en frontend/package.json           |      Disponible      |
+|       T10        | Compra E2E UI: sin rutas frontend de órdenes/tickets              |      Pendiente       |
+|       T11        | Ticket PDF UI: flujo frontend no implementado                     |      Pendiente       |
+|       T12        | Scanner QR UI: pantalla/flujo final no integrado                  |      Pendiente       |
 
 ## Evaluación de cumplimiento de objetivos
 
-
-| \focheadcell{Requisito} | \focheadcell{Verificación (resumen)} | \focheadcell{Estado} |
-|:--|:--|:--:|
-| OBJ-01 Gestión de eventos | CRUD y administración disponibles | Cumplido |
-| OBJ-02 Seguridad de tickets | Hash único + validación backend | Cumplido (backend) |
-| OBJ-03 Anti-sobreventa | Lógica transaccional + pruebas concurrencia | Cumplido |
-| OBJ-04 Roles y permisos | Guards y restricciones por endpoint | Cumplido |
-| OBJ-05 Compra UX completa | Flujo completo desde frontend | Parcial |
-| OBJ-06 Entrega ticket al comprador | Visualización/descarga en frontend | Parcial |
-| OBJ-07 Escaneo QR móvil | UI de scanner integrada | Pendiente |
-| OBJ-08 Trazabilidad validaciones | validatedAt / validatedBy en tickets | Cumplido |
-| OBJ-09 Prueba bajo carga | Scripts/suites declarados | Disponible (sin ejecución en auditoría) |
-| OBJ-10 Consistencia doc-código | Documentación alineada a estado real | Mejorada |
-
+| \focheadcell{Requisito}            | \focheadcell{Verificación (resumen)}        |          \focheadcell{Estado}           |
+| :--------------------------------- | :------------------------------------------ | :-------------------------------------: |
+| OBJ-01 Gestión de eventos          | CRUD y administración disponibles           |                Cumplido                 |
+| OBJ-02 Seguridad de tickets        | Hash único + validación backend             |           Cumplido (backend)            |
+| OBJ-03 Anti-sobreventa             | Lógica transaccional + pruebas concurrencia |                Cumplido                 |
+| OBJ-04 Roles y permisos            | Guards y restricciones por endpoint         |                Cumplido                 |
+| OBJ-05 Compra UX completa          | Flujo completo desde frontend               |                 Parcial                 |
+| OBJ-06 Entrega ticket al comprador | Visualización/descarga en frontend          |                 Parcial                 |
+| OBJ-07 Escaneo QR móvil            | UI de scanner integrada                     |                Pendiente                |
+| OBJ-08 Trazabilidad validaciones   | validatedAt / validatedBy en tickets        |                Cumplido                 |
+| OBJ-09 Prueba bajo carga           | Scripts/suites declarados                   | Disponible (sin ejecución en auditoría) |
+| OBJ-10 Consistencia doc-código     | Documentación alineada a estado real        |                Mejorada                 |
 
 ## Soporte y mantenimiento
 

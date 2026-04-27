@@ -4,25 +4,23 @@
 
 ### Identificación de riesgos
 
-
-| \focheadcell{ID} | \focheadcell{Riesgo} | \focheadcell{Probabilidad} | \focheadcell{Impacto} |
-|:--:|:--|:--:|:--:|
-| R01 | Desalineación entre funcionalidades backend y frontend | Media | Alto |
-| R02 | Errores en flujos de pago/webhook con efectos en órdenes y tickets | Media | Alto |
-| R03 | Defectos de seguridad en autenticación o manejo de secrets | Baja | Muy alto |
-| R04 | Degradación bajo concurrencia en compra de tickets | Media | Alto |
-| R05 | Desactualización documental respecto al código real | Alta | Medio |
-
+| \focheadcell{ID} | \focheadcell{Riesgo}                                               | \focheadcell{Probabilidad} | \focheadcell{Impacto} |
+| :--------------: | :----------------------------------------------------------------- | :------------------------: | :-------------------: |
+|       R01        | Desalineación entre funcionalidades backend y frontend             |           Media            |         Alto          |
+|       R02        | Errores en flujos de pago/webhook con efectos en órdenes y tickets |           Media            |         Alto          |
+|       R03        | Defectos de seguridad en autenticación o manejo de secrets         |            Baja            |       Muy alto        |
+|       R04        | Degradación bajo concurrencia en compra de tickets                 |           Media            |         Alto          |
+|       R05        | Desactualización documental respecto al código real                |            Alta            |         Medio         |
 
 ### Plan de prevención y mitigación
 
-| \focheadcell{Riesgo} | \focheadcell{Mitigación} |
-| :------------------- | :----------------------- |
-| R01 | Mantener matriz de estado funcional por capa (backend/frontend) y actualizarla en cada hito. |
-| R02 | Pruebas de integración y e2e específicas de órdenes, tickets y webhooks. |
-| R03 | Validación estricta de entorno, revisión de permisos y rotación de credenciales. |
-| R04 | Mantener y ampliar suites de concurrencia (`test:concurrency`) y stress. |
-| R05 | Auditorías documentales periódicas con trazabilidad a archivos de código. |
+| \focheadcell{Riesgo} | \focheadcell{Mitigación}                                                                     |
+| :------------------- | :------------------------------------------------------------------------------------------- |
+| R01                  | Mantener matriz de estado funcional por capa (backend/frontend) y actualizarla en cada hito. |
+| R02                  | Pruebas de integración y e2e específicas de órdenes, tickets y webhooks.                     |
+| R03                  | Validación estricta de entorno, revisión de permisos y rotación de credenciales.             |
+| R04                  | Mantener y ampliar suites de concurrencia (`test:concurrency`) y stress.                     |
+| R05                  | Auditorías documentales periódicas con trazabilidad a archivos de código.                    |
 
 ## Documentación de ejecución
 
@@ -76,27 +74,24 @@ CMD ["bun", ".output/server/index.mjs"]
 
 ```yaml
 services:
-  postgres:
-    image: postgres:18-alpine
-    restart: unless-stopped
-    ports:
-      - '127.0.0.1:5432:5432'
+    postgres:
+        image: postgres:18-alpine
+        restart: unless-stopped
+        ports:
+            - '127.0.0.1:5432:5432'
 
-  redis:
-    image: redis:8-alpine
-    restart: unless-stopped
-    ports:
-      - '127.0.0.1:6379:6379'
+    redis:
+        image: redis:8-alpine
+        restart: unless-stopped
+        ports:
+            - '127.0.0.1:6379:6379'
 
-  backend:
-    build:
-      dockerfile: Dockerfile.dev
-    ports:
-      - '3001:3001'
+    backend:
+        build:
+            dockerfile: Dockerfile.dev
+        ports:
+            - '3001:3001'
 ```
-
-Los fragmentos anteriores se muestran como código resaltado en LaTeX; no hace falta usar captura
-de pantalla para documentar este tipo de artefacto.
 
 **Aspectos técnicos confirmados:**
 
@@ -104,17 +99,6 @@ de pantalla para documentar este tipo de artefacto.
 - Documentación Swagger activa en `/docs`.
 - Webhook de Stripe en `/api/v1/webhooks/stripe` con `rawBody` habilitado para firma.
 - Seguridad con `helmet`, `cookie-parser`, validación global y guards.
-
-### Manuales finales
-
-Estado de madurez documental en este punto:
-
-- **Manual de usuario final:** parcial.
-- **Manual de instalación consolidado:** parcial (hay documentación técnica dispersa).
-- **Manual de administración/operación:** parcial.
-
-Se recomienda consolidarlos como entregables separados y versionados, cubriendo compra, validación,
-despliegue y operación real del repositorio.
 
 ## Incidencias
 

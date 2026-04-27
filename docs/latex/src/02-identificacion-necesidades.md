@@ -7,16 +7,16 @@
 La planificación original se definió en ocho fases. A continuación se refleja el grado de
 cumplimiento según el estado real del repositorio (abril de 2026).
 
-| \focheadcell{Fase} | \focheadcell{Contenido planificado} | \focheadcell{Estado actual} |
+| \focheadcell{Fase}                | \focheadcell{Contenido planificado}                       |                \focheadcell{Estado actual}                |
 | :-------------------------------- | :-------------------------------------------------------- | :-------------------------------------------------------: |
-| 1. Análisis y diseño              | Requisitos, modelo de datos, contratos API, wireframes    | Completada                                                |
-| 2. Autenticación y usuarios       | Registro/login/refresh/roles                              | Completada (backend + frontend base)                      |
-| 3. Gestión de eventos y catálogos | CRUD de eventos, recintos, artistas, géneros y formatos   | Completada                                                |
-| 4. Venta de tickets               | Órdenes, Stripe Checkout, webhooks, generación de tickets | Completada en backend; integración frontend pendiente     |
-| 5. Validación de tickets          | Endpoint de validación y trazabilidad de acceso           | Backend completado; UI de scanner pendiente               |
-| 6. Panel administrativo           | Gestión y métricas para administración                    | Completada (área admin en frontend)                       |
+| 1. Análisis y diseño              | Requisitos, modelo de datos, contratos API, wireframes    |                        Completada                         |
+| 2. Autenticación y usuarios       | Registro/login/refresh/roles                              |           Completada (backend + frontend base)            |
+| 3. Gestión de eventos y catálogos | CRUD de eventos, recintos, artistas, géneros y formatos   |                        Completada                         |
+| 4. Venta de tickets               | Órdenes, Stripe Checkout, webhooks, generación de tickets |   Completada en backend; integración frontend pendiente   |
+| 5. Validación de tickets          | Endpoint de validación y trazabilidad de acceso           |        Backend completado; UI de scanner pendiente        |
+| 6. Panel administrativo           | Gestión y métricas para administración                    |            Completada (área admin en frontend)            |
 | 7. Testing                        | Pruebas unitarias/integración/e2e/concurrencia            | Implementadas en backend; no ejecutadas en esta auditoría |
-| 8. Despliegue y documentación     | Operación productiva y manuales finales                   | Parcial                                                   |
+| 8. Despliegue y documentación     | Operación productiva y manuales finales                   |                          Parcial                          |
 
 ### Especificar los objetivos del proyecto
 
@@ -36,14 +36,14 @@ cumplimiento según el estado real del repositorio (abril de 2026).
 
 **Stack software real del proyecto**
 
-| \focheadcell{Capa / dominio} | \focheadcell{Tecnologías y mecanismos} |
-| :--------------------------- | :------------------------------------- |
-| Backend | NestJS 11, Prisma 7, PostgreSQL, Redis, BullMQ. |
-| Frontend | Nuxt 4, Vue 3, Nuxt UI, Tailwind 4. |
-| Auth | JWT + refresh token HTTP-only con rotación. |
-| Pagos | Stripe Checkout + webhook (`/api/v1/webhooks/stripe`). |
-| Notificaciones | Resend (emails) + colas BullMQ. |
-| Testing | Jest, Supertest y suites de concurrencia. |
+| \focheadcell{Capa / dominio} | \focheadcell{Tecnologías y mecanismos}                 |
+| :--------------------------- | :----------------------------------------------------- |
+| Backend                      | NestJS 11, Prisma 7, PostgreSQL, Redis, BullMQ.        |
+| Frontend                     | Nuxt 4, Vue 3, Nuxt UI, Tailwind 4.                    |
+| Auth                         | JWT + refresh token HTTP-only con rotación.            |
+| Pagos                        | Stripe Checkout + webhook (`/api/v1/webhooks/stripe`). |
+| Notificaciones               | Resend (emails) + colas BullMQ.                        |
+| Testing                      | Jest, Supertest y suites de concurrencia.              |
 
 ### Especificar recursos materiales y personales
 
@@ -54,20 +54,20 @@ cumplimiento según el estado real del repositorio (abril de 2026).
 
 **Recursos personales**
 
-| \focheadcell{Rol} | \focheadcell{Responsabilidad} |
-| :--------------- | :---------------------------- |
-| Equipo de desarrollo | Backend, frontend y base de datos. |
-| Tutor | Seguimiento técnico y validación académica. |
+| \focheadcell{Rol}    | \focheadcell{Responsabilidad}               |
+| :------------------- | :------------------------------------------ |
+| Equipo de desarrollo | Backend, frontend y base de datos.          |
+| Tutor                | Seguimiento técnico y validación académica. |
 
 ### Asociación entre fases y recursos (materiales y humanos)
 
-| \focheadcell{Fase} | \focheadcell{Recursos materiales} | \focheadcell{Recursos humanos} |
-| :-------------------------- | :------------------------------------------- | :-------------------------: |
-| Análisis/diseño             | Herramientas de modelado y documentación     | Equipo técnico del proyecto |
-| Desarrollo backend/frontend | IDE, control de versiones, servicios locales | Equipo técnico del proyecto |
-| Testing                     | Suites automáticas + dispositivos de prueba  | Equipo técnico + tutor      |
-| Revisiones por hito         | Documentación de avance y evidencias         | Tutor académico             |
-| Despliegue / cierre         | Servidor, reverse proxy, certificados TLS    | Equipo técnico + tutor      |
+| \focheadcell{Fase}          | \focheadcell{Recursos materiales}            | \focheadcell{Recursos humanos} |
+| :-------------------------- | :------------------------------------------- | :----------------------------: |
+| Análisis/diseño             | Herramientas de modelado y documentación     |  Equipo técnico del proyecto   |
+| Desarrollo backend/frontend | IDE, control de versiones, servicios locales |  Equipo técnico del proyecto   |
+| Testing                     | Suites automáticas + dispositivos de prueba  |     Equipo técnico + tutor     |
+| Revisiones por hito         | Documentación de avance y evidencias         |        Tutor académico         |
+| Despliegue / cierre         | Servidor, reverse proxy, certificados TLS    |     Equipo técnico + tutor     |
 
 ## Aspectos fiscales y laborales
 
@@ -91,11 +91,11 @@ del trabajo prolongado con pantallas, mitigables con pausas y condiciones de pue
 
 ### Presupuesto económico
 
-| \focheadcell{Concepto} | \focheadcell{Coste estimado} |
+| \focheadcell{Concepto}                       |     \focheadcell{Coste estimado} |
 | :------------------------------------------- | -------------------------------: |
 | Desarrollo realizado por el equipo académico | 0€ (coste imputado no monetario) |
-| Dominio y hosting básico anual               | Bajo (dependiente de proveedor)  |
-| Licencias software base                      | 0€ (stack open source)           |
+| Dominio y hosting básico anual               |  Bajo (dependiente de proveedor) |
+| Licencias software base                      |           0€ (stack open source) |
 
 ### Financiación necesaria
 
@@ -116,7 +116,7 @@ condicionado a formalización empresarial y plan financiero específico.
 VeriTix adopta arquitectura cliente-servidor desacoplada en monorepo. El frontend consume
 exclusivamente la API REST del backend.
 
-| \focheadcell{Aspecto} | \focheadcell{Backend} | \focheadcell{Frontend} |
+| \focheadcell{Aspecto} | \focheadcell{Backend}                      | \focheadcell{Frontend}          |
 | :-------------------- | :----------------------------------------- | :------------------------------ |
 | Framework             | NestJS 11                                  | Nuxt 4 / Vue 3                  |
 | Puerto local habitual | 3001                                       | 3000                            |
@@ -127,13 +127,13 @@ exclusivamente la API REST del backend.
 
 La implementación backend se organiza en dominios funcionales claramente delimitados:
 
-| \focheadcell{Dominio funcional} | \focheadcell{Módulos} |
-| :------------------------------ | :-------------------- |
-| Identidad y acceso               | `auth`, `users` |
-| Catálogo y eventos               | `events` (incluye `ticket-types` y `event-artists`) |
-| Transacción y emisión            | `orders`, `tickets`, `webhooks` |
-| Infraestructura de dominio       | `venues`, `artists`, `genres`, `concert-formats` |
-| Soporte operativo                | `notifications`, `queues`, `cache` |
+| \focheadcell{Dominio funcional} | \focheadcell{Módulos}                               |
+| :------------------------------ | :-------------------------------------------------- |
+| Identidad y acceso              | `auth`, `users`                                     |
+| Catálogo y eventos              | `events` (incluye `ticket-types` y `event-artists`) |
+| Transacción y emisión           | `orders`, `tickets`, `webhooks`                     |
+| Infraestructura de dominio      | `venues`, `artists`, `genres`, `concert-formats`    |
+| Soporte operativo               | `notifications`, `queues`, `cache`                  |
 
 #### API real del sistema
 
@@ -146,86 +146,78 @@ Los contratos siguientes se extrajeron de controladores y DTOs del repositorio
 
 **Autenticación**
 
-
-| \focheadcell{Endpoint} | \focheadcell{Seguridad} | \focheadcell{Resumen funcional} |
-| :-- | :-- | :-- |
-| POST /api/v1/auth/register | Pública | Alta usuario y devuelve mensaje de verificación |
-| POST /api/v1/auth/login | Pública | Recibe credenciales y devuelve token + cookie refresh |
-| POST /api/v1/auth/refresh | Cookie refresh válida | Emite nuevo access token y rota cookie |
-| POST /api/v1/auth/logout | JWT + cookie refresh | Revoca refresh token y limpia cookie (204) |
-
+| \focheadcell{Endpoint}     | \focheadcell{Seguridad} | \focheadcell{Resumen funcional}                       |
+| :------------------------- | :---------------------- | :---------------------------------------------------- |
+| POST /api/v1/auth/register | Pública                 | Alta usuario y devuelve mensaje de verificación       |
+| POST /api/v1/auth/login    | Pública                 | Recibe credenciales y devuelve token + cookie refresh |
+| POST /api/v1/auth/refresh  | Cookie refresh válida   | Emite nuevo access token y rota cookie                |
+| POST /api/v1/auth/logout   | JWT + cookie refresh    | Revoca refresh token y limpia cookie (204)            |
 
 **Eventos y catálogo**
 
-
-| \focheadcell{Endpoint} | \focheadcell{Seguridad} | \focheadcell{Resumen funcional} |
-| :-- | :-- | :-- |
-| GET /api/v1/events | Pública | Lista eventos con paginación y filtros |
-| POST /api/v1/events | JWT + rol ADMIN/CREATOR | Crea evento |
-| POST /api/v1/events/:id/publish | JWT + rol ADMIN/CREATOR | Publica evento existente |
-| POST /api/v1/events/:eventId/ticket-types | JWT + rol ADMIN/CREATOR | Crea tipo de ticket para un evento |
-
+| \focheadcell{Endpoint}                    | \focheadcell{Seguridad} | \focheadcell{Resumen funcional}        |
+| :---------------------------------------- | :---------------------- | :------------------------------------- |
+| GET /api/v1/events                        | Pública                 | Lista eventos con paginación y filtros |
+| POST /api/v1/events                       | JWT + rol ADMIN/CREATOR | Crea evento                            |
+| POST /api/v1/events/:id/publish           | JWT + rol ADMIN/CREATOR | Publica evento existente               |
+| POST /api/v1/events/:eventId/ticket-types | JWT + rol ADMIN/CREATOR | Crea tipo de ticket para un evento     |
 
 **Órdenes, tickets y pagos**
 
-
-| \focheadcell{Endpoint} | \focheadcell{Seguridad} | \focheadcell{Resumen funcional} |
-| :-- | :-- | :-- |
-| POST /api/v1/orders | JWT usuario autenticado | Crea orden y retorna checkoutUrl cuando aplica |
-| GET /api/v1/orders/my | JWT usuario autenticado | Lista órdenes del comprador |
-| GET /api/v1/tickets/mine | JWT usuario autenticado | Lista tickets del comprador |
-| POST /api/v1/tickets/validate | JWT + rol ADMIN/VALIDATOR | Valida ticket por hash y registra trazabilidad |
-| POST /api/v1/webhooks/stripe | Firma stripe-signature válida | Procesa evento de pago/reembolso |
-
+| \focheadcell{Endpoint}        | \focheadcell{Seguridad}       | \focheadcell{Resumen funcional}                |
+| :---------------------------- | :---------------------------- | :--------------------------------------------- |
+| POST /api/v1/orders           | JWT usuario autenticado       | Crea orden y retorna checkoutUrl cuando aplica |
+| GET /api/v1/orders/my         | JWT usuario autenticado       | Lista órdenes del comprador                    |
+| GET /api/v1/tickets/mine      | JWT usuario autenticado       | Lista tickets del comprador                    |
+| POST /api/v1/tickets/validate | JWT + rol ADMIN/VALIDATOR     | Valida ticket por hash y registra trazabilidad |
+| POST /api/v1/webhooks/stripe  | Firma stripe-signature válida | Procesa evento de pago/reembolso               |
 
 **Cobertura de flujo (backend vs frontend).**
 
-| \focheadcell{Capa} | \focheadcell{Estado verificable} |
-| :---------------- | :------------------------------- |
-| Backend | Contratos de auth, eventos, órdenes, tickets y webhook Stripe implementados, con suites de pruebas en `backend/test/` y `backend/src/**/*.spec.ts`. |
-| Frontend | Cobertura para autenticación, catálogo público de eventos y área administrativa; los flujos de compra de órdenes, consumo de tickets del comprador y scanner/validación final en UI permanecen parciales o pendientes. |
+| \focheadcell{Capa} | \focheadcell{Estado verificable}                                                                                                                                                                                       |
+| :----------------- | :--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Backend            | Contratos de auth, eventos, órdenes, tickets y webhook Stripe implementados, con suites de pruebas en `backend/test/` y `backend/src/**/*.spec.ts`.                                                                    |
+| Frontend           | Cobertura para autenticación, catálogo público de eventos y área administrativa; los flujos de compra de órdenes, consumo de tickets del comprador y scanner/validación final en UI permanecen parciales o pendientes. |
 
 #### Modelo de datos y constraints
 
 El esquema Prisma (`backend/prisma/schema.prisma`) se organiza en dos bloques:
 
-| \focheadcell{Bloque} | \focheadcell{Entidades} |
-| :------------------- | :---------------------- |
+| \focheadcell{Bloque} | \focheadcell{Entidades}                                                   |
+| :------------------- | :------------------------------------------------------------------------ |
 | Núcleo transaccional | User, RefreshToken, Event, TicketType, Order, OrderItem, Ticket, Payment. |
-| Catálogos y soporte | Venue, Artist, Genre, ConcertFormat, EventArtist. |
+| Catálogos y soporte  | Venue, Artist, Genre, ConcertFormat, EventArtist.                         |
 
 **Relaciones principales verificables**
 
-
-| \focheadcell{Relación} | \focheadcell{Cardinalidad} |
-|:--|:--:|
-| User (creator) con Event | 1:N |
-| Event con TicketType, Order y Ticket | 1:N |
-| Order con OrderItem, Payment y Ticket | 1:N |
-| TicketType con OrderItem y Ticket | 1:N |
-| User (buyer) con Order y Ticket | 1:N |
-| User (validator) con Ticket validado | 1:N (opcional) |
-| Event con Artist mediante EventArtist | N:M |
-| Event con Genre y Artist con Genre | N:M |
-
+| \focheadcell{Relación}                | \focheadcell{Cardinalidad} |
+| :------------------------------------ | :------------------------: |
+| User (creator) con Event              |            1:N             |
+| Event con TicketType, Order y Ticket  |            1:N             |
+| Order con OrderItem, Payment y Ticket |            1:N             |
+| TicketType con OrderItem y Ticket     |            1:N             |
+| User (buyer) con Order y Ticket       |            1:N             |
+| User (validator) con Ticket validado  |       1:N (opcional)       |
+| Event con Artist mediante EventArtist |            N:M             |
+| Event con Genre y Artist con Genre    |            N:M             |
 
 **Constraints e índices relevantes (extracto)**
 
-| \focheadcell{Tipo de restricción} | \focheadcell{Detalle} |
-| :------------------------------- | :-------------------- |
-| Unicidad | `users.email`, `users.phone`, `tickets.hash`, `venues.slug`, `artists.slug`, `genres.name/slug`, `concert_formats.name/slug`, `event_artists(event_id, artist_id)`. |
-| Integridad referencial (FK) | Presente en las relaciones críticas (`event_id`, `buyer_id`, `order_id`, etc.). |
-| Cascadas de borrado | `RefreshToken→User`, `EventArtist→Event`, `TicketType→Event`, `OrderItem→Order`, `Ticket→Event`. |
-| Índices de consulta | `events(status, eventDate)`, `orders(buyerId, createdAt)`, `orders(eventId, status)`, `tickets(buyerId, status)`, `tickets(eventId, status)`. |
-| Enums de dominio | `Role`, `EventStatus`, `OrderStatus`, `TicketStatus`, `PaymentStatus`. |
+| \focheadcell{Tipo de restricción} | \focheadcell{Detalle}                                                                                                                                               |
+| :-------------------------------- | :------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| Unicidad                          | `users.email`, `users.phone`, `tickets.hash`, `venues.slug`, `artists.slug`, `genres.name/slug`, `concert_formats.name/slug`, `event_artists(event_id, artist_id)`. |
+| Integridad referencial (FK)       | Presente en las relaciones críticas (`event_id`, `buyer_id`, `order_id`, etc.).                                                                                     |
+| Cascadas de borrado               | `RefreshToken→User`, `EventArtist→Event`, `TicketType→Event`, `OrderItem→Order`, `Ticket→Event`.                                                                    |
+| Índices de consulta               | `events(status, eventDate)`, `orders(buyerId, createdAt)`, `orders(eventId, status)`, `tickets(buyerId, status)`, `tickets(eventId, status)`.                       |
+| Enums de dominio                  | `Role`, `EventStatus`, `OrderStatus`, `TicketStatus`, `PaymentStatus`.                                                                                              |
 
 **Limitaciones actuales del esquema (a considerar)**
 
-| \focheadcell{Limitación} | \focheadcell{Implicación} |
-| :----------------------- | :------------------------ |
-| Ausencia de CHECK constraints | No se observan restricciones como `availableQuantity >= 0`, `totalQuantity >= availableQuantity` o `saleStartDate <= saleEndDate`. |
-| `currency` como String | Requiere validación estricta de ISO. |
-| FKs sin `onDelete` explícito en algunos casos | Conviene revisar políticas de borrado para producción. |
+| \focheadcell{Limitación}                      | \focheadcell{Implicación}                                                                                                          |
+| :-------------------------------------------- | :--------------------------------------------------------------------------------------------------------------------------------- |
+| Ausencia de CHECK constraints                 | No se observan restricciones como `availableQuantity >= 0`, `totalQuantity >= availableQuantity` o `saleStartDate <= saleEndDate`. |
+| `currency` como String                        | Requiere validación estricta de ISO.                                                                                               |
+| FKs sin `onDelete` explícito en algunos casos | Conviene revisar políticas de borrado para producción.                                                                             |
 
 #### Diagrama entidad-relación (resumen)
 
@@ -245,22 +237,19 @@ Para mantener legibilidad, el diagrama ER se presenta en vistas por dominio gene
 
 #### Seguridad y control de integridad
 
-| \focheadcell{Mecanismo} | \focheadcell{Función} |
-| :---------------------- | :-------------------- |
-| JWT + refresh token rotativo | Autenticación y renovación segura de sesión. |
-| Joi en `env.validation.ts` | Validación de variables de entorno críticas. |
-| `prisma.$transaction()` | Aislamiento de operaciones críticas de compra. |
-| Hash SHA-256 por ticket | Identificación y validación del ticket vía `qrPayload`. |
+| \focheadcell{Mecanismo}      | \focheadcell{Función}                                   |
+| :--------------------------- | :------------------------------------------------------ |
+| JWT + refresh token rotativo | Autenticación y renovación segura de sesión.            |
+| Joi en `env.validation.ts`   | Validación de variables de entorno críticas.            |
+| `prisma.$transaction()`      | Aislamiento de operaciones críticas de compra.          |
+| Hash SHA-256 por ticket      | Identificación y validación del ticket vía `qrPayload`. |
 
 ### Puntos de control para validación del proyecto
 
-| \focheadcell{Punto de control} | \focheadcell{Verificación} |
-| :----------------------------- | :------------------------ |
-| Integridad y unicidad del ticket | Validación de uso único en acceso. |
-| Prevención de sobreventa | Consistencia bajo concurrencia. |
-| Control de acceso por rol | Protección de endpoints sensibles. |
-| Auditoría de validación | Registro de `validatedAt` y `validatedBy`. |
-| Confirmación de pago | Webhook y emisión de notificaciones. |
-
-> Esta sección describe el diseño implementado y evita afirmar resultados no ejecutados en la
-> presente auditoría.
+| \focheadcell{Punto de control}   | \focheadcell{Verificación}                 |
+| :------------------------------- | :----------------------------------------- |
+| Integridad y unicidad del ticket | Validación de uso único en acceso.         |
+| Prevención de sobreventa         | Consistencia bajo concurrencia.            |
+| Control de acceso por rol        | Protección de endpoints sensibles.         |
+| Auditoría de validación          | Registro de `validatedAt` y `validatedBy`. |
+| Confirmación de pago             | Webhook y emisión de notificaciones.       |
