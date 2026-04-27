@@ -23,7 +23,6 @@ Contiene todo el tooling para generar PDF académico desde Markdown:
 - `template.tex` → plantilla LaTeX
 - `metadata.yml` → metadatos globales
 - `build.sh` + `Makefile` → build/watch/clean
-- `latexmkrc` → configuración base de latexmk
 - `assets/` → recursos gráficos del PDF
 - `build/` → salida de compilación
 

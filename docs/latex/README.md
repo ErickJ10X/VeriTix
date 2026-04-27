@@ -10,7 +10,6 @@ Este módulo encapsula TODO lo necesario para compilar la memoria PDF a partir d
 - `assets/`: recursos gráficos del documento
 - `build.sh`: script principal (build/watch/clean)
 - `Makefile`: fachada simple sobre `build.sh`
-- `latexmkrc`: configuración base para flujos con latexmk
 - `build/`: artefactos de salida
 
 ## Requisitos

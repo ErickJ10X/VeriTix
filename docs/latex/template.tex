@@ -269,7 +269,7 @@ $if(linestretch)$\setstretch{$linestretch$}$endif$
 % ── Encabezado y pie de página ──────────────────────────────
 \clearpairofpagestyles
 \setlength{\headheight}{18pt}
-\newcommand{\focpagebrand}{\makebox[\textwidth][r]{\small\color{focgray}\sffamily FOMENTO OCUPACIONAL FOC \textregistered}}
+\newcommand{\focpagebrand}{\makebox[\textwidth][r]{\small\color{focgray}\sffamily $institution-brand$ \textregistered}}
 \newcommand{\focpagefooter}{\makebox[\textwidth][r]{\footnotesize\color{focgray}\sffamily Página\hspace{0.35em}{\color{focblue}\thepage}}}
 \ohead{\focpagebrand}
 \ohead*{\focpagebrand}
@@ -328,9 +328,10 @@ $if(linestretch)$\setstretch{$linestretch$}$endif$
         ($$(current page.north east)-(0,1.85cm)$$);
 
       % ── Marca institucional — logo + texto dentro de la barra azul ──
+      $if(logo-path)$
       \node[anchor=north west, inner sep=0pt]
         at ($$(current page.north west)+(0.95cm,-0.08cm)$$) {
-          \includegraphics[height=2.4cm]{assets/foc-logo.png}
+          \includegraphics[height=2.4cm]{$logo-path$}
       };
 
       \draw[white, line width=0.8pt]
@@ -340,9 +341,17 @@ $if(linestretch)$\setstretch{$linestretch$}$endif$
       \node[anchor=north west, inner sep=0pt]
         at ($$(current page.north west)+(4.15cm,-0.08cm)$$) {
           \parbox[c][2.4cm][c]{8.8cm}{%
-            \color{white}\bfseries\sffamily\fontsize{17}{17}\selectfont \textsc{Instituto Fomento Ocupacional}
+            \color{white}\bfseries\sffamily\fontsize{17}{17}\selectfont \textsc{$institution-name$}
           }
       };
+      $else$
+      \node[anchor=north west, inner sep=0pt]
+        at ($$(current page.north west)+(0.95cm,-0.08cm)$$) {
+          \parbox[c][2.4cm][c]{12.5cm}{%
+            \color{white}\bfseries\sffamily\fontsize{17}{17}\selectfont \textsc{$institution-name$}
+          }
+      };
+      $endif$
 
       % ── Línea divisoria sutil ──
       \draw[focblue, line width=0.5pt]
@@ -352,14 +361,14 @@ $if(linestretch)$\setstretch{$linestretch$}$endif$
       % ── Título "VeriTix" — centrado,parte superior ──
       \node[anchor=center]
         at ($$(current page.center)+(0,3cm)$$) {
-          \color{focblue}\fontsize{72}{76}\selectfont\bfseries\sffamily VeriTix
+          \color{focblue}\fontsize{72}{76}\selectfont\bfseries\sffamily $title$
       };
 
       % ── Subtítulo — debajo del título ──
       \node[anchor=center, inner sep=0pt]
         at ($$(current page.center)+(0,0.5cm)$$) {
           \color{focblue}\fontsize{18}{20}\selectfont\sffamily
-          Sistema de Gestión de Eventos y Tickets Digitales
+          $subtitle$
       };
 
       % ── Línea horizontal decorativa ──
@@ -385,16 +394,16 @@ $if(linestretch)$\setstretch{$linestretch$}$endif$
       \node[anchor=south east, inner sep=0pt, align=right]
         at ($$(current page.south east)+(-2cm,2cm)$$) {
           \color{focblue}\bfseries\sffamily\large
-          DAM/DAW\\[0.3em]
+          $cycle$\\[0.3em]
           \color{focblue}\sffamily\normalsize
-          2026
+          $date$
       };
 
       % ── Footer institucional — esquina inferior izquierda ──
       \node[anchor=south west, inner sep=0pt]
         at ($$(current page.south west)+(2cm,2cm)$$) {
           \color{focblue}\sffamily\small
-          Proyecto Fin de Ciclo
+          $project-type$
       };
 
     \end{tikzpicture}
@@ -410,28 +419,27 @@ $if(linestretch)$\setstretch{$linestretch$}$endif$
   \begin{small}\itshape
   Los documentos, elementos gráficos, vídeos, transparencias y otros recursos didácticos
   incluidos en este contenido pueden contener imprecisiones técnicas o errores tipográficos.
-  Periódicamente se realizan cambios en el contenido. Fomento Ocupacional FOC SL puede
+  Periódicamente se realizan cambios en el contenido. $legal-entity$ puede
   realizar en cualquier momento, sin previo aviso, mejoras y/o cambios en el contenido.
 
   \vspace{0.8em}
   Es responsabilidad del usuario el cumplimiento de todas las leyes de derechos de autor
   aplicables. Ningún elemento de este contenido, ni parte de este contenido puede ser
   reproducida, almacenada o introducida en un sistema de recuperación, ni transmitida de
-  ninguna forma ni por ningún medio, sin la previa autorización por escrito de Fomento
-  Ocupacional FOC SL.
+  ninguna forma ni por ningún medio, sin la previa autorización por escrito de $legal-entity$.
 
   \vspace{0.8em}
   Este contenido está protegido por la ley de propiedad intelectual e industrial. Pertenecen
-  a Fomento Ocupacional FOC SL los derechos de autor y los demás derechos de propiedad
+  a $legal-entity$ los derechos de autor y los demás derechos de propiedad
   intelectual e industrial sobre este contenido.
 
   \vspace{0.8em}
   Sin perjuicio de los casos en que la ley aplicable prohíbe la exclusión de la
-  responsabilidad por daños, Fomento Ocupacional FOC SL no se responsabiliza en ningún
+  responsabilidad por daños, $legal-entity$ no se responsabiliza en ningún
   caso de daños indirectos que se deriven del uso de este contenido.
 
   \vspace{0.8em}
-  \textcopyright{} 2026 Fomento Ocupacional FOC SL todos los derechos reservados.
+  \textcopyright{} $date$ $legal-entity$ todos los derechos reservados.
   \end{small}
   \vspace*{\fill}
   \newpage
