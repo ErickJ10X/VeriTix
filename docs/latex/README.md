@@ -6,13 +6,37 @@ Este módulo encapsula TODO lo necesario para compilar la memoria PDF a partir d
 
 - `src/*.md`: capítulos en orden (se concatenan al compilar)
 - `filters/`: filtros Lua para limpiar Markdown y centralizar transformaciones
-- `template.tex`: plantilla visual/institucional
+- `template/`: plantilla modularizada (preamble, components, document)
+- `template.tex`: orquestador que importa los parciales de `template/`
 - `metadata.yml`: metadatos globales (título, autores, idioma, etc.)
 - `assets/`: recursos gráficos del documento (logo y otros assets estáticos)
 - `build/assets/`: diagramas ER derivados en PNG (generados por Prisma ERD)
 - `build.sh`: script principal (build/clean/erd)
 - `Makefile`: fachada simple sobre `build.sh`
 - `build/`: artefactos de salida
+
+### Detalle de `template/`
+
+```bash
+template/
+├── preamble/          % configuración del preámbulo LaTeX
+│   ├── 00-class.tex          % clase del documento
+│   ├── 10-fonts-language.tex % fuentes e idioma
+│   ├── 20-layout-colors.tex  % geometría, colores, spacing
+│   ├── 30-tables.tex         % tablas y helpers
+│   ├── 40-lists-figures.tex  % listas y figuras
+│   ├── 50-code.tex           % código fuente y highlighting
+│   ├── 60-sections-toc.tex   % secciones y ToC (KOMA)
+│   ├── 70-header-footer.tex  % header y footer
+│   └── 90-hyperref.tex       % hyperref y bookmarks
+├── components/        % macros reutilizables
+│   ├── cover.tex             % portada institucional
+│   └── legal.tex             % aviso legal
+└── document/           % estructura del documento
+    ├── 00-begin.tex          % \begin{document}
+    ├── 10-frontmatter.tex    % portada → legal → índice
+    └── 90-end.tex            % \end{document}
+```
 
 Nota: los ERD se generan directamente como PNG en `build/assets/` desde Prisma ERD (`make erd`).
 

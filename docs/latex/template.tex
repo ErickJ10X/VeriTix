@@ -1,23 +1,35 @@
 % ============================================================
-%  VeriTix — Plantilla LaTeX estilo FOC
-%  Convenciones: documentación académica/técnica
-%  Motor: XeLaTeX  |  Pandoc template
+%  VeriTix — Plantilla LaTeX (Pandoc)
+%  Estilo: FOC Documentation
+%  Motor: XeLaTeX
 % ============================================================
 
-% ── Clase base ──────────────────────────────────────────────
+% %%────────────────────────────────────────────────────
+% %% CLASE BASE
+% %%────────────────────────────────────────────────────
 \documentclass[
   $if(fontsize)$$fontsize$,$endif$
   $if(papersize)$$papersize$paper,$endif$
   twoside=false,
-  parskip=half               % espacio entre párrafos sin sangría (estilo técnico)
-]{$if(documentclass)$$documentclass$$else$scrreprt$endif$}                  % KOMA-Script: mejor base para docs académicos que 'report'
+  parskip=half
+]{scrreprt}
 
-% ── Codificación y tipografía ───────────────────────────────
-\usepackage{fontspec}        % fuentes OpenType/TrueType con XeLaTeX
+
+% %%────────────────────────────────────────────────────
+% %% PAQUETES FUNDAMENTALES
+% %%────────────────────────────────────────────────────
+\usepackage{etoolbox}
+\usepackage{calc}
+\usepackage{needspace}
+
+
+% %%────────────────────────────────────────────────────
+% %% TIPOGRAFÍA Y IDIOMA
+% %%────────────────────────────────────────────────────
+\usepackage{fontspec}
 \usepackage{polyglossia}
 \setdefaultlanguage[variant=spanish]{spanish}
-\frenchspacing               % espaciado uniforme tras punto (norma española)
-
+\frenchspacing
 \defaultfontfeatures{Ligatures=TeX}
 
 $if(mainfont)$
@@ -29,6 +41,7 @@ $if(mainfont)$
 $else$
   \setmainfont[Numbers=OldStyle]{TeX Gyre Pagella}
 $endif$
+
 $if(sansfont)$
   \IfFontExistsTF{$sansfont$}{
     \setsansfont[Scale=MatchLowercase]{$sansfont$}
@@ -38,6 +51,7 @@ $if(sansfont)$
 $else$
   \setsansfont[Scale=MatchLowercase]{TeX Gyre Heros}
 $endif$
+
 $if(monofont)$
   \IfFontExistsTF{$monofont$}{
     \setmonofont[Scale=MatchLowercase]{$monofont$}
@@ -48,18 +62,20 @@ $else$
   \setmonofont[Scale=MatchLowercase]{TeX Gyre Cursor}
 $endif$
 
-% ── Geometría ───────────────────────────────────────────────
+
+% %%────────────────────────────────────────────────────
+% %% GEOMETRÍA Y COLORES
+% %%────────────────────────────────────────────────────
 \usepackage[$for(geometry)$$geometry$$sep$,$endfor$]{geometry}
 
-% ── Colores institucionales FOC ─────────────────────────────
 \usepackage{xcolor}
-\definecolor{focblue}{HTML}{1F497D}    % azul base institucional
-\definecolor{focmid}{HTML}{1F497D}     % unificado al azul base
-\definecolor{foclight}{HTML}{BDD7EE}   % azul claro (filas alternas tablas)
-\definecolor{focgray}{HTML}{595959}    % gris oscuro (header página)
-\definecolor{focorange}{HTML}{C97A00}  % aviso/advertencia en código
-
-% ── Esquema One Dark para código ────────────────────────────
+% Colores institucionales FOC
+\definecolor{focblue}{HTML}{1F497D}
+\definecolor{focmid}{HTML}{1F497D}
+\definecolor{foclight}{HTML}{BDD7EE}
+\definecolor{focgray}{HTML}{595959}
+\definecolor{focorange}{HTML}{C97A00}
+% Colores One Dark para código
 \definecolor{foccodebg}{HTML}{282C34}
 \definecolor{foccodefg}{HTML}{ABB2BF}
 \definecolor{foccodecomment}{HTML}{5C6370}
@@ -70,34 +86,30 @@ $endif$
 \definecolor{foccodeconst}{HTML}{D19A66}
 \definecolor{foccodeaccent}{HTML}{56B6C2}
 
-% ── Interlineado ────────────────────────────────────────────
+
+% %%────────────────────────────────────────────────────
+% %% INTERLINEADO Y MICROTIPOGRAFÍA
+% %%────────────────────────────────────────────────────
 \usepackage{setspace}
 $if(linestretch)$\setstretch{$linestretch$}$endif$
-\setlength{\emergencystretch}{2em} % evita overfulls y cortes feos de línea
-\clubpenalty=10000               % evita líneas huérfanas al inicio de página
-\widowpenalty=10000              % evita líneas viudas al final de párrafo
+\setlength{\emergencystretch}{2em}
+\clubpenalty=10000
+\widowpenalty=10000
 \displaywidowpenalty=10000
 
-% ── Microtipoografía ────────────────────────────────────────
-\usepackage[final]{microtype}  % con XeLaTeX solo actúa sobre tracking
+\usepackage[final]{microtype}
+\usepackage{csquotes}
 
-% ── Citas y comillas (buena práctica académica) ─────────────
-\usepackage{csquotes}        % \enquote{} para citas tipográficamente correctas
 
-% ── Matemáticas básicas (requerido por pandoc para tablas con \real{}) ──
-\usepackage{calc}
-
-% ── Tablas (estilo académico con booktabs) ──────────────────
-\usepackage{booktabs}        % \toprule \midrule \bottomrule
-\usepackage{longtable}       % tablas multipágina (pandoc las usa)
+% %%────────────────────────────────────────────────────
+% %% TABLAS
+% %%────────────────────────────────────────────────────
+\usepackage{booktabs}
+\usepackage{longtable}
 \usepackage{array}
 \usepackage{tabularx}
-\usepackage{colortbl}        % colores en celdas
-\usepackage{etoolbox}        % hooks de entorno
-\setlength{\LTleft}{0pt}
-\setlength{\LTright}{0pt}
+\usepackage{colortbl}
 
-% Ajustes visuales de tablas académicas (legibilidad)
 \definecolor{foctablerowodd}{HTML}{FFFFFF}
 \definecolor{foctableroweven}{HTML}{EAF2FC}
 \definecolor{foctableline}{HTML}{BFD0E3}
@@ -110,15 +122,13 @@ $if(linestretch)$\setstretch{$linestretch$}$endif$
 \renewcommand{\arraystretch}{1.17}
 \setlength{\tabcolsep}{5.5pt}
 
-% Columnas con alineación y ancho definido
 \newcolumntype{L}[1]{>{\raggedright\arraybackslash}p{#1}}
 \newcolumntype{C}[1]{>{\centering\arraybackslash}p{#1}}
 \newcolumntype{R}[1]{>{\raggedleft\arraybackslash}p{#1}}
 
-% Estilo de tablas: helpers reutilizables para Markdown y LaTeX crudo
 \newcommand{\focheadcell}[1]{\cellcolor{focmid}\color{white}\textbf{#1}}
 \newcommand{\focheadrow}{\rowcolor{focblue}\color{white}\bfseries\sffamily}
-\newcommand{\foctheadrow}{\focheadrow} % alias legado
+\newcommand{\foctheadrow}{\focheadrow}
 
 \newcommand{\focapplytablestyle}{%
   \arrayrulecolor{foctableline}%
@@ -135,16 +145,20 @@ $if(linestretch)$\setstretch{$linestretch$}$endif$
 \AtBeginEnvironment{tabularx}{\focapplytablestyle}%
 \AtEndEnvironment{tabularx}{\focresettablestyle}%
 \AtBeginEnvironment{longtable}{\focapplytablestyle}%
-% longtable no usa reset al final porque colortbl/longtable disparan \noalign fuera de la alineación
-% Zebra activa también en longtable; el encabezado sigue viniendo desde Markdown
 
-% ── Listas ──────────────────────────────────────────────────
+
+% %%────────────────────────────────────────────────────
+% %% LISTAS
+% %%────────────────────────────────────────────────────
 \usepackage{enumitem}
 \setlist[itemize,1]{label=\textcolor{focmid}{\textbullet}, leftmargin=1.8em, itemsep=0.2em}
-\setlist[itemize,2]{label=\textcolor{focmid}{--},          leftmargin=1.5em, itemsep=0.1em}
+\setlist[itemize,2]{label=\textcolor{focmid}{--}, leftmargin=1.5em, itemsep=0.1em}
 \setlist[enumerate]{leftmargin=1.8em, itemsep=0.2em}
 
-% ── Gráficos y figuras ──────────────────────────────────────
+
+% %%────────────────────────────────────────────────────
+% %% GRÁFICOS Y FIGURAS
+% %%────────────────────────────────────────────────────
 \usepackage{graphicx}
 \usepackage{caption}
 \captionsetup{
@@ -154,7 +168,10 @@ $if(linestretch)$\setstretch{$linestretch$}$endif$
   labelsep=period,
 }
 
-% ── Código fuente ───────────────────────────────────────────
+
+% %%────────────────────────────────────────────────────
+% %% CÓDIGO FUENTE
+% %%────────────────────────────────────────────────────
 \usepackage{listings}
 \lstset{
   basicstyle=\small\ttfamily\color{foccodefg},
@@ -173,13 +190,14 @@ $if(linestretch)$\setstretch{$linestretch$}$endif$
   showstringspaces=false,
 }
 
-% Bloques Shaded de pandoc (```código```)
+% Bloques Shaded de pandoc
 \usepackage{framed}
 \definecolor{shadecolor}{HTML}{282C34}
 \newenvironment{Shaded}{\begin{snugshade}}{\end{snugshade}}
 \usepackage{fancyvrb}
 \newcommand{\VerbBar}{|}
 \newcommand{\VERB}{\Verb[commandchars=\\\{\}]}
+
 % Macros de resaltado generadas por Pandoc
 \newcommand{\NormalTok}[1]{\textcolor{foccodefg}{#1}}
 \newcommand{\KeywordTok}[1]{\textcolor{foccodekeyword}{\bfseries #1}}
@@ -220,62 +238,72 @@ $if(linestretch)$\setstretch{$linestretch$}$endif$
   fillcolor=\color{foccodebg},
 }
 
-% ── TikZ para portada ───────────────────────────────────────
+
+% %%────────────────────────────────────────────────────
+% %% TIKZ (para portada)
+% %%────────────────────────────────────────────────────
 \usepackage{tikz}
 \usetikzlibrary{calc}
 
-% ── Títulos de sección — KOMA-Script ────────────────────────
-\usepackage{scrlayer-scrpage}  % encabezados KOMA
-\usepackage{needspace}         % evita títulos al final de página sin contenido
 
-% Personalización de títulos con scrreprt (KOMA-first)
+% %%────────────────────────────────────────────────────
+% %% TÍTULOS DE SECCIÓN — KOMA-Script
+% %%────────────────────────────────────────────────────
+\usepackage{scrlayer-scrpage}
+
 \setkomafont{disposition}{\bfseries\sffamily}
 \setkomafont{chapter}{\Huge\bfseries\sffamily\color{focblue}}
 \setkomafont{section}{\Large\bfseries\sffamily\color{focmid}}
 \setkomafont{subsection}{\large\bfseries\sffamily\color{focmid}}
 \setkomafont{subsubsection}{\normalsize\bfseries\sffamily}
 
-% Espaciados verticales de títulos (KOMA, sin titlesec)
 \RedeclareSectionCommand[beforeskip=0.5em,afterskip=1.2em]{chapter}
 \RedeclareSectionCommand[beforeskip=1.2em,afterskip=0.65em]{section}
 \RedeclareSectionCommand[beforeskip=0.95em,afterskip=0.45em]{subsection}
 \RedeclareSectionCommand[beforeskip=0.8em,afterskip=0.35em]{subsubsection}
 
-% Evita encabezados "colgados" al pie de página (política más estricta)
 \preto\section{\Needspace{12\baselineskip}}
 \preto\subsection{\Needspace{10\baselineskip}}
 \preto\subsubsection{\Needspace{7\baselineskip}}
 
-% ── Encabezado y pie de página ──────────────────────────────
+% Índice (KOMA)
+\setkomafont{chapterentry}{\bfseries\sffamily\color{focblue}}
+\setkomafont{chapterentrypagenumber}{\bfseries\sffamily\color{focblue}}
+
+
+% %%────────────────────────────────────────────────────
+% %% ENCABEZADO Y PIE DE PÁGINA
+% %%────────────────────────────────────────────────────
 \clearpairofpagestyles
 \setlength{\headheight}{18pt}
-\newcommand{\focpagebrand}{\makebox[\textwidth][r]{\small\color{focgray}\sffamily $institution-brand$ \textregistered}}
-\newcommand{\focpagefooter}{\makebox[\textwidth][r]{\footnotesize\color{focgray}\sffamily Página\hspace{0.35em}{\color{focblue}\thepage}}}
+\newcommand{\focpagebrand}{\textcolor{focgray}{\sffamily $institution-brand$ \textregistered}}
+\newcommand{\focpagefooter}{\textcolor{focgray}{\sffamily Página~\thepage}}
+
 \ohead{\focpagebrand}
 \ohead*{\focpagebrand}
 \ihead{}
 \ihead*{}
 \ofoot{\focpagefooter}
 \ifoot{\small\color{focgray}\sffamily $if(footer-text)$$footer-text$$else$$for(author)$$author$$sep$ -- $endfor$$endif$}
-% También aplicar footer en páginas de estilo "plain" (inicio de capítulos, ToC, etc.)
 \ofoot*{\focpagefooter}
 \ifoot*{\small\color{focgray}\sffamily $if(footer-text)$$footer-text$$else$$for(author)$$author$$sep$ -- $endfor$$endif$}
+
 \KOMAoptions{headsepline=0.4pt}
 \addtokomafont{headsepline}{\color{focgray}}
 \pagestyle{scrheadings}
+\def\chapterpagestyle{scrheadings}
 
-% Capítulos con el mismo header/footer que el resto del documento
-\renewcommand*{\chapterpagestyle}{scrheadings}
 
-% ── Índice (KOMA) ───────────────────────────────────────────
-\setkomafont{chapterentry}{\bfseries\sffamily\color{focblue}}
-\setkomafont{chapterentrypagenumber}{\bfseries\sffamily\color{focblue}}
-
-% ── Utilidades pandoc ───────────────────────────────────────
+% %%────────────────────────────────────────────────────
+% %% UTILIDADES PANDOC
+% %%─��──────────────────────────────────────────────────
 \providecommand{\tightlist}{%
   \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
 
-% ── hyperref — SIEMPRE AL FINAL del preámbulo ───────────────
+
+% %%────────────────────────────────────────────────────
+% %% HYPERREF — SIEMPRE AL FINAL
+% %%────────────────────────────────────────────────────
 \usepackage{hyperref}
 \hypersetup{
   colorlinks  = $if(colorlinks)$$colorlinks$$else$true$endif$,
@@ -283,110 +311,114 @@ $if(linestretch)$\setstretch{$linestretch$}$endif$
   urlcolor    = $if(urlcolor)$$urlcolor$$else$focmid$endif$,
   citecolor   = $if(citecolor)$$citecolor$$else$focmid$endif$,
 }
-\usepackage{bookmark}        % mejor manejo de bookmarks PDF (carga después de hyperref)
+\usepackage{bookmark}
 
-% ── PORTADA con TikZ ────────────────────────────────────────
+
+% %%────────────────────────────────────────────────────
+% %% PORTADA — TikZ (simplificada)
+% %%────────────────────────────────────────────────────
 \newcommand{\makefoccover}{%
   \begin{titlepage}
     \thispagestyle{empty}
-    \newgeometry{margin=0pt}   % portada sin márgenes para control total
+    \newgeometry{margin=0pt}
 
     \begin{tikzpicture}[remember picture, overlay]
-
       % Fondo blanco completo
       \fill[white] (current page.south west) rectangle (current page.north east);
 
-      % ── Barra decorativa superior (azul institucional) ──
+      % Barra decorativa superior (azul institucional)
       \fill[focblue]
         (current page.north west) rectangle
-        ($$(current page.north east)-(0,1.85cm)$$);
+        ([yshift=-1.85cm] current page.north east);
 
-      % ── Marca institucional — logo + texto dentro de la barra azul ──
+      % Marca institucional — logo + texto dentro de la barra azul
       $if(logo-path)$
-      \node[anchor=north west, inner sep=0pt]
-        at ($$(current page.north west)+(0.95cm,-0.08cm)$$) {
+      \node[anchor=north west, inner sep=0pt, xshift=0.95cm, yshift=-0.08cm]
+        at (current page.north west) {
           \includegraphics[height=2.4cm]{$logo-path$}
       };
 
       \draw[white, line width=0.8pt]
-        ($$(current page.north west)+(3.7cm,-0.28cm)$$) --
-        ($$(current page.north west)+(3.7cm,-1.6cm)$$);
+        ([xshift=3.7cm, yshift=-0.28cm] current page.north west) --
+        ([xshift=3.7cm, yshift=-1.6cm] current page.north west);
 
-      \node[anchor=north west, inner sep=0pt]
-        at ($$(current page.north west)+(4.15cm,-0.08cm)$$) {
+      \node[anchor=north west, inner sep=0pt, xshift=4.15cm, yshift=-0.08cm]
+        at (current page.north west) {
           \parbox[c][2.4cm][c]{8.8cm}{%
             \color{white}\bfseries\sffamily\fontsize{17}{17}\selectfont \textsc{$institution-name$}
           }
       };
       $else$
-      \node[anchor=north west, inner sep=0pt]
-        at ($$(current page.north west)+(0.95cm,-0.08cm)$$) {
+      \node[anchor=north west, inner sep=0pt, xshift=0.95cm, yshift=-0.08cm]
+        at (current page.north west) {
           \parbox[c][2.4cm][c]{12.5cm}{%
-            \color{white}\bfseries\sffamily\fontsize{17}{17}\selectfont \textsc{$institution-name$}
+            \color{white}\bfseries\sffamily\fontsize{17}{17}\selectfont \textcolor{$institution-name$}
           }
       };
       $endif$
 
-      % ── Línea divisoria sutil ──
+      % Línea divisoria sutil
       \draw[focblue, line width=0.5pt]
-        ($$(current page.north west)+(0,1.85cm)$$) --
-        ($$(current page.north east)+(0,1.85cm)$$);
+        ([yshift=-1.85cm] current page.north west) --
+        ([yshift=-1.85cm] current page.north east);
 
-      % ── Título "VeriTix" — centrado,parte superior ──
-      \node[anchor=center]
-        at ($$(current page.center)+(0,3cm)$$) {
+      % Título "VeriTix" — centrado, parte superior
+      \node[anchor=center, yshift=3cm]
+        at (current page.center) {
           \color{focblue}\fontsize{72}{76}\selectfont\bfseries\sffamily $title$
       };
 
-      % ── Subtítulo — debajo del título ──
-      \node[anchor=center, inner sep=0pt]
-        at ($$(current page.center)+(0,0.5cm)$$) {
+      % Subtítulo — debajo del título
+      \node[anchor=center, inner sep=0pt, yshift=0.5cm]
+        at (current page.center) {
           \color{focblue}\fontsize{18}{20}\selectfont\sffamily
           $subtitle$
       };
 
-      % ── Línea horizontal decorativa ──
+      % Línea horizontal decorativa
       \draw[focblue, line width=1pt]
-        ($$(current page.center)+(-5cm, -1.5cm)$$) --
-        ($$(current page.center)+(5cm, -1.5cm)$$);
+        ([xshift=-5cm, yshift=-1.5cm] current page.center) --
+        ([xshift=5cm, yshift=-1.5cm] current page.center);
 
-      % ── Fase del proyecto ──
-      \node[anchor=center, inner sep=0pt]
-        at ($$(current page.center)+(0,-3cm)$$) {
+      % Fase del proyecto
+      \node[anchor=center, inner sep=0pt, yshift=-3cm]
+        at (current page.center) {
           \color{focblue}\bfseries\sffamily\Large
           $if(phase)$$phase$$endif$
       };
 
-      % ── Autores ──
-      \node[anchor=center, inner sep=0pt]
-        at ($$(current page.center)+(0,-5cm)$$) {
+      % Autores
+      \node[anchor=center, inner sep=0pt, yshift=-5cm]
+        at (current page.center) {
           \color{focblue}\sffamily\large
-          $for(author)$$author$$sep$ ~~·~~ $endfor$
+          $for(author)$$author$$sep$ ~~\textbullet~~ $endfor$
       };
 
-      % ── Ciclo y fecha — esquina inferior derecha ──
-      \node[anchor=south east, inner sep=0pt, align=right]
-        at ($$(current page.south east)+(-2cm,2cm)$$) {
+      % Ciclo y fecha — esquina inferior derecha
+      \node[anchor=south east, inner sep=0pt, align=right, xshift=-2cm, yshift=2cm]
+        at (current page.south east) {
           \color{focblue}\bfseries\sffamily\large
           $cycle$\\[0.3em]
           \color{focblue}\sffamily\normalsize
           $date$
       };
 
-      % ── Footer institucional — esquina inferior izquierda ──
-      \node[anchor=south west, inner sep=0pt]
-        at ($$(current page.south west)+(2cm,2cm)$$) {
+      % Footer institucional — esquina inferior izquierda
+      \node[anchor=south west, inner sep=0pt, xshift=2cm, yshift=2cm]
+        at (current page.south west) {
           \color{focblue}\sffamily\small
           $project-type$
       };
-
     \end{tikzpicture}
 
     \restoregeometry
   \end{titlepage}
 }
 
-% ── Página de aviso legal ────────────────────────────────────
+
+% %%────────────────────────────────────────────────────
+% %% PÁGINA LEGAL
+% %%────────────────────────────────────────────────────
 \newcommand{\makelegaldisclaimer}{%
   \thispagestyle{empty}
   \vspace*{\fill}
@@ -419,23 +451,24 @@ $if(linestretch)$\setstretch{$linestretch$}$endif$
   \newpage
 }
 
-% ════════════════════════════════════════════════════════════
-%  DOCUMENTO
-% ════════════════════════════════════════════════════════════
+
+% %%────────────────────────────────────────────────────
+% %% INICIO DEL DOCUMENTO
+% %%────────────────────────────────────────────────────
 \begin{document}
 
+% Portada y página legal
 \makefoccover
 \makelegaldisclaimer
 
 % Índice
 {
   \hypersetup{linkcolor=focblue}
-  \setcounter{tocdepth}{$if(toc-depth)$$toc-depth$$else$3$endif$}
   \tableofcontents
   \newpage
 }
 
-% Contenido generado por pandoc
+% Contenido generado por Pandoc
 $body$
 
 \end{document}
