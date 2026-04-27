@@ -13,6 +13,10 @@ OUTPUT="$BUILD_DIR/memoria.pdf"
 BACKEND_DIR="$LATEX_DIR/../../backend"
 LOGO_SOURCE="$LATEX_DIR/assets/foc-logo.png"
 ASSET_BUILD_DIR="$BUILD_DIR/assets"
+ERD_FILES=(
+  "$ASSET_BUILD_DIR/er-overview.png"
+  "$ASSET_BUILD_DIR/er-core-transaccional.png"
+)
 
 GREEN='\033[0;32m'
 YELLOW='\033[1;33m'
@@ -27,12 +31,7 @@ require_cmd() {
 }
 
 ensure_erd_png_assets() {
-  local files=(
-    "$ASSET_BUILD_DIR/er-overview.png"
-    "$ASSET_BUILD_DIR/er-core-transaccional.png"
-  )
-
-  for file in "${files[@]}"; do
+  for file in "${ERD_FILES[@]}"; do
     if [ ! -s "$file" ]; then
       echo -e "${YELLOW}⚠ Falta ERD generado: $file${NC}"
       echo -e "${YELLOW}  Ejecutá primero: make erd${NC}"
@@ -55,68 +54,37 @@ collect_sources() {
   printf '%s\n' "${files[@]}" | sort
 }
 
-logo_is_valid_png() {
-  if [ ! -f "$LOGO_SOURCE" ]; then
-    return 1
-  fi
+logo_is_available() {
+  [ -s "$LOGO_SOURCE" ]
+}
 
-  python3 - "$LOGO_SOURCE" <<'PY'
-import pathlib
-import sys
-import zlib
+validate_inputs() {
+  local required_files=(
+    "$METADATA"
+    "$TEMPLATE"
+    "$FILTER"
+  )
 
-p = pathlib.Path(sys.argv[1])
-d = p.read_bytes()
-sig = b"\x89PNG\r\n\x1a\n"
-
-if not d.startswith(sig):
-    raise SystemExit(1)
-
-pos = len(sig)
-seen_iend = False
-idat = bytearray()
-
-while pos + 12 <= len(d):
-    ln = int.from_bytes(d[pos:pos + 4], "big")
-    ctype = d[pos + 4:pos + 8]
-    ds = pos + 8
-    de = ds + ln
-    ce = de + 4
-    if ce > len(d):
-      raise SystemExit(1)
-    data = d[ds:de]
-    crc = int.from_bytes(d[de:ce], "big")
-    calc = zlib.crc32(ctype)
-    calc = zlib.crc32(data, calc) & 0xFFFFFFFF
-    if crc != calc:
-      raise SystemExit(1)
-    if ctype == b"IDAT":
-      idat.extend(data)
-    pos = ce
-    if ctype == b"IEND":
-      seen_iend = True
-      break
-
-if not (seen_iend and pos == len(d)):
-    raise SystemExit(1)
-
-if idat:
-    zlib.decompress(bytes(idat))
-PY
+  for file in "${required_files[@]}"; do
+    if [ ! -f "$file" ]; then
+      echo -e "${RED}✗ Archivo requerido no encontrado: $file${NC}"
+      exit 1
+    fi
+  done
 }
 
 build() {
   require_cmd pandoc
   require_cmd xelatex
-  require_cmd python3
+  validate_inputs
 
   mkdir -p "$BUILD_DIR"
 
   local -a pandoc_logo_args=()
-  if logo_is_valid_png; then
+  if logo_is_available; then
     pandoc_logo_args+=("--variable=logo-path:$LOGO_SOURCE")
   else
-    echo -e "${YELLOW}⚠ Logo inválido o no disponible, se usará fallback tipográfico en portada${NC}"
+    echo -e "${YELLOW}⚠ Logo no disponible, se usará fallback tipográfico en portada${NC}"
   fi
 
   ensure_erd_png_assets
@@ -151,18 +119,23 @@ clean() {
 
 erd() {
   require_cmd bunx
+  validate_inputs
 
   if [ ! -d "$BACKEND_DIR" ]; then
     echo -e "${RED}✗ Backend no encontrado: $BACKEND_DIR${NC}"
     exit 1
   fi
 
-  echo -e "${YELLOW}▶ Generando diagrama ER desde Prisma...${NC}"
+  echo -e "${YELLOW}▶ Generando diagramas ER desde Prisma...${NC}"
   mkdir -p "$ASSET_BUILD_DIR"
+
+  rm -f "${ERD_FILES[@]}"
   (
     cd "$BACKEND_DIR"
     bunx prisma generate
   )
+
+  ensure_erd_png_assets
   echo -e "${GREEN}✓ ER generado en docs/latex/build/assets/ (PNG)${NC}"
 }
 

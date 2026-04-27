@@ -20,6 +20,7 @@ Nota: los ERD se generan directamente como PNG en `build/assets/` desde Prisma E
 
 - `pandoc`
 - `xelatex` (TeX Live)
+
 ## Instalacion de requisitos en ubuntu
 
 ```bash
@@ -35,6 +36,12 @@ Desde `docs/latex/`:
 make build
 make erd
 make clean
+```
+
+Recomendado:
+
+```bash
+make erd && make build
 ```
 
 Alternativa directa:
