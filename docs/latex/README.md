@@ -19,6 +19,13 @@ Este módulo encapsula TODO lo necesario para compilar la memoria PDF a partir d
 - `xelatex` (TeX Live)
 - `inotifywait` (solo para watch)
 
+## Instalacion de requisitos en ubuntu
+
+```bash
+sudo apt update
+sudo apt install pandoc texlive-xetex inotify-tools
+```
+
 ## Uso
 
 Desde `docs/latex/`:
