@@ -315,7 +315,7 @@ $if(linestretch)$\setstretch{$linestretch$}$endif$
 
 
 % %%────────────────────────────────────────────────────
-% %% PORTADA — TikZ (simplificada)
+% %% PORTADA — TikZ (mejorada)
 % %%────────────────────────────────────────────────────
 \newcommand{\makefoccover}{%
   \begin{titlepage}
@@ -323,92 +323,73 @@ $if(linestretch)$\setstretch{$linestretch$}$endif$
     \newgeometry{margin=0pt}
 
     \begin{tikzpicture}[remember picture, overlay]
-      % Fondo blanco completo
+      % ── Fondo blanco completo ──
       \fill[white] (current page.south west) rectangle (current page.north east);
 
-      % Barra decorativa superior (azul institucional)
+      % ── Barra decorativa superior (azul institucional) ──
       \fill[focblue]
         (current page.north west) rectangle
-        ([yshift=-1.85cm] current page.north east);
+        ([yshift=-2.8cm] current page.north east);
 
-      % Marca institucional — logo + texto dentro de la barra azul
+      % ── Marca institucional — logo + texto dentro de la barra azul ──
       $if(logo-path)$
-      \node[anchor=north west, inner sep=0pt, xshift=0.95cm, yshift=-0.08cm]
+      \node[anchor=north west, inner sep=0pt, xshift=0.7cm, yshift=-0.15cm]
         at (current page.north west) {
-          \includegraphics[height=2.4cm]{$logo-path$}
+          \includegraphics[height=3.8cm]{$logo-path$}
       };
 
-      \draw[white, line width=0.8pt]
-        ([xshift=3.7cm, yshift=-0.28cm] current page.north west) --
-        ([xshift=3.7cm, yshift=-1.6cm] current page.north west);
-
-      \node[anchor=north west, inner sep=0pt, xshift=4.15cm, yshift=-0.08cm]
+      \node[anchor=north west, inner sep=0pt, xshift=5.5cm, yshift=-0.15cm]
         at (current page.north west) {
-          \parbox[c][2.4cm][c]{8.8cm}{%
-            \color{white}\bfseries\sffamily\fontsize{17}{17}\selectfont \textsc{$institution-name$}
+          \parbox[c][3.5cm][c]{10cm}{%
+            \color{white}\bfseries\sffamily\fontsize{15}{15}\selectfont \textbf{\uppercase{$institution-name$}}
           }
       };
       $else$
       \node[anchor=north west, inner sep=0pt, xshift=0.95cm, yshift=-0.08cm]
         at (current page.north west) {
-          \parbox[c][2.4cm][c]{12.5cm}{%
-            \color{white}\bfseries\sffamily\fontsize{17}{17}\selectfont \textcolor{$institution-name$}
+          \parbox[c][2.0cm][c]{14cm}{%
+            \color{white}\bfseries\sffamily\fontsize{15}{15}\selectfont \textbf{\uppercase{$institution-name$}}
           }
       };
       $endif$
 
-      % Línea divisoria sutil
-      \draw[focblue, line width=0.5pt]
-        ([yshift=-1.85cm] current page.north west) --
-        ([yshift=-1.85cm] current page.north east);
+      % ── Línea divisoria sutil ──
+      \draw[focblue, line width=0.4pt]
+        ([yshift=-2.8cm] current page.north west) --
+        ([yshift=-2.8cm] current page.north east);
 
-      % Título "VeriTix" — centrado, parte superior
-      \node[anchor=center, yshift=3cm]
+      % ── Título "VeriTix" — centrado, parte superior ──
+      \node[anchor=center, yshift=3.5cm]
         at (current page.center) {
-          \color{focblue}\fontsize{72}{76}\selectfont\bfseries\sffamily $title$
+          \color{focblue}\fontsize{72}{74}\selectfont\bfseries\sffamily $title$
       };
 
-      % Subtítulo — debajo del título
-      \node[anchor=center, inner sep=0pt, yshift=0.5cm]
+      % ── Subtítulo — debajo del título ──
+      \node[anchor=center, inner sep=0pt, yshift=1.2cm]
         at (current page.center) {
-          \color{focblue}\fontsize{18}{20}\selectfont\sffamily
+          \color{focmid}\fontsize{17}{20}\selectfont\sffamily
           $subtitle$
       };
 
-      % Línea horizontal decorativa
-      \draw[focblue, line width=1pt]
-        ([xshift=-5cm, yshift=-1.5cm] current page.center) --
-        ([xshift=5cm, yshift=-1.5cm] current page.center);
+      % ── Línea horizontal decorativa ──
+      \draw[foclight, line width=1pt, opacity=0.85]
+        ([xshift=-4.0cm, yshift=-0.4cm] current page.center) --
+        ([xshift=4.0cm, yshift=-0.4cm] current page.center);
 
-      % Fase del proyecto
-      \node[anchor=center, inner sep=0pt, yshift=-3cm]
+      % ── Fase del proyecto ──
+      \node[anchor=center, inner sep=0pt, yshift=-2.2cm]
         at (current page.center) {
-          \color{focblue}\bfseries\sffamily\Large
+          \color{focblue}\bfseries\sffamily\fontsize{13}{15}\selectfont
           $if(phase)$$phase$$endif$
       };
 
-      % Autores
-      \node[anchor=center, inner sep=0pt, yshift=-5cm]
+      % ── Autores ──
+      \node[anchor=center, inner sep=0pt, yshift=-4.0cm]
         at (current page.center) {
-          \color{focblue}\sffamily\large
-          $for(author)$$author$$sep$ ~~\textbullet~~ $endfor$
-      };
+          \color{focgray}\sffamily\fontsize{12}{14}\selectfont
+          $for(author)$$author$$sep$ ~~·~~ $endfor$
+};
 
-      % Ciclo y fecha — esquina inferior derecha
-      \node[anchor=south east, inner sep=0pt, align=right, xshift=-2cm, yshift=2cm]
-        at (current page.south east) {
-          \color{focblue}\bfseries\sffamily\large
-          $cycle$\\[0.3em]
-          \color{focblue}\sffamily\normalsize
-          $date$
-      };
-
-      % Footer institucional — esquina inferior izquierda
-      \node[anchor=south west, inner sep=0pt, xshift=2cm, yshift=2cm]
-        at (current page.south west) {
-          \color{focblue}\sffamily\small
-          $project-type$
-      };
     \end{tikzpicture}
 
     \restoregeometry
