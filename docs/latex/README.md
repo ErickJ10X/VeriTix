@@ -6,8 +6,7 @@ Este módulo encapsula TODO lo necesario para compilar la memoria PDF a partir d
 
 - `src/*.md`: capítulos en orden (se concatenan al compilar)
 - `filters/`: filtros Lua para limpiar Markdown y centralizar transformaciones
-- `template/`: plantilla modularizada (preamble, components, document)
-- `template.tex`: orquestador que importa los parciales de `template/`
+- `template.tex`: plantilla única (todo el preámbulo, macros y estructura)
 - `metadata.yml`: metadatos globales (título, autores, idioma, etc.)
 - `assets/`: recursos gráficos del documento (logo y otros assets estáticos)
 - `build/assets/`: diagramas ER derivados en PNG (generados por Prisma ERD)
@@ -15,28 +14,31 @@ Este módulo encapsula TODO lo necesario para compilar la memoria PDF a partir d
 - `Makefile`: fachada simple sobre `build.sh`
 - `build/`: artefactos de salida
 
-### Detalle de `template/`
+## Organización de `template.tex`
 
-```bash
-template/
-├── preamble/          % configuración del preámbulo LaTeX
-│   ├── 00-class.tex          % clase del documento
-│   ├── 10-fonts-language.tex % fuentes e idioma
-│   ├── 20-layout-colors.tex  % geometría, colores, spacing
-│   ├── 30-tables.tex         % tablas y helpers
-│   ├── 40-lists-figures.tex  % listas y figuras
-│   ├── 50-code.tex           % código fuente y highlighting
-│   ├── 60-sections-toc.tex   % secciones y ToC (KOMA)
-│   ├── 70-header-footer.tex  % header y footer
-│   └── 90-hyperref.tex       % hyperref y bookmarks
-├── components/        % macros reutilizables
-│   ├── cover.tex             % portada institucional
-│   └── legal.tex             % aviso legal
-└── document/           % estructura del documento
-    ├── 00-begin.tex          % \begin{document}
-    ├── 10-frontmatter.tex    % portada → legal → índice
-    └── 90-end.tex            % \end{document}
+El archivo `template.tex` es único (~470 líneas) pero está organizado en secciones claras:
+
+```tex
+%% CLASE BASE
+%% PAQUETES FUNDAMENTALES
+%% TIPOGRAFÍA Y IDIOMA
+%% GEOMETRÍA Y COLORES  
+%% INTERLINEADO Y MICROTIPOGRAFÍA
+%% TABLAS
+%% LISTAS
+%% GRÁFICOS Y FIGURAS
+%% CÓDIGO FUENTE
+%% TIKZ (para portada)
+%% TÍTULOS DE SECCIÓN — KOMA-Script
+%% ENCABEZADO Y PIE DE PÁGINA
+%% UTILIDADES PANDOC
+%% HYPERREF — SIEMPRE AL FINAL
+%% PORTADA — TikZ
+%% PÁGINA LEGAL
+%% INICIO DEL DOCUMENTO
 ```
+
+Cada sección tiene `%%` como separador visual para facilitar navegación y mantenimiento.
 
 Nota: los ERD se generan directamente como PNG en `build/assets/` desde Prisma ERD (`make erd`).
 
