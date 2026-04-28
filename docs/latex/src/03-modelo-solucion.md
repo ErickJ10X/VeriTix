@@ -72,16 +72,15 @@ El esquema Prisma (`backend/prisma/schema.prisma`) se organiza en dos bloques:
 
 ## Relaciones principales verificables
 
-| Relación                              |   Cardinalidad |
-| ------------------------------------- | -------------: |
-| User (creator) con Event              |            1:N |
-| Event con TicketType, Order y Ticket  |            1:N |
-| Order con OrderItem, Payment y Ticket |            1:N |
-| TicketType con OrderItem y Ticket     |            1:N |
-| User (buyer) con Order y Ticket       |            1:N |
-| User (validator) con Ticket validado  | 1:N (opcional) |
-| Event con Artist mediante EventArtist |            N:M |
-| Event con Genre y Artist con Genre    |            N:M |
+| Relación                              | Cardinalidad |
+| ------------------------------------- | -----------: |
+| User (creator) con Event              |          1:N |
+| Event con TicketType, Order y Ticket  |          1:N |
+| Order con OrderItem, Payment y Ticket |          1:N |
+| TicketType con OrderItem y Ticket     |          1:N |
+| User (buyer) con Order y Ticket       |          1:N |
+| Event con Artist mediante EventArtist |          N:M |
+| Event con Genre y Artist con Genre    |          N:M |
 
 ## Constraints e índices relevantes
 
