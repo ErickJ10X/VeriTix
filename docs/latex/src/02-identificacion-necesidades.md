@@ -44,6 +44,7 @@ cumplimiento según el estado real del repositorio (abril de 2026).
 | Pagos          | Stripe Checkout + webhook (`/api/v1/webhooks/stripe`). |
 | Notificaciones | Resend (emails) + colas BullMQ.                        |
 | Testing        | Jest, Supertest y suites de concurrencia.              |
+| DevOps         | Docker, despliegue manual.                             |
 
 ### Especificar recursos materiales y personales
 
@@ -111,7 +112,7 @@ condicionado a formalización empresarial y plan financiero específico.
 
 ### Modelado de la solución
 
-#### Arquitectura general del sistema
+**Arquitectura general del sistema**
 
 VeriTix adopta arquitectura cliente-servidor desacoplada en monorepo. El frontend consume
 exclusivamente la API REST del backend.
@@ -123,7 +124,7 @@ exclusivamente la API REST del backend.
 | Responsabilidad       | Lógica de negocio, seguridad, persistencia | UI, navegación y consumo de API |
 | Persistencia          | Prisma 7 + PostgreSQL                      | Sin acceso directo a BD         |
 
-#### Módulos backend
+**Módulos backend**
 
 La implementación backend se organiza en dominios funcionales claramente delimitados:
 
@@ -135,7 +136,7 @@ La implementación backend se organiza en dominios funcionales claramente delimi
 | Infraestructura de dominio | `venues`, `artists`, `genres`, `concert-formats`    |
 | Soporte operativo          | `notifications`, `queues`, `cache`                  |
 
-#### API real del sistema
+**API real del sistema**
 
 El backend aplica prefijo global configurable mediante `API_PREFIX` y, en ausencia de valor en
 entorno, utiliza `api/v1` (`backend/src/main.ts`). Por tanto, las rutas públicas/protegidas se
@@ -164,16 +165,15 @@ tablas compactas para mantener la legibilidad del PDF.
 
 **Órdenes, tickets y pagos**
 
-| Endpoint                     | Seguridad                     | Resumen funcional                              |
-| :--------------------------- | :---------------------------- | :--------------------------------------------- |
-| POST /api/v1/orders          | JWT usuario autenticado       | Crea orden y retorna checkoutUrl cuando aplica |
-| GET /api/v1/orders/my        | JWT usuario autenticado       | Lista órdenes del comprador                    |
-| GET /api/v1/tickets/mine     | JWT usuario autenticado       | Lista tickets del comprador                    |
-| POST /api/v1/tickets/validate | JWT + rol ADMIN/VALIDATOR    | Valida ticket por hash y registra trazabilidad |
-| POST /api/v1/webhooks/stripe | Firma stripe-signature válida | Procesa evento de pago/reembolso               |
+| Endpoint                      | Seguridad                     | Resumen funcional                              |
+| :---------------------------- | :---------------------------- | :--------------------------------------------- |
+| POST /api/v1/orders           | JWT usuario autenticado       | Crea orden y retorna checkoutUrl cuando aplica |
+| GET /api/v1/orders/my         | JWT usuario autenticado       | Lista órdenes del comprador                    |
+| GET /api/v1/tickets/mine      | JWT usuario autenticado       | Lista tickets del comprador                    |
+| POST /api/v1/tickets/validate | JWT + rol ADMIN/VALIDATOR     | Valida ticket por hash y registra trazabilidad |
+| POST /api/v1/webhooks/stripe  | Firma stripe-signature válida | Procesa evento de pago/reembolso               |
 
-
-#### Modelo de datos y constraints
+**Modelo de datos y constraints**
 
 El esquema Prisma (`backend/prisma/schema.prisma`) se organiza en dos bloques:
 
@@ -204,9 +204,27 @@ El esquema Prisma (`backend/prisma/schema.prisma`) se organiza en dos bloques:
 | Cascadas de borrado         | `RefreshToken→User`, `EventArtist→Event`, `TicketType→Event`, `OrderItem→Order`, `Ticket→Event`.                                                                    |
 | Índices de consulta         | `events(status, eventDate)`, `orders(buyerId, createdAt)`, `orders(eventId, status)`, `tickets(buyerId, status)`, `tickets(eventId, status)`.                       |
 | Enums de dominio            | `Role`, `EventStatus`, `OrderStatus`, `TicketStatus`, `PaymentStatus`.                                                                                              |
-                                                                            |
 
-#### Diagrama entidad-relación
+**Seguridad y control de integridad**
+
+| Mecanismo                    | Función                                                 |
+| :--------------------------- | :------------------------------------------------------ |
+| JWT + refresh token rotativo | Autenticación y renovación segura de sesión.            |
+| Joi en `env.validation.ts`   | Validación de variables de entorno críticas.            |
+| `prisma.$transaction()`      | Aislamiento de operaciones críticas de compra.          |
+| Hash SHA-256 por ticket      | Identificación y validación del ticket vía `qrPayload`. |
+
+**Puntos de control para validación del proyecto**
+
+| Punto de control                 | Verificación                               |
+| :------------------------------- | :----------------------------------------- |
+| Integridad y unicidad del ticket | Validación de uso único en acceso.         |
+| Prevención de sobreventa         | Consistencia bajo concurrencia.            |
+| Control de acceso por rol        | Protección de endpoints sensibles.         |
+| Auditoría de validación          | Registro de `validatedAt` y `validatedBy`. |
+| Confirmación de pago             | Webhook y emisión de notificaciones.       |
+
+### Diagrama entidad-relación
 
 ::: {.latex-figure}
 
@@ -219,22 +237,3 @@ El esquema Prisma (`backend/prisma/schema.prisma`) se organiza en dos bloques:
 ![Dominio transaccional del sistema](build/assets/er-core-transaccional.png)
 
 :::
-
-#### Seguridad y control de integridad
-
-| Mecanismo                    | Función                                                 |
-| :--------------------------- | :------------------------------------------------------ |
-| JWT + refresh token rotativo | Autenticación y renovación segura de sesión.            |
-| Joi en `env.validation.ts`   | Validación de variables de entorno críticas.            |
-| `prisma.$transaction()`      | Aislamiento de operaciones críticas de compra.          |
-| Hash SHA-256 por ticket      | Identificación y validación del ticket vía `qrPayload`. |
-
-### Puntos de control para validación del proyecto
-
-| Punto de control                 | Verificación                               |
-| :------------------------------- | :----------------------------------------- |
-| Integridad y unicidad del ticket | Validación de uso único en acceso.         |
-| Prevención de sobreventa         | Consistencia bajo concurrencia.            |
-| Control de acceso por rol        | Protección de endpoints sensibles.         |
-| Auditoría de validación          | Registro de `validatedAt` y `validatedBy`. |
-| Confirmación de pago             | Webhook y emisión de notificaciones.       |
