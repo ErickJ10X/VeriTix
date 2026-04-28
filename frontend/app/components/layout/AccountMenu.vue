@@ -1,39 +1,7 @@
 <script setup lang="ts">
 const { user } = useAuth()
 
-const accountMenuItems = computed(() => {
-  const items = [] as Array<{
-    label: string
-    description: string
-    to: string
-    icon: string
-  }>
-
-  if (user.value?.role === 'ADMIN') {
-    items.push({
-      label: 'Panel admin',
-      description: 'Eventos, usuarios y artistas',
-      to: '/admin',
-      icon: 'i-lucide-shield-check',
-    })
-  }
-
-  items.push({
-    label: 'Ajustes',
-    description: 'Perfil, contacto y seguridad',
-    to: '/users/me',
-    icon: 'i-lucide-settings-2',
-  })
-
-    items.push({
-    label: 'Cerrar sesión',
-    description: 'Salir de VeriTix de forma segura',
-    to: '/users/me/logout',
-    icon: 'i-lucide-log-out',
-  })
-
-  return items
-})
+const accountMenuItems = useAccountMenuItems(() => user.value?.role === 'ADMIN')
 
 const accountAvatarAlt = computed(() => {
   const fullName = [user.value?.name, user.value?.lastName]

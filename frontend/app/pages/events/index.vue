@@ -165,7 +165,7 @@ async function handlePageChange(page: number) {
 </script>
 
 <template>
-  <UiEventsPageShell variant="index" container-class="relative">
+  <EventsPageShell variant="index" container-class="relative">
     <div class="mx-auto max-w-7xl space-y-8 sm:space-y-9">
       <header class="space-y-4 border-b border-default/55 pb-8">
         <UiMetaLabel tone="accent">
@@ -212,7 +212,7 @@ async function handlePageChange(page: number) {
             <div class="mt-5 space-y-4.5">
               <EventsFilterSection title="Búsqueda">
                 <form class="mt-3.5 space-y-3" @submit.prevent="submitSearch">
-                  <BaseFormInput
+                  <FormInput
                     v-model="searchDraft"
                     placeholder="Buscar por evento"
                     icon="i-lucide-search"
@@ -220,7 +220,7 @@ async function handlePageChange(page: number) {
                     class="min-w-0"
                   />
 
-                  <BaseFormInput
+                  <FormInput
                     v-model="artistNameDraft"
                     placeholder="Buscar por artista"
                     icon="i-lucide-mic-vocal"
@@ -361,5 +361,5 @@ async function handlePageChange(page: number) {
         </section>
       </section>
     </div>
-  </UiEventsPageShell>
+  </EventsPageShell>
 </template>

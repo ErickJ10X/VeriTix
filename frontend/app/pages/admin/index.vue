@@ -201,7 +201,7 @@ onMounted(() => {
             <USkeleton v-for="index in 4" :key="index" class="h-24 rounded-xl" />
           </div>
 
-          <AdminEmptyState
+          <UiEmptyState
             v-else-if="upcomingEvents.length === 0"
             icon="i-lucide-calendar-x"
             title="No hay próximos eventos"

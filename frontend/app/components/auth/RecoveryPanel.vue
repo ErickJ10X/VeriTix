@@ -1,6 +1,6 @@
 <template>
-  <UiAuthPageShell variant="login">
-    <UiAuthContainer>
+    <AuthPageShell variant="login">
+      <AuthContainer>
       <div class="w-full max-w-lg px-4 sm:px-0">
         <section class="space-y-8">
           <header class="text-center">
@@ -54,8 +54,8 @@
           </footer>
         </section>
       </div>
-    </UiAuthContainer>
-  </UiAuthPageShell>
+      </AuthContainer>
+    </AuthPageShell>
 </template>
 
 <style scoped>

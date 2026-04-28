@@ -53,7 +53,7 @@ const eventErrorMessage = computed(() => {
 </script>
 
 <template>
-  <UiEventsPageShell variant="detail">
+  <EventsPageShell variant="detail">
     <div v-if="status === 'pending'" class="space-y-6">
       <USkeleton class="h-16 rounded-2xl" />
       <USkeleton class="h-120 rounded-2xl" />
@@ -190,5 +190,5 @@ const eventErrorMessage = computed(() => {
         </div>
       </div>
     </div>
-  </UiEventsPageShell>
+  </EventsPageShell>
 </template>

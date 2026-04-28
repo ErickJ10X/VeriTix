@@ -191,13 +191,13 @@ watch(() => state, () => {
 <template>
   <UForm :state="state" :schema="formSchema" :validate-on="[]" class="space-y-8" @submit="handleSubmit">
     <div class="grid gap-5 lg:grid-cols-2">
-      <BaseFormField v-model="state.name" name="name" label="Nombre" required />
-      <BaseFormField v-model="state.lastName" name="lastName" label="Apellido" required />
+      <FormField v-model="state.name" name="name" label="Nombre" required />
+      <FormField v-model="state.lastName" name="lastName" label="Apellido" required />
     </div>
 
     <div class="grid gap-5 lg:grid-cols-2">
-      <BaseFormField v-model="state.email" name="email" label="Correo" type="email" required @blur="handleEmailBlur" />
-      <BaseFormField
+      <FormField v-model="state.email" name="email" label="Correo" type="email" required @blur="handleEmailBlur" />
+      <FormField
         v-model="state.phone"
         name="phone"
         label="Teléfono"
@@ -207,14 +207,14 @@ watch(() => state, () => {
     </div>
 
     <div class="grid gap-5 lg:grid-cols-2">
-      <BaseFormSelect
+      <FormSelect
         v-model="state.role"
         name="role"
         label="Rol"
         :items="roleOptions"
       />
 
-      <BaseFormField
+      <FormField
         v-if="!includePassword"
         v-model="state.avatarUrl"
         name="avatarUrl"
@@ -223,7 +223,7 @@ watch(() => state, () => {
         placeholder="https://..."
       />
 
-      <BaseFormField
+      <FormField
         v-else
         v-model="state.password"
         name="password"
@@ -234,14 +234,14 @@ watch(() => state, () => {
     </div>
 
     <div v-if="!includePassword" class="grid gap-5 lg:grid-cols-2">
-      <BaseFormSelect
+      <FormSelect
         v-model="activeValue"
         name="isActive"
         label="Estado"
         :items="statusOptions"
       />
 
-      <BaseFormSelect
+      <FormSelect
         v-model="verificationValue"
         name="emailVerified"
         label="Verificación"

@@ -116,8 +116,8 @@ watch(() => state, () => {
 <template>
   <UForm :state="state" :schema="schema" :validate-on="[]" class="space-y-8" @submit="handleSubmit">
     <div class="grid gap-5 lg:grid-cols-2">
-      <BaseFormField v-model="state.name" name="name" label="Nombre" required />
-      <BaseFormField
+      <FormField v-model="state.name" name="name" label="Nombre" required />
+      <FormField
         v-model="state.slug"
         name="slug"
         label="Slug"
@@ -127,24 +127,24 @@ watch(() => state, () => {
     </div>
 
     <UFormField name="bio" label="Biografía">
-      <BaseFormTextarea v-model="state.bio" placeholder="Describí al artista" />
+      <FormTextarea v-model="state.bio" placeholder="Describí al artista" />
     </UFormField>
 
     <div class="grid gap-5 lg:grid-cols-3">
-      <BaseFormField
+      <FormField
         v-model="state.imageUrl"
         name="imageUrl"
         label="Imagen"
         type="url"
         placeholder="https://..."
       />
-      <BaseFormField
+      <FormField
         v-model="state.country"
         name="country"
         label="País"
         placeholder="ES"
       />
-      <BaseFormField
+      <FormField
         v-model="state.website"
         name="website"
         label="Web"

@@ -58,7 +58,7 @@ function handleSubscribe() {
               Correo para newsletter
             </label>
 
-            <BaseFormInput
+            <FormInput
               id="newsletter-email"
               v-model="email"
               type="email"

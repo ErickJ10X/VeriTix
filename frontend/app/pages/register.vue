@@ -60,8 +60,8 @@ async function onSubmit() {
 </script>
 
 <template>
-  <UiAuthPageShell variant="register">
-    <UiAuthContainer>
+  <AuthPageShell variant="register">
+    <AuthContainer>
       <div class="w-full max-w-lg px-4 sm:px-0">
         <section class="space-y-8">
           <header class="text-center">
@@ -94,7 +94,7 @@ async function onSubmit() {
             @submit="onSubmit"
           >
             <!-- All fields stacked vertically with equal spacing -->
-            <BaseFormField
+            <FormField
               v-model="state.email"
               name="email"
               label="Email"
@@ -107,7 +107,7 @@ async function onSubmit() {
             />
 
             <div class="grid gap-4 md:grid-cols-2">
-              <BaseFormField
+              <FormField
                 v-model="state.name"
                 name="name"
                 label="Nombre"
@@ -117,7 +117,7 @@ async function onSubmit() {
                 class="w-full"
               />
 
-              <BaseFormField
+              <FormField
                 v-model="state.lastName"
                 name="lastName"
                 label="Apellido"
@@ -128,7 +128,7 @@ async function onSubmit() {
               />
             </div>
 
-            <BaseFormField
+            <FormField
               v-model="state.phone"
               name="phone"
               label="Teléfono"
@@ -140,7 +140,7 @@ async function onSubmit() {
               class="w-full"
             />
 
-            <BasePasswordField
+            <FormPassword
               v-model="state.password"
               name="password"
               label="Contraseña"
@@ -153,7 +153,7 @@ async function onSubmit() {
               @update:show="showPassword = $event"
             />
 
-            <BasePasswordField
+            <FormPassword
               v-model="state.confirmPassword"
               name="confirmPassword"
               label="Confirmar contraseña"
@@ -213,6 +213,6 @@ async function onSubmit() {
           </footer>
         </section>
       </div>
-    </UiAuthContainer>
-  </UiAuthPageShell>
+    </AuthContainer>
+  </AuthPageShell>
 </template>

@@ -1,13 +1,13 @@
 <script setup lang="ts">
-const { isAuthenticated, hydrated } = useAuth()
+const { isAuthenticated } = useAuth()
 const route = useRoute()
 
 const showGuestActions = computed(() => {
-  return hydrated.value && !isAuthenticated.value
+  return !isAuthenticated.value
 })
 
 const showAccountAction = computed(() => {
-  return hydrated.value && isAuthenticated.value
+  return isAuthenticated.value
 })
 
 const isEventsRoute = computed(() => {
@@ -46,34 +46,33 @@ const isEventsRoute = computed(() => {
         </nav>
 
         <div class="flex shrink-0 items-center gap-3">
-          <!-- Auth buttons -->
-          <div class="flex shrink-0 items-center gap-2">
-            <template v-if="showGuestActions">
-              <BaseButton
-                to="/login"
-                kind="secondary"
-                size="xs"
-                class="px-3.5 text-xs tracking-wide uppercase"
-              >
-                Iniciar sesión
-              </BaseButton>
+          <ClientOnly>
+            <div class="flex shrink-0 items-center gap-2">
+              <template v-if="showGuestActions">
+                <BaseButton
+                  to="/login"
+                  kind="secondary"
+                  size="xs"
+                  class="px-3.5 text-xs tracking-wide uppercase"
+                >
+                  Iniciar sesión
+                </BaseButton>
 
-              <BaseButton
-                to="/register"
-                kind="primary"
-                size="xs"
-                class="px-3.5 text-xs tracking-wide uppercase"
-              >
-              Registrarse
-              </BaseButton>
-            </template>
+                <BaseButton
+                  to="/register"
+                  kind="primary"
+                  size="xs"
+                  class="px-3.5 text-xs tracking-wide uppercase"
+                >
+                  Registrarse
+                </BaseButton>
+              </template>
 
-            <ClientOnly v-else-if="isAuthenticated">
-              <LayoutAccountMenu />
-            </ClientOnly>
-
-            <template v-else />
-          </div>
+              <template v-else-if="showAccountAction">
+                <LayoutAccountMenu />
+              </template>
+            </div>
+          </ClientOnly>
         </div>
       </div>
     </UContainer>

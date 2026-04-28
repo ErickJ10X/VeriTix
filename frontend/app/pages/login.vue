@@ -45,8 +45,8 @@ async function onSubmit() {
 </script>
 
 <template>
-  <UiAuthPageShell variant="login">
-    <UiAuthContainer>
+  <AuthPageShell variant="login">
+    <AuthContainer>
       <div class="w-full max-w-lg px-4 sm:px-0">
         <section class="space-y-8">
           <header class="text-center">
@@ -79,7 +79,7 @@ async function onSubmit() {
             @submit="onSubmit"
           >
             <!-- Email -->
-            <BaseFormField
+            <FormField
               v-model="state.email"
               name="email"
               label="Email"
@@ -92,7 +92,7 @@ async function onSubmit() {
             />
 
             <!-- Password -->
-            <BasePasswordField
+            <FormPassword
               v-model="state.password"
               name="password"
               label="Contraseña"
@@ -146,6 +146,6 @@ async function onSubmit() {
           </footer>
         </section>
       </div>
-    </UiAuthContainer>
-  </UiAuthPageShell>
+    </AuthContainer>
+  </AuthPageShell>
 </template>

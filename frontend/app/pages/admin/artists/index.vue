@@ -189,7 +189,7 @@ onMounted(() => {
             <USkeleton v-for="index in 6" :key="index" class="h-80 rounded-2xl" />
           </div>
 
-          <AdminEmptyState
+          <UiEmptyState
             v-else-if="artists.length === 0"
             icon="i-lucide-mic-2"
             title="Sin artistas"

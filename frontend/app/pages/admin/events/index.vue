@@ -322,14 +322,14 @@ onMounted(() => {
               <USkeleton v-for="i in 4" :key="`catalog-${i}`" class="h-32 rounded-2xl" />
             </template>
 
-            <AdminEmptyState
+            <UiEmptyState
               v-else-if="catalogMode === 'review' && requiresAttention.length === 0"
               icon="i-lucide-shield-check"
               title="Sin eventos por revisar"
               description="No hay incidencias activas ahora mismo."
             />
 
-            <AdminEmptyState
+            <UiEmptyState
               v-else-if="catalogMode === 'published' && catalogEvents.length === 0"
               icon="i-lucide-search-x"
               title="Sin resultados publicados"

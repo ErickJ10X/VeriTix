@@ -190,26 +190,26 @@ watch(() => state, () => {
 <template>
   <UForm :state="state" :schema="schema" :validate-on="[]" class="space-y-8" @submit="handleSubmit">
     <div class="grid gap-5 lg:grid-cols-2">
-      <BaseFormField v-model="state.name" name="name" label="Nombre" placeholder="VeriTix Sunset Series" required />
-      <BaseFormField v-model="state.eventDate" name="eventDate" label="Fecha del evento" type="datetime-local" required />
+      <FormField v-model="state.name" name="name" label="Nombre" placeholder="VeriTix Sunset Series" required />
+      <FormField v-model="state.eventDate" name="eventDate" label="Fecha del evento" type="datetime-local" required />
     </div>
 
     <UFormField name="description" label="Descripcion" class="w-full">
-      <BaseFormTextarea
+      <FormTextarea
         v-model="state.description"
         placeholder="Describe la propuesta del evento"
       />
     </UFormField>
 
     <div class="grid gap-5 lg:grid-cols-3">
-      <BaseFormField v-model="state.doorsOpenTime" name="doorsOpenTime" label="Apertura de puertas" type="datetime-local" />
-      <BaseFormField v-model="state.startSale" name="startSale" label="Inicio de venta" type="datetime-local" />
-      <BaseFormField v-model="state.endSale" name="endSale" label="Fin de venta" type="datetime-local" />
+      <FormField v-model="state.doorsOpenTime" name="doorsOpenTime" label="Apertura de puertas" type="datetime-local" />
+      <FormField v-model="state.startSale" name="startSale" label="Inicio de venta" type="datetime-local" />
+      <FormField v-model="state.endSale" name="endSale" label="Fin de venta" type="datetime-local" />
     </div>
 
     <div class="grid gap-5 lg:grid-cols-2">
-      <BaseFormField v-model="state.maxCapacity" name="maxCapacity" label="Capacidad maxima" type="number" required />
-      <BaseFormField v-model="state.imageUrl" name="imageUrl" label="Imagen" type="url" placeholder="https://..." />
+      <FormField v-model="state.maxCapacity" name="maxCapacity" label="Capacidad maxima" type="number" required />
+      <FormField v-model="state.imageUrl" name="imageUrl" label="Imagen" type="url" placeholder="https://..." />
     </div>
 
     <div class="grid gap-5 lg:grid-cols-3">

@@ -234,7 +234,7 @@ onMounted(() => {
             <USkeleton v-for="index in 6" :key="index" class="h-80 rounded-2xl" />
           </div>
 
-          <AdminEmptyState
+          <UiEmptyState
             v-else-if="users.length === 0"
             icon="i-lucide-users"
             title="Sin usuarios"
@@ -244,7 +244,7 @@ onMounted(() => {
           />
 
           <div v-else class="grid grid-cols-1 gap-6 md:grid-cols-2 xl:grid-cols-3">
-            <AdminCard
+            <UiCard
               v-for="user in users"
               :key="user.id"
               class="h-full border-default/65 bg-elevated/20"
@@ -315,7 +315,7 @@ onMounted(() => {
                   />
                 </div>
               </div>
-            </AdminCard>
+            </UiCard>
           </div>
 
           <AdminPaginationBar

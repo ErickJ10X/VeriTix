@@ -159,7 +159,7 @@ const secondaryFiltersGridClass = computed(() => {
   <div class="flex w-full flex-col gap-4">
     <!-- Row 1: Text search filters -->
     <div class="grid grid-cols-1 items-end gap-4" :class="textFiltersGridClass">
-      <BaseFormField
+      <FormField
         :name="searchName"
         :label="searchLabel"
         :model-value="search"
@@ -169,7 +169,7 @@ const secondaryFiltersGridClass = computed(() => {
         @update:model-value="$emit('update:search', String($event ?? ''))"
       />
 
-      <BaseFormField
+      <FormField
         v-if="showCity"
         :name="cityName"
         :label="cityLabel"
@@ -180,7 +180,7 @@ const secondaryFiltersGridClass = computed(() => {
         @update:model-value="$emit('update:city', String($event ?? ''))"
       />
 
-      <BaseFormField
+      <FormField
         v-if="showArtistName"
         :name="artistFieldName"
         :label="artistLabel"
@@ -191,7 +191,7 @@ const secondaryFiltersGridClass = computed(() => {
         @update:model-value="$emit('update:artistName', String($event ?? ''))"
       />
 
-      <BaseFormSelect
+      <FormSelect
         v-if="showPageSize"
         :name="pageSizeName"
         :label="pageSizeLabel"
@@ -209,7 +209,7 @@ const secondaryFiltersGridClass = computed(() => {
       class="grid grid-cols-1 items-end gap-4"
       :class="secondaryFiltersGridClass"
     >
-      <BaseFormField
+      <FormField
         v-if="showDateRange"
         :name="dateFromName"
         :label="dateFromLabel"
@@ -219,7 +219,7 @@ const secondaryFiltersGridClass = computed(() => {
         @update:model-value="$emit('update:dateFrom', String($event ?? ''))"
       />
 
-      <BaseFormField
+      <FormField
         v-if="showDateRange"
         :name="dateToName"
         :label="dateToLabel"
@@ -229,7 +229,7 @@ const secondaryFiltersGridClass = computed(() => {
         @update:model-value="$emit('update:dateTo', String($event ?? ''))"
       />
 
-      <BaseFormSelect
+      <FormSelect
         v-if="showGenre"
         :name="genreName"
         :label="genreLabel"
@@ -239,7 +239,7 @@ const secondaryFiltersGridClass = computed(() => {
         @update:model-value="selectedGenreId = String($event ?? ALL_OPTION_VALUE)"
       />
 
-      <BaseFormSelect
+      <FormSelect
         v-if="showFormat"
         :name="formatName"
         :label="formatLabel"
