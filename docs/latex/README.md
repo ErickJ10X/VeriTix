@@ -47,7 +47,7 @@ Nota: los ERD se generan directamente como PDF vectorial ajustado al contenido e
 
 - `pandoc`
 - `xelatex` (TeX Live)
-`monofont` controla el texto monoespaciado inline. Ahora usamos `Noto Sans Mono`; los bloques de código usan `Maple Mono NF`.
+  `monofont` controla el texto monoespaciado inline. Ahora usamos `Noto Sans Mono`; los bloques de código usan `Maple Mono NF`.
 
 ## Instalacion de requisitos en ubuntu
 
@@ -71,12 +71,12 @@ Salida esperada: `build/memoria.pdf`.
 
 ## Referencia rápida Markdown → LaTeX
 
-| Lo que escribís                                              | Qué genera                                              |
-| ------------------------------------------------------------ | ------------------------------------------------------- |
-| Tabla Markdown normal                                        | Tabla LaTeX con encabezado estilizado                   |
+| Lo que escribís                                               | Qué genera                                              |
+| ------------------------------------------------------------- | ------------------------------------------------------- |
+| Tabla Markdown normal                                         | Tabla LaTeX con encabezado estilizado                   |
 | `::: latex-figure width=0.95\\linewidth needspace=8` + imagen | `figure` con ancho configurable y `\Needspace` opcional |
-| `::: pagebreak :::`                                          | `\newpage`                                              |
-| `::: clearpage :::`                                          | `\clearpage`                                            |
+| `::: pagebreak :::`                                           | `\newpage`                                              |
+| `::: clearpage :::`                                           | `\clearpage`                                            |
 
 ### Ejemplos
 
