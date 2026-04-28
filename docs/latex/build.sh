@@ -8,7 +8,13 @@ SRC_DIR="$LATEX_DIR/src"
 BUILD_DIR="$LATEX_DIR/build"
 TEMPLATE="$LATEX_DIR/template.tex"
 METADATA="$LATEX_DIR/metadata.yml"
-FILTER="$LATEX_DIR/filters/cleanup.lua"
+FILTER_DIR="$LATEX_DIR/filters"
+COMMON_FILTER="$FILTER_DIR/common.lua"
+PANDOC_FILTERS=(
+  "$FILTER_DIR/tables.lua"
+  "$FILTER_DIR/figures.lua"
+  "$FILTER_DIR/pagebreaks.lua"
+)
 OUTPUT="$BUILD_DIR/memoria.pdf"
 BACKEND_DIR="$LATEX_DIR/../../backend"
 LOGO_SOURCE="$LATEX_DIR/assets/foc-logo.png"
@@ -59,11 +65,8 @@ logo_is_available() {
 }
 
 validate_inputs() {
-  local required_files=(
-    "$METADATA"
-    "$TEMPLATE"
-    "$FILTER"
-  )
+  local required_files=("$METADATA" "$TEMPLATE" "$COMMON_FILTER")
+  required_files+=("${PANDOC_FILTERS[@]}")
 
   for file in "${required_files[@]}"; do
     if [ ! -f "$file" ]; then
@@ -87,6 +90,13 @@ build() {
     echo -e "${YELLOW}⚠ Logo no disponible, se usará fallback tipográfico en portada${NC}"
   fi
 
+  export LUA_PATH="$FILTER_DIR/?.lua;$FILTER_DIR/?/init.lua;${LUA_PATH:-}"
+
+  local -a pandoc_filter_args=()
+  for filter in "${PANDOC_FILTERS[@]}"; do
+    pandoc_filter_args+=("--lua-filter=$filter")
+  done
+
   ensure_erd_png_assets
 
   mapfile -t src_files < <(collect_sources)
@@ -101,7 +111,7 @@ build() {
     --from markdown+smart+pipe_tables+fenced_code_blocks+fenced_divs \
     --metadata-file="$METADATA" \
     --template="$TEMPLATE" \
-    --lua-filter="$FILTER" \
+    "${pandoc_filter_args[@]}" \
     "${pandoc_logo_args[@]}" \
     --pdf-engine=xelatex \
     --toc \

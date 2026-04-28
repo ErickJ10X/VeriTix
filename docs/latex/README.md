@@ -5,7 +5,7 @@ Este módulo encapsula TODO lo necesario para compilar la memoria PDF a partir d
 ## Estructura
 
 - `src/*.md`: capítulos en orden (se concatenan al compilar)
-- `filters/`: filtros Lua para limpiar Markdown y centralizar transformaciones
+- `filters/`: `common.lua` + filtros por responsabilidad (`tables.lua`, `figures.lua`, `pagebreaks.lua`)
 - `template.tex`: plantilla única (todo el preámbulo, macros y estructura)
 - `metadata.yml`: metadatos globales (título, autores, idioma, etc.)
 - `assets/`: recursos gráficos del documento (logo y otros assets estáticos)
@@ -93,8 +93,42 @@ Para compilar, primero ejecutá `make erd` para generar `build/assets/er-*.png`.
     - Agregar archivo en `src/` con prefijo numérico (`05-...md`) para mantener orden.
 4. **Nuevos filtros o transformaciones**
     - Editar o agregar filtros en `filters/`.
+    - `pagebreaks.lua` reconoce `::: pagebreak :::` y emite `\newpage`.
 5. **Nuevos targets**
     - Agregar target en `Makefile` y, si aplica, función en `build.sh`.
+
+## Referencia rápida Markdown → LaTeX
+
+| Lo que escribís | Qué genera |
+| --- | --- |
+| Tabla Markdown normal | Tabla LaTeX con encabezado estilizado |
+| `::: latex-figure width=0.8\\linewidth needspace=8` + imagen | `figure` con ancho configurable y `\Needspace` opcional |
+| `::: pagebreak :::` | `\newpage` |
+| `::: clearpage :::` | `\clearpage` |
+
+Ejemplos:
+
+```md
+| Columna 1 | Columna 2 |
+|-----------|-----------|
+| A         | B         |
+```
+
+```md
+::: latex-figure width=0.8\\linewidth needspace=8
+![Mi figura](assets/diagrama.png)
+:::
+```
+
+```md
+::: pagebreak
+:::
+```
+
+```md
+::: clearpage
+:::
+```
 
 ## Convenciones
 
