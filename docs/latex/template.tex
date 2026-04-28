@@ -18,7 +18,6 @@
 % %%────────────────────────────────────────────────────
 % %% PAQUETES FUNDAMENTALES
 % %%────────────────────────────────────────────────────
-\usepackage{etoolbox}
 \usepackage{calc}
 \usepackage{needspace}
 
@@ -280,10 +279,6 @@ $if(linestretch)$\setstretch{$linestretch$}$endif$
 \RedeclareSectionCommand[beforeskip=1.2em,afterskip=0.65em]{section}
 \RedeclareSectionCommand[beforeskip=0.95em,afterskip=0.45em]{subsection}
 \RedeclareSectionCommand[beforeskip=0.8em,afterskip=0.35em]{subsubsection}
-
-\preto\section{\Needspace{12\baselineskip}}
-\preto\subsection{\Needspace{10\baselineskip}}
-\preto\subsubsection{\Needspace{7\baselineskip}}
 
 % Índice (KOMA)
 \setkomafont{chapterentry}{\bfseries\sffamily\color{focblue}}

@@ -61,6 +61,7 @@ logo_is_available() {
 validate_inputs() {
   local required_files=("$DEFAULTS" "$COMMON_FILTER")
   required_files+=(
+    "$FILTER_DIR/headers.lua"
     "$FILTER_DIR/tables.lua"
     "$FILTER_DIR/figures.lua"
     "$FILTER_DIR/pagebreaks.lua"

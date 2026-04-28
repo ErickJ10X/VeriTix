@@ -5,7 +5,7 @@ Este módulo encapsula TODO lo necesario para compilar la memoria PDF a partir d
 ## Estructura
 
 - `src/*.md`: capítulos en orden (se concatenan al compilar)
-- `filters/`: `common.lua` + filtros por responsabilidad (`tables.lua`, `figures.lua`, `pagebreaks.lua`)
+- `filters/`: `common.lua` + filtros por responsabilidad (`headers.lua`, `tables.lua`, `figures.lua`, `pagebreaks.lua`)
 - `defaults.yml`: concentra la configuración de Pandoc/LaTeX del build
 - `template.tex`: plantilla única (todo el preámbulo, macros y estructura)
 - `metadata.yml`: metadatos globales (título, autores, idioma, etc.)
@@ -47,7 +47,7 @@ Nota: los ERD se generan directamente como PDF vectorial ajustado al contenido e
 
 - `pandoc`
 - `xelatex` (TeX Live)
-  `monofont` controla el texto monoespaciado inline. Ahora usamos `Noto Sans Mono`; los bloques de código usan `Maple Mono NF`.
+  `monofont` controla el texto monoespaciado inline. En `metadata.yml` usamos `Noto Sans Mono` y `template.tex` cae a `TeX Gyre Cursor` si no está disponible; los bloques de código usan `Maple Mono NF`.
 
 ## Instalacion de requisitos en ubuntu
 
@@ -107,5 +107,5 @@ Salida esperada: `build/memoria.pdf`.
 - No mezclar documentación general del proyecto aquí; eso vive en `docs/markdown/`.
 - `build/` contiene artefactos generados, no fuente documental.
 - Los `.md` deben quedarse en Markdown semántico: tablas normales, figuras con fenced divs y sin LaTeX crudo.
-- El estilo de tablas y figuras vive en `template.tex` + `filters/`.
+- El estilo de tablas, figuras y el espaciado antes de encabezados vive en `template.tex` + `filters/`.
 - El zebra striping está centralizado en `template.tex` y aplica a `tabular`, `tabularx` y `longtable`.
