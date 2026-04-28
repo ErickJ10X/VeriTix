@@ -6,6 +6,7 @@ Este módulo encapsula TODO lo necesario para compilar la memoria PDF a partir d
 
 - `src/*.md`: capítulos en orden (se concatenan al compilar)
 - `filters/`: `common.lua` + filtros por responsabilidad (`tables.lua`, `figures.lua`, `pagebreaks.lua`)
+- `defaults.yml`: concentra la configuración de Pandoc/LaTeX del build
 - `template.tex`: plantilla única (todo el preámbulo, macros y estructura)
 - `metadata.yml`: metadatos globales (título, autores, idioma, etc.)
 - `assets/`: recursos gráficos del documento (logo y otros assets estáticos)
@@ -16,13 +17,13 @@ Este módulo encapsula TODO lo necesario para compilar la memoria PDF a partir d
 
 ## Organización de `template.tex`
 
-El archivo `template.tex` es único (~470 líneas) pero está organizado en secciones claras:
+El archivo `template.tex` está organizado en secciones claras:
 
 ```tex
 %% CLASE BASE
 %% PAQUETES FUNDAMENTALES
 %% TIPOGRAFÍA Y IDIOMA
-%% GEOMETRÍA Y COLORES  
+%% GEOMETRÍA Y COLORES
 %% INTERLINEADO Y MICROTIPOGRAFÍA
 %% TABLAS
 %% LISTAS
@@ -57,60 +58,28 @@ sudo apt install pandoc texlive-xetex
 ## Uso
 
 Desde `docs/latex/`:
-
-```bash
-make build
-make erd
-make clean
-```
-
-Recomendado:
+Para compilar, primero ejecutá `make erd` para generar `build/assets/er-*.png`.
 
 ```bash
 make erd && make build
 ```
 
-Alternativa directa:
-
-```bash
-./build.sh build
-./build.sh erd
-./build.sh clean
-```
-
 Salida esperada: `build/memoria.pdf`.
-Para compilar, primero ejecutá `make erd` para generar `build/assets/er-*.png`.
-
-## Cómo extender tooling
-
-1. **Cambios de formato visual**
-    - Editar `template.tex`.
-    - Para tablas, usar Markdown normal; el filtro Lua aplica el estilo de encabezados.
-    - Para figuras especiales, usar fenced divs con clase `latex-figure`.
-2. **Cambios de metadatos o defaults de Pandoc**
-    - Editar `metadata.yml`.
-3. **Nuevos capítulos**
-    - Agregar archivo en `src/` con prefijo numérico (`05-...md`) para mantener orden.
-4. **Nuevos filtros o transformaciones**
-    - Editar o agregar filtros en `filters/`.
-    - `pagebreaks.lua` reconoce `::: pagebreak :::` y emite `\newpage`.
-5. **Nuevos targets**
-    - Agregar target en `Makefile` y, si aplica, función en `build.sh`.
 
 ## Referencia rápida Markdown → LaTeX
 
-| Lo que escribís | Qué genera |
-| --- | --- |
-| Tabla Markdown normal | Tabla LaTeX con encabezado estilizado |
+| Lo que escribís                                              | Qué genera                                              |
+| ------------------------------------------------------------ | ------------------------------------------------------- |
+| Tabla Markdown normal                                        | Tabla LaTeX con encabezado estilizado                   |
 | `::: latex-figure width=0.8\\linewidth needspace=8` + imagen | `figure` con ancho configurable y `\Needspace` opcional |
-| `::: pagebreak :::` | `\newpage` |
-| `::: clearpage :::` | `\clearpage` |
+| `::: pagebreak :::`                                          | `\newpage`                                              |
+| `::: clearpage :::`                                          | `\clearpage`                                            |
 
-Ejemplos:
+### Ejemplos:
 
 ```md
 | Columna 1 | Columna 2 |
-|-----------|-----------|
+| --------- | --------- |
 | A         | B         |
 ```
 
