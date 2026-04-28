@@ -1,4 +1,4 @@
-# Modelado de solución
+# Modelado de la solución
 
 ## Arquitectura general del sistema
 
