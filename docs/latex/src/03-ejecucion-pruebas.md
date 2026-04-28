@@ -46,7 +46,7 @@ La solución está containerizada y preparada para operarse en una VPS con servi
 El backend levanta PostgreSQL, Redis y la API en contenedores separados; el frontend usa un
 `Dockerfile` multi-stage con runtime no-root.
 
-**Frontend (Dockerfile multi-stage)**
+**Frontend (Dockerfile multi-stage):**
 
 ```dockerfile
 FROM oven/bun:1-alpine AS base
@@ -70,7 +70,7 @@ EXPOSE 3000
 CMD ["bun", ".output/server/index.mjs"]
 ```
 
-**Backend (orquestación de servicios)**
+**Backend (orquestación de servicios):**
 
 ```yaml
 services:

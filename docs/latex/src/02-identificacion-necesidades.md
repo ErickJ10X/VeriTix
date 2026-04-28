@@ -28,13 +28,13 @@ cumplimiento según el estado real del repositorio (abril de 2026).
 
 ### Especificar recursos hardware y software
 
-**Hardware de referencia**
+**Hardware de referencia:**
 
 - Equipos de desarrollo para ejecutar backend, frontend y servicios auxiliares.
 - Dispositivos móviles para validación de UI responsive y pruebas de lectura QR.
 - Servidor de despliegue (cuando se opere en producción).
 
-**Stack software real del proyecto**
+**Stack software real del proyecto:**
 
 | Capa / dominio | Tecnologías y mecanismos                               |
 | :------------- | :----------------------------------------------------- |
@@ -48,12 +48,12 @@ cumplimiento según el estado real del repositorio (abril de 2026).
 
 ### Especificar recursos materiales y personales
 
-**Recursos materiales**
+**Recursos materiales:**
 
 - Infraestructura local de desarrollo y repositorio GitHub.
 - Servicios externos de pago y correo para entorno real (Stripe, Resend).
 
-**Recursos personales**
+**Recursos personales:**
 
 | Rol                  | Responsabilidad                             |
 | :------------------- | :------------------------------------------ |
@@ -112,7 +112,7 @@ condicionado a formalización empresarial y plan financiero específico.
 
 ### Modelado de la solución
 
-**Arquitectura general del sistema**
+**Arquitectura general del sistema:**
 
 VeriTix adopta arquitectura cliente-servidor desacoplada en monorepo. El frontend consume
 exclusivamente la API REST del backend.
@@ -124,7 +124,7 @@ exclusivamente la API REST del backend.
 | Responsabilidad       | Lógica de negocio, seguridad, persistencia | UI, navegación y consumo de API |
 | Persistencia          | Prisma 7 + PostgreSQL                      | Sin acceso directo a BD         |
 
-**Módulos backend**
+**Módulos backend:**
 
 La implementación backend se organiza en dominios funcionales claramente delimitados:
 
@@ -136,7 +136,7 @@ La implementación backend se organiza en dominios funcionales claramente delimi
 | Infraestructura de dominio | `venues`, `artists`, `genres`, `concert-formats`    |
 | Soporte operativo          | `notifications`, `queues`, `cache`                  |
 
-**API real del sistema**
+**API real del sistema:**
 
 El backend aplica prefijo global configurable mediante `API_PREFIX` y, en ausencia de valor en
 entorno, utiliza `api/v1` (`backend/src/main.ts`). Por tanto, las rutas públicas/protegidas se
@@ -145,7 +145,7 @@ consumen como `/api/v1/...`.
 Los contratos siguientes se extrajeron de controladores y DTOs del repositorio. Se resumen en
 tablas compactas para mantener la legibilidad del PDF.
 
-**Autenticación**
+**Autenticación:**
 
 | Endpoint                   | Seguridad             | Resumen funcional                                     |
 | :------------------------- | :-------------------- | :---------------------------------------------------- |
@@ -154,7 +154,7 @@ tablas compactas para mantener la legibilidad del PDF.
 | POST /api/v1/auth/refresh  | Cookie refresh válida | Emite nuevo access token y rota cookie                |
 | POST /api/v1/auth/logout   | JWT + cookie refresh  | Revoca refresh token y limpia cookie (204)            |
 
-**Eventos y catálogo**
+**Eventos y catálogo:**
 
 | Endpoint                                  | Seguridad               | Resumen funcional                      |
 | :---------------------------------------- | :---------------------- | :------------------------------------- |
@@ -163,7 +163,7 @@ tablas compactas para mantener la legibilidad del PDF.
 | POST /api/v1/events/:id/publish           | JWT + rol ADMIN/CREATOR | Publica evento existente               |
 | POST /api/v1/events/:eventId/ticket-types | JWT + rol ADMIN/CREATOR | Crea tipo de ticket para un evento     |
 
-**Órdenes, tickets y pagos**
+**Órdenes, tickets y pagos:**
 
 | Endpoint                      | Seguridad                     | Resumen funcional                              |
 | :---------------------------- | :---------------------------- | :--------------------------------------------- |
@@ -173,7 +173,7 @@ tablas compactas para mantener la legibilidad del PDF.
 | POST /api/v1/tickets/validate | JWT + rol ADMIN/VALIDATOR     | Valida ticket por hash y registra trazabilidad |
 | POST /api/v1/webhooks/stripe  | Firma stripe-signature válida | Procesa evento de pago/reembolso               |
 
-**Modelo de datos y constraints**
+**Modelo de datos y constraints:**
 
 El esquema Prisma (`backend/prisma/schema.prisma`) se organiza en dos bloques:
 
@@ -182,7 +182,7 @@ El esquema Prisma (`backend/prisma/schema.prisma`) se organiza en dos bloques:
 | Núcleo transaccional | User, RefreshToken, Event, TicketType, Order, OrderItem, Ticket, Payment. |
 | Catálogos y soporte  | Venue, Artist, Genre, ConcertFormat, EventArtist.                         |
 
-**Relaciones principales verificables**
+**Relaciones principales verificables:**
 
 | Relación                              |  Cardinalidad  |
 | :------------------------------------ | :------------: |
@@ -195,7 +195,7 @@ El esquema Prisma (`backend/prisma/schema.prisma`) se organiza en dos bloques:
 | Event con Artist mediante EventArtist |      N:M       |
 | Event con Genre y Artist con Genre    |      N:M       |
 
-**Constraints e índices relevantes**
+**Constraints e índices relevantes:**
 
 | Tipo de restricción         | Detalle                                                                                                                                                             |
 | :-------------------------- | :------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
@@ -205,7 +205,7 @@ El esquema Prisma (`backend/prisma/schema.prisma`) se organiza en dos bloques:
 | Índices de consulta         | `events(status, eventDate)`, `orders(buyerId, createdAt)`, `orders(eventId, status)`, `tickets(buyerId, status)`, `tickets(eventId, status)`.                       |
 | Enums de dominio            | `Role`, `EventStatus`, `OrderStatus`, `TicketStatus`, `PaymentStatus`.                                                                                              |
 
-**Seguridad y control de integridad**
+**Seguridad y control de integridad:**
 
 | Mecanismo                    | Función                                                 |
 | :--------------------------- | :------------------------------------------------------ |
@@ -214,7 +214,7 @@ El esquema Prisma (`backend/prisma/schema.prisma`) se organiza en dos bloques:
 | `prisma.$transaction()`      | Aislamiento de operaciones críticas de compra.          |
 | Hash SHA-256 por ticket      | Identificación y validación del ticket vía `qrPayload`. |
 
-**Puntos de control para validación del proyecto**
+**Puntos de control para validación del proyecto:**
 
 | Punto de control                 | Verificación                               |
 | :------------------------------- | :----------------------------------------- |

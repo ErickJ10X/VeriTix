@@ -73,12 +73,12 @@ Se selecciona arquitectura web desacoplada (API REST + cliente web SSR/SPA) por:
 
 ## Características principales del sistema
 
-| Capacidad                          | Implementación actual                                      |
-| :--------------------------------- | :--------------------------------------------------------- |
-| Autenticación y roles por servidor | Validación de permisos por endpoint.                       |
-| Compra transaccional con Stripe    | Confirmación por webhook y generación de tickets.          |
-| Tickets digitales con QR y hash    | Trazabilidad de uso, validación de acceso y auditoría.     |
-| Catálogos de dominio               | Artistas, recintos, géneros y formatos.                    |
-| Panel administrativo               | Gestión operativa desde el frontend.                       |
-| Caché con Redis                    | Optimización de consultas frecuentes.                       |
-| Notificaciones transaccionales     | Verificación, confirmación y avisos por email.             |
+| Capacidad                          | Implementación actual                                  |
+| :--------------------------------- | :----------------------------------------------------- |
+| Autenticación y roles por servidor | Validación de permisos por endpoint.                   |
+| Compra transaccional con Stripe    | Confirmación por webhook y generación de tickets.      |
+| Tickets digitales con QR y hash    | Trazabilidad de uso, validación de acceso y auditoría. |
+| Catálogos de dominio               | Artistas, recintos, géneros y formatos.                |
+| Panel administrativo               | Gestión operativa desde el frontend.                   |
+| Caché con Redis                    | Optimización de consultas frecuentes.                  |
+| Notificaciones transaccionales     | Verificación, confirmación y avisos por email.         |
