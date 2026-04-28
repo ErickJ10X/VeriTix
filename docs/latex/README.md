@@ -47,7 +47,7 @@ Nota: los ERD se generan directamente como PNG en `build/assets/` desde Prisma E
 
 - `pandoc`
 - `xelatex` (TeX Live)
-- `monofont` controla el texto monoespaciado inline. Los bloques de código usan `Maple Mono NF`.
+`monofont` controla el texto monoespaciado inline. Ahora usamos `Noto Sans Mono`; los bloques de código usan `Maple Mono NF`.
 
 ## Instalacion de requisitos en ubuntu
 
