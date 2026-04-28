@@ -61,6 +61,10 @@
   \node[anchor=north west, inner sep=0pt, xshift=#1, yshift=#2] at (current page.north west) {#3};%
 }
 
+\newcommand{\foccovernortheasttext}[3]{%
+  \node[anchor=north east, inner sep=0pt, xshift=#1, yshift=#2] at (current page.north east) {#3};%
+}
+
 \newcommand{\foccoverellipse}[7]{%
   \fill[#1, opacity=#2] ([xshift=#3, yshift=#4] #5) ellipse (#6 and #7);%
 }
@@ -142,7 +146,7 @@ $if(linestretch)$\setstretch{$linestretch$}$endif$
 \setlength{\belowrulesep}{0.5ex}
 \setlength{\extrarowheight}{1.5pt}
 \renewcommand{\arraystretch}{1.25}
-\setlength{\tabcolsep}{5.5pt}
+\setlength{\tabcolsep}{4.5pt}
 
 \newcolumntype{L}[1]{>{\raggedright\arraybackslash}p{#1}}
 \newcolumntype{C}[1]{>{\centering\arraybackslash}p{#1}}
@@ -335,14 +339,14 @@ $if(linestretch)$\setstretch{$linestretch$}$endif$
 
       % ── Marca institucional — logo + texto dentro de la barra azul ──
       $if(logo-path)$
-      \foccovernorthwesttext{0.7cm}{-0.15cm}{\includegraphics[height=3.8cm]{$logo-path$}}
+      \foccovernorthwesttext{0.7cm}{-0.10cm}{\includegraphics[height=4.1cm]{$logo-path$}}
 
-      \foccovernorthwesttext{5.5cm}{-0.15cm}{\parbox[c][3.5cm][c]{10cm}{%
-        \color{white}\bfseries\sffamily\fontsize{15}{15}\selectfont \textbf{\uppercase{$institution-name$}}
+      \foccovernortheasttext{-0.9cm}{-0.12cm}{\parbox[c][3.5cm][c]{9.3cm}{%
+        \raggedleft\color{white}\bfseries\sffamily\fontsize{15}{15}\selectfont \textbf{\uppercase{$institution-name$}}
       }}
       $else$
-      \foccovernorthwesttext{0.95cm}{-0.08cm}{\parbox[c][2.0cm][c]{14cm}{%
-        \color{white}\bfseries\sffamily\fontsize{15}{15}\selectfont \textbf{\uppercase{$institution-name$}}
+      \foccovernortheasttext{-0.9cm}{-0.08cm}{\parbox[c][2.0cm][c]{14cm}{%
+        \raggedleft\color{white}\bfseries\sffamily\fontsize{15}{15}\selectfont \textbf{\uppercase{$institution-name$}}
       }}
       $endif$
 
@@ -352,7 +356,7 @@ $if(linestretch)$\setstretch{$linestretch$}$endif$
         ([yshift=-2.8cm] current page.north east);
 
       % ── Título "VeriTix" — centrado, parte superior ──
-      \foccovercentertext{3.5cm}{\color{focblue}\fontsize{72}{74}\selectfont\bfseries\sffamily $title$}
+      \foccovercentertext{3.2cm}{\color{focblue}\fontsize{72}{74}\selectfont\bfseries\sffamily $title$}
 
       % ── Subtítulo — debajo del título ──
       \foccovercentertext{1.2cm}{\color{focmid}\fontsize{17}{20}\selectfont\sffamily $subtitle$}
@@ -373,20 +377,20 @@ $if(linestretch)$\setstretch{$linestretch$}$endif$
         (current page.south west) rectangle ([yshift=1.25cm] current page.south east);
 
       % Esquina inferior izquierda
-      \foccoverellipse{focblue}{0.86}{-7.2cm}{-1.16cm}{current page.south west}{9.4cm}{5.4cm}
-      \foccoverellipse{focblue}{0.18}{-3.4cm}{1.10cm}{current page.south west}{5.8cm}{2.55cm}
-      \foccoverellipse{focblue}{0.22}{-4.1cm}{0.92cm}{current page.south west}{5.1cm}{2.35cm}
-      \foccoverellipse{focmid}{0.24}{-10.3cm}{-0.96cm}{current page.south west}{7.0cm}{3.75cm}
-      \foccoverellipse{foclight}{0.36}{-11.4cm}{-0.24cm}{current page.south west}{3.9cm}{2.15cm}
-      \foccoverellipse{foclight}{0.18}{-1.8cm}{0.48cm}{current page.south west}{2.7cm}{1.1cm}
+      \foccoverellipse{focblue}{0.86}{-7.6cm}{-1.22cm}{current page.south west}{10.0cm}{5.9cm}
+      \foccoverellipse{focblue}{0.18}{-3.7cm}{1.18cm}{current page.south west}{6.4cm}{2.85cm}
+      \foccoverellipse{focblue}{0.22}{-4.4cm}{1.00cm}{current page.south west}{5.7cm}{2.60cm}
+      \foccoverellipse{focmid}{0.24}{-10.8cm}{-1.02cm}{current page.south west}{7.8cm}{4.15cm}
+      \foccoverellipse{foclight}{0.36}{-12.0cm}{-0.30cm}{current page.south west}{4.4cm}{2.35cm}
+      \foccoverellipse{foclight}{0.18}{-2.0cm}{0.54cm}{current page.south west}{3.1cm}{1.25cm}
 
       % Esquina inferior derecha
-      \foccoverellipse{focblue}{0.86}{8.8cm}{-1.10cm}{current page.south east}{10.9cm}{6.1cm}
-      \foccoverellipse{focblue}{0.18}{3.9cm}{1.16cm}{current page.south east}{6.2cm}{2.75cm}
-      \foccoverellipse{focblue}{0.20}{4.4cm}{0.94cm}{current page.south east}{5.5cm}{2.45cm}
-      \foccoverellipse{focmid}{0.27}{11.7cm}{-0.90cm}{current page.south east}{7.7cm}{4.25cm}
-      \foccoverellipse{foclight}{0.42}{13.3cm}{-0.08cm}{current page.south east}{4.3cm}{2.35cm}
-      \foccoverellipse{foclight}{0.16}{2.5cm}{0.44cm}{current page.south east}{2.9cm}{1.15cm}
+      \foccoverellipse{focblue}{0.86}{9.6cm}{-1.16cm}{current page.south east}{11.8cm}{6.7cm}
+      \foccoverellipse{focblue}{0.18}{4.4cm}{1.22cm}{current page.south east}{6.8cm}{3.00cm}
+      \foccoverellipse{focblue}{0.20}{4.9cm}{0.98cm}{current page.south east}{6.0cm}{2.70cm}
+      \foccoverellipse{focmid}{0.27}{12.6cm}{-0.96cm}{current page.south east}{8.4cm}{4.70cm}
+      \foccoverellipse{foclight}{0.42}{14.2cm}{-0.10cm}{current page.south east}{4.8cm}{2.55cm}
+      \foccoverellipse{foclight}{0.16}{2.8cm}{0.48cm}{current page.south east}{3.2cm}{1.25cm}
 
     \end{tikzpicture}
 
