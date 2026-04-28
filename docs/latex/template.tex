@@ -106,7 +106,6 @@ $if(linestretch)$\setstretch{$linestretch$}$endif$
 \usepackage{booktabs}
 \usepackage{longtable}
 \usepackage{array}
-\usepackage{tabularx}
 \usepackage{colortbl}
 
 \definecolor{foctablerowodd}{HTML}{FFFFFF}
@@ -140,8 +139,6 @@ $if(linestretch)$\setstretch{$linestretch$}$endif$
 
 \AtBeginEnvironment{tabular}{\focapplytablestyle}%
 \AtEndEnvironment{tabular}{\focresettablestyle}%
-\AtBeginEnvironment{tabularx}{\focapplytablestyle}%
-\AtEndEnvironment{tabularx}{\focresettablestyle}%
 \AtBeginEnvironment{longtable}{\focapplytablestyle}%
 
 
