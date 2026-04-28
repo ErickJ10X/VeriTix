@@ -5,7 +5,7 @@
 ### Identificación de riesgos
 
 | ID  | Riesgo                                                             | Probabilidad | Impacto  |
-| :-: | :----------------------------------------------------------------- | :----------: | :------: |
+| :-: | ------------------------------------------------------------------ | :----------: | :------: |
 | R01 | Desalineación entre funcionalidades backend y frontend             |    Media     |   Alto   |
 | R02 | Errores en flujos de pago/webhook con efectos en órdenes y tickets |    Media     |   Alto   |
 | R03 | Defectos de seguridad en autenticación o manejo de secrets         |     Baja     | Muy alto |
@@ -15,7 +15,7 @@
 ### Plan de prevención y mitigación
 
 | Riesgo | Mitigación                                                                                   |
-| :----- | :------------------------------------------------------------------------------------------- |
+| ------ | -------------------------------------------------------------------------------------------- |
 | R01    | Mantener matriz de estado funcional por capa (backend/frontend) y actualizarla en cada hito. |
 | R02    | Pruebas de integración y e2e específicas de órdenes, tickets y webhooks.                     |
 | R03    | Validación estricta de entorno, revisión de permisos y rotación de credenciales.             |

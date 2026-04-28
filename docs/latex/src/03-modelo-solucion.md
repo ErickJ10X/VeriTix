@@ -1,4 +1,4 @@
-# Modelado de la solución
+# Modelado de solución
 
 ## Arquitectura general del sistema
 
@@ -6,7 +6,7 @@ VeriTix adopta arquitectura cliente-servidor desacoplada en monorepo. El fronten
 exclusivamente la API REST del backend.
 
 | Aspecto               | Backend                                    | Frontend                        |
-| :-------------------- | :----------------------------------------- | :------------------------------ |
+| --------------------- | ------------------------------------------ | ------------------------------- |
 | Framework             | NestJS 11                                  | Nuxt 4 / Vue 3                  |
 | Puerto local habitual | 3001                                       | 3000                            |
 | Responsabilidad       | Lógica de negocio, seguridad, persistencia | UI, navegación y consumo de API |
@@ -17,7 +17,7 @@ exclusivamente la API REST del backend.
 La implementación backend se organiza en dominios funcionales claramente delimitados:
 
 | Dominio funcional          | Módulos                                             |
-| :------------------------- | :-------------------------------------------------- |
+| -------------------------- | --------------------------------------------------- |
 | Identidad y acceso         | `auth`, `users`                                     |
 | Catálogo y eventos         | `events` (incluye `ticket-types` y `event-artists`) |
 | Transacción y emisión      | `orders`, `tickets`, `webhooks`                     |
@@ -36,7 +36,7 @@ tablas compactas para mantener la legibilidad del PDF.
 ## Autenticación
 
 | Endpoint                   | Seguridad             | Resumen funcional                                     |
-| :------------------------- | :-------------------- | :---------------------------------------------------- |
+| -------------------------- | --------------------- | ----------------------------------------------------- |
 | POST /api/v1/auth/register | Pública               | Alta usuario y devuelve mensaje de verificación       |
 | POST /api/v1/auth/login    | Pública               | Recibe credenciales y devuelve token + cookie refresh |
 | POST /api/v1/auth/refresh  | Cookie refresh válida | Emite nuevo access token y rota cookie                |
@@ -45,7 +45,7 @@ tablas compactas para mantener la legibilidad del PDF.
 ## Eventos y catálogo
 
 | Endpoint                                  | Seguridad               | Resumen funcional                      |
-| :---------------------------------------- | :---------------------- | :------------------------------------- |
+| ----------------------------------------- | ----------------------- | -------------------------------------- |
 | GET /api/v1/events                        | Pública                 | Lista eventos con paginación y filtros |
 | POST /api/v1/events                       | JWT + rol ADMIN/CREATOR | Crea evento                            |
 | POST /api/v1/events/:id/publish           | JWT + rol ADMIN/CREATOR | Publica evento existente               |
@@ -54,7 +54,7 @@ tablas compactas para mantener la legibilidad del PDF.
 ## Órdenes, tickets y pagos
 
 | Endpoint                      | Seguridad                     | Resumen funcional                              |
-| :---------------------------- | :---------------------------- | :--------------------------------------------- |
+| ----------------------------- | ----------------------------- | ---------------------------------------------- |
 | POST /api/v1/orders           | JWT usuario autenticado       | Crea orden y retorna checkoutUrl cuando aplica |
 | GET /api/v1/orders/my         | JWT usuario autenticado       | Lista órdenes del comprador                    |
 | GET /api/v1/tickets/mine      | JWT usuario autenticado       | Lista tickets del comprador                    |
@@ -66,22 +66,22 @@ tablas compactas para mantener la legibilidad del PDF.
 El esquema Prisma (`backend/prisma/schema.prisma`) se organiza en dos bloques:
 
 | Bloque               | Entidades                                                                 |
-| :------------------- | :------------------------------------------------------------------------ |
+| -------------------- | ------------------------------------------------------------------------- |
 | Núcleo transaccional | User, RefreshToken, Event, TicketType, Order, OrderItem, Ticket, Payment. |
 | Catálogos y soporte  | Venue, Artist, Genre, ConcertFormat, EventArtist.                         |
 
 ## Relaciones principales verificables
 
-| Relación                              |  Cardinalidad  |
-| :------------------------------------ | :------------: |
-| User (creator) con Event              |      1:N       |
-| Event con TicketType, Order y Ticket  |      1:N       |
-| Order con OrderItem, Payment y Ticket |      1:N       |
-| TicketType con OrderItem y Ticket     |      1:N       |
-| User (buyer) con Order y Ticket       |      1:N       |
+| Relación                              |   Cardinalidad |
+| ------------------------------------- | -------------: |
+| User (creator) con Event              |            1:N |
+| Event con TicketType, Order y Ticket  |            1:N |
+| Order con OrderItem, Payment y Ticket |            1:N |
+| TicketType con OrderItem y Ticket     |            1:N |
+| User (buyer) con Order y Ticket       |            1:N |
 | User (validator) con Ticket validado  | 1:N (opcional) |
-| Event con Artist mediante EventArtist |      N:M       |
-| Event con Genre y Artist con Genre    |      N:M       |
+| Event con Artist mediante EventArtist |            N:M |
+| Event con Genre y Artist con Genre    |            N:M |
 
 ## Constraints e índices relevantes
 
@@ -96,7 +96,7 @@ El esquema Prisma (`backend/prisma/schema.prisma`) se organiza en dos bloques:
 ## Seguridad y control de integridad
 
 | Mecanismo                    | Función                                                 |
-| :--------------------------- | :------------------------------------------------------ |
+| ---------------------------- | ------------------------------------------------------- |
 | JWT + refresh token rotativo | Autenticación y renovación segura de sesión.            |
 | Joi en `env.validation.ts`   | Validación de variables de entorno críticas.            |
 | `prisma.$transaction()`      | Aislamiento de operaciones críticas de compra.          |
@@ -105,7 +105,7 @@ El esquema Prisma (`backend/prisma/schema.prisma`) se organiza en dos bloques:
 ## Puntos de control para validación del proyecto
 
 | Punto de control                 | Verificación                               |
-| :------------------------------- | :----------------------------------------- |
+| -------------------------------- | ------------------------------------------ |
 | Integridad y unicidad del ticket | Validación de uso único en acceso.         |
 | Prevención de sobreventa         | Consistencia bajo concurrencia.            |
 | Control de acceso por rol        | Protección de endpoints sensibles.         |
@@ -124,6 +124,9 @@ El esquema Prisma (`backend/prisma/schema.prisma`) se organiza en dos bloques:
 
 ![Dominio transaccional del sistema](build/assets/er-core-transaccional.png)
 
+:::
+
+:::pagebreak
 :::
 
 ## Contenerización y despliegue operativo

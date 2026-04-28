@@ -7,16 +7,16 @@
 La planificación original se definió en ocho fases. A continuación se refleja el grado de
 cumplimiento según el estado real del repositorio (abril de 2026).
 
-| Fase                              | Contenido planificado                                     |                       Estado actual                       |
-| :-------------------------------- | :-------------------------------------------------------- | :-------------------------------------------------------: |
-| 1. Análisis y diseño              | Requisitos, modelo de datos, contratos API, wireframes    |                        Completada                         |
-| 2. Autenticación y usuarios       | Registro/login/refresh/roles                              |           Completada (backend + frontend base)            |
-| 3. Gestión de eventos y catálogos | CRUD de eventos, recintos, artistas, géneros y formatos   |                        Completada                         |
-| 4. Venta de tickets               | Órdenes, Stripe Checkout, webhooks, generación de tickets |   Completada en backend; integración frontend pendiente   |
-| 5. Validación de tickets          | Endpoint de validación y trazabilidad de acceso           |        Backend completado; UI de scanner pendiente        |
-| 6. Panel administrativo           | Gestión y métricas para administración                    |            Completada (área admin en frontend)            |
+| Fase                              | Contenido planificado                                     |                                             Estado actual |
+| --------------------------------- | --------------------------------------------------------- | --------------------------------------------------------: |
+| 1. Análisis y diseño              | Requisitos, modelo de datos, contratos API, wireframes    |                                                Completada |
+| 2. Autenticación y usuarios       | Registro/login/refresh/roles                              |                      Completada (backend + frontend base) |
+| 3. Gestión de eventos y catálogos | CRUD de eventos, recintos, artistas, géneros y formatos   |                                                Completada |
+| 4. Venta de tickets               | Órdenes, Stripe Checkout, webhooks, generación de tickets |     Completada en backend; integración frontend pendiente |
+| 5. Validación de tickets          | Endpoint de validación y trazabilidad de acceso           |               Backend completado; UI de scanner pendiente |
+| 6. Panel administrativo           | Gestión y métricas para administración                    |                       Completada (área admin en frontend) |
 | 7. Testing                        | Pruebas unitarias/integración/e2e/concurrencia            | Implementadas en backend; no ejecutadas en esta auditoría |
-| 8. Despliegue y documentación     | Operación productiva y manuales finales                   |                          Parcial                          |
+| 8. Despliegue y documentación     | Operación productiva y manuales finales                   |                                                   Parcial |
 
 ### Especificar los objetivos del proyecto
 
@@ -37,7 +37,7 @@ cumplimiento según el estado real del repositorio (abril de 2026).
 **Stack software real del proyecto:**
 
 | Capa / dominio | Tecnologías y mecanismos                               |
-| :------------- | :----------------------------------------------------- |
+| -------------- | ------------------------------------------------------ |
 | Backend        | NestJS 11, Prisma 7, PostgreSQL, Redis, BullMQ.        |
 | Frontend       | Nuxt 4, Vue 3, Nuxt UI, Tailwind 4.                    |
 | Auth           | JWT + refresh token HTTP-only con rotación.            |
@@ -56,14 +56,14 @@ cumplimiento según el estado real del repositorio (abril de 2026).
 **Recursos personales:**
 
 | Rol                  | Responsabilidad                             |
-| :------------------- | :------------------------------------------ |
+| -------------------- | ------------------------------------------- |
 | Equipo de desarrollo | Backend, frontend y base de datos.          |
 | Tutor                | Seguimiento técnico y validación académica. |
 
 ### Asociación entre fases y recursos (materiales y humanos)
 
 | Fase                        | Recursos materiales                          |      Recursos humanos       |
-| :-------------------------- | :------------------------------------------- | :-------------------------: |
+| --------------------------- | -------------------------------------------- | :-------------------------: |
 | Análisis/diseño             | Herramientas de modelado y documentación     | Equipo técnico del proyecto |
 | Desarrollo backend/frontend | IDE, control de versiones, servicios locales | Equipo técnico del proyecto |
 | Testing                     | Suites automáticas + dispositivos de prueba  |   Equipo técnico + tutor    |
@@ -93,7 +93,7 @@ del trabajo prolongado con pantallas, mitigables con pausas y condiciones de pue
 ### Presupuesto económico
 
 | Concepto                                     |                   Coste estimado |
-| :------------------------------------------- | -------------------------------: |
+| -------------------------------------------- | -------------------------------: |
 | Desarrollo realizado por el equipo académico | 0€ (coste imputado no monetario) |
 | Dominio y hosting básico anual               |  Bajo (dependiente de proveedor) |
 | Licencias software base                      |           0€ (stack open source) |

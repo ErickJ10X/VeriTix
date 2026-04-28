@@ -32,7 +32,7 @@ scanner QR no está integrado en UI en el estado actual.
 ## Registro de pruebas
 
 | ID  | Evidencia (resumen)                                               |   Estado   |
-| :-: | :---------------------------------------------------------------- | :--------: |
+| :-: | ----------------------------------------------------------------- | :--------: |
 | T01 | Unitaria backend: backend/src/.../tickets.generator.spec.ts       | Disponible |
 | T02 | Unitaria backend: backend/src/.../tickets.service.spec.ts         | Disponible |
 | T03 | Integración/e2e auth: backend/test/auth.e2e-spec.ts               | Disponible |
@@ -49,7 +49,7 @@ scanner QR no está integrado en UI en el estado actual.
 ## Evaluación de cumplimiento de objetivos
 
 | Requisito                          | Verificación (resumen)                      |                 Estado                  |
-| :--------------------------------- | :------------------------------------------ | :-------------------------------------: |
+| ---------------------------------- | ------------------------------------------- | :-------------------------------------: |
 | OBJ-01 Gestión de eventos          | CRUD y administración disponibles           |                Cumplido                 |
 | OBJ-02 Seguridad de tickets        | Hash único + validación backend             |           Cumplido (backend)            |
 | OBJ-03 Anti-sobreventa             | Lógica transaccional + pruebas concurrencia |                Cumplido                 |

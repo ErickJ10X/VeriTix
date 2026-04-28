@@ -24,7 +24,7 @@ y resistente a intentos de reutilización de entradas.
 Una ticketera digital de tamaño medio suele organizarse en la siguiente matriz funcional:
 
 | Área funcional      | Responsabilidad principal                                 |
-| :------------------ | :-------------------------------------------------------- |
+| ------------------- | --------------------------------------------------------- |
 | Dirección           | Estrategia y priorización de negocio.                     |
 | Operaciones         | Relación con organizadores y operación de eventos.        |
 | Tecnología          | Backend, frontend, base de datos, seguridad y despliegue. |
@@ -37,7 +37,7 @@ Una ticketera digital de tamaño medio suele organizarse en la siguiente matriz 
 VeriTix aborda necesidades reales del sector con alcance verificable en el repositorio:
 
 | Necesidad del sector              | Implementación verificable en VeriTix                                           |
-| :-------------------------------- | :------------------------------------------------------------------------------ |
+| --------------------------------- | ------------------------------------------------------------------------------- |
 | Centralización operativa          | Gestión de eventos, catálogos y usuarios desde una API unificada.               |
 | Control de stock y sobreventa     | Compra con transacciones atómicas en PostgreSQL/Prisma.                         |
 | Trazabilidad del acceso           | Tickets con hash único y registro de validación (`validatedAt`, `validatedBy`). |
@@ -51,7 +51,7 @@ ticketing. El backend concentra la lógica transaccional, la seguridad y la pers
 ofrece la experiencia de compra, administración y consulta para usuarios finales y creadores.
 
 | Componente | Tecnología                                              |
-| :--------- | :------------------------------------------------------ |
+| ---------- | ------------------------------------------------------- |
 | Backend    | NestJS 11 + TypeScript + Prisma 7 + PostgreSQL + Redis. |
 | Frontend   | Nuxt 4 + Vue 3 + Nuxt UI + Tailwind 4.                  |
 
@@ -65,7 +65,7 @@ roles `BUYER`, `CREATOR`, `VALIDATOR` y `ADMIN`.
 Se selecciona arquitectura web desacoplada (API REST + cliente web SSR/SPA) por:
 
 | Criterio                | Justificación técnica                                              |
-| :---------------------- | :----------------------------------------------------------------- |
+| ----------------------- | ------------------------------------------------------------------ |
 | Escalabilidad operativa | Separación de backend y frontend para evolucionar cada capa.       |
 | Mantenibilidad          | Módulos de dominio en NestJS y tipado fuerte extremo a extremo.    |
 | Portabilidad            | La API puede reutilizarse por otros clientes (ej. app móvil).      |
@@ -74,7 +74,7 @@ Se selecciona arquitectura web desacoplada (API REST + cliente web SSR/SPA) por:
 ## Características principales del sistema
 
 | Capacidad                          | Implementación actual                                  |
-| :--------------------------------- | :----------------------------------------------------- |
+| ---------------------------------- | ------------------------------------------------------ |
 | Autenticación y roles por servidor | Validación de permisos por endpoint.                   |
 | Compra transaccional con Stripe    | Confirmación por webhook y generación de tickets.      |
 | Tickets digitales con QR y hash    | Trazabilidad de uso, validación de acceso y auditoría. |
