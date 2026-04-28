@@ -11,7 +11,9 @@ function Div(div)
   end
 
   local needspace = div.attributes.needspace or ''
-  local width = div.attributes.width or '0.92\\linewidth'
+  local width = div.attributes.width or '0.98\\linewidth'
+  local height = div.attributes.height or ''
+  local stretch = (div.attributes.stretch or ''):lower()
   local image_src = image.src
   local caption = pandoc.utils.stringify(image.caption or {})
 
@@ -24,6 +26,12 @@ function Div(div)
   table.insert(lines, '\\centering')
 
   local includegraphics = '\\includegraphics[width=' .. width
+  if height ~= '' then
+    includegraphics = includegraphics .. ',height=' .. height
+    if stretch ~= 'true' and stretch ~= '1' then
+      includegraphics = includegraphics .. ',keepaspectratio'
+    end
+  end
   includegraphics = includegraphics .. ']'
   includegraphics = includegraphics .. '{' .. utils.escape_latex(image_src) .. '}'
 

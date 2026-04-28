@@ -10,7 +10,7 @@ Este módulo encapsula TODO lo necesario para compilar la memoria PDF a partir d
 - `template.tex`: plantilla única (todo el preámbulo, macros y estructura)
 - `metadata.yml`: metadatos globales (título, autores, idioma, etc.)
 - `assets/`: recursos gráficos del documento (logo y otros assets estáticos)
-- `build/assets/`: diagramas ER derivados en PNG (generados por Prisma ERD)
+- `build/assets/`: diagramas ER derivados en PDF vectorial (generados por Prisma ERD)
 - `build.sh`: script principal (build/clean/erd)
 - `Makefile`: fachada simple sobre `build.sh`
 - `build/`: artefactos de salida
@@ -41,7 +41,7 @@ El archivo `template.tex` está organizado en secciones claras:
 
 Cada sección tiene `%%` como separador visual para facilitar navegación y mantenimiento.
 
-Nota: los ERD se generan directamente como PNG en `build/assets/` desde Prisma ERD (`make erd`).
+Nota: los ERD se generan directamente como PDF vectorial ajustado al contenido en `build/assets/` desde Prisma ERD (`make erd`).
 
 ## Requisitos
 
@@ -61,7 +61,7 @@ Y para la fuente, la puedes descargar desde [Maple Mono NF en GitHub](https://gi
 ## Uso
 
 Desde `docs/latex/`:
-Para compilar, primero ejecutá `make erd` para generar `build/assets/er-*.png`.
+Para compilar, primero ejecutá `make erd` para generar `build/assets/er-*.pdf`.
 
 ```bash
 make erd && make build
@@ -74,7 +74,7 @@ Salida esperada: `build/memoria.pdf`.
 | Lo que escribís                                              | Qué genera                                              |
 | ------------------------------------------------------------ | ------------------------------------------------------- |
 | Tabla Markdown normal                                        | Tabla LaTeX con encabezado estilizado                   |
-| `::: latex-figure width=0.8\\linewidth needspace=8` + imagen | `figure` con ancho configurable y `\Needspace` opcional |
+| `::: latex-figure width=0.95\\linewidth needspace=8` + imagen | `figure` con ancho configurable y `\Needspace` opcional |
 | `::: pagebreak :::`                                          | `\newpage`                                              |
 | `::: clearpage :::`                                          | `\clearpage`                                            |
 
@@ -87,7 +87,7 @@ Salida esperada: `build/memoria.pdf`.
 ```
 
 ```md
-::: latex-figure width=0.8\\linewidth needspace=8
+::: latex-figure width=0.95\\linewidth needspace=8
 ![Mi figura](assets/diagrama.png)
 :::
 ```

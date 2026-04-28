@@ -14,8 +14,8 @@ BACKEND_DIR="$LATEX_DIR/../../backend"
 LOGO_SOURCE="$LATEX_DIR/assets/foc-logo.png"
 ASSET_BUILD_DIR="$BUILD_DIR/assets"
 ERD_FILES=(
-  "$ASSET_BUILD_DIR/er-overview.png"
-  "$ASSET_BUILD_DIR/er-core-transaccional.png"
+  "$ASSET_BUILD_DIR/er-overview.pdf"
+  "$ASSET_BUILD_DIR/er-core-transaccional.pdf"
 )
 
 GREEN='\033[0;32m'
@@ -30,7 +30,7 @@ require_cmd() {
   fi
 }
 
-ensure_erd_png_assets() {
+ensure_erd_assets() {
   for file in "${ERD_FILES[@]}"; do
     if [ ! -s "$file" ]; then
       echo -e "${YELLOW}⚠ Falta ERD generado: $file${NC}"
@@ -90,7 +90,7 @@ build() {
 
   export LUA_PATH="$FILTER_DIR/?.lua;$FILTER_DIR/?/init.lua;${LUA_PATH:-}"
 
-  ensure_erd_png_assets
+  ensure_erd_assets
 
   mapfile -t src_files < <(collect_sources)
 
@@ -135,8 +135,8 @@ erd() {
     bunx prisma generate
   )
 
-  ensure_erd_png_assets
-  echo -e "${GREEN}✓ ER generado en docs/latex/build/assets/ (PNG)${NC}"
+  ensure_erd_assets
+  echo -e "${GREEN}✓ ER generado en docs/latex/build/assets/ (PDF vectorial)${NC}"
 }
 
 case "${1:-build}" in

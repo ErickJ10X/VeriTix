@@ -113,15 +113,15 @@ El esquema Prisma (`backend/prisma/schema.prisma`) se organiza en dos bloques:
 
 ## Diagrama entidad-relación
 
-::: {.latex-figure}
+::: {.latex-figure height="0.55\\textheight" stretch="true"}
 
-![Vista general del diagrama ER](build/assets/er-overview.png)
+![Vista general del diagrama ER](build/assets/er-overview.pdf)
 
 :::
 
 ::: {.latex-figure needspace="16"}
 
-![Dominio transaccional del sistema](build/assets/er-core-transaccional.png)
+![Dominio transaccional del sistema](build/assets/er-core-transaccional.pdf)
 
 :::
 
