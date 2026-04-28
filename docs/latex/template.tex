@@ -32,32 +32,29 @@
 \frenchspacing
 \defaultfontfeatures{Ligatures=TeX}
 
+\newcommand{\focrequirefont}[3]{%
+  \IfFontExistsTF{#2}{%
+    #1[#3]{#2}%
+  }{%
+    \PackageError{VeriTix}{Fuente requerida no encontrada: #2}{%
+      Instalá esa fuente en el sistema o indicá una fuente disponible en el metadata del documento.}%
+  }%
+}
+
 $if(mainfont)$
-  \IfFontExistsTF{$mainfont$}{
-    \setmainfont[Numbers=OldStyle]{$mainfont$}
-  }{
-    \setmainfont[Numbers=OldStyle]{TeX Gyre Pagella}
-  }
+  \focrequirefont{\setmainfont}{$mainfont$}{Numbers=OldStyle}
 $else$
   \setmainfont[Numbers=OldStyle]{TeX Gyre Pagella}
 $endif$
 
 $if(sansfont)$
-  \IfFontExistsTF{$sansfont$}{
-    \setsansfont[Scale=MatchLowercase]{$sansfont$}
-  }{
-    \setsansfont[Scale=MatchLowercase]{TeX Gyre Heros}
-  }
+  \focrequirefont{\setsansfont}{$sansfont$}{Scale=MatchLowercase}
 $else$
   \setsansfont[Scale=MatchLowercase]{TeX Gyre Heros}
 $endif$
 
 $if(monofont)$
-  \IfFontExistsTF{$monofont$}{
-    \setmonofont[Scale=MatchLowercase]{$monofont$}
-  }{
-    \setmonofont[Scale=MatchLowercase]{TeX Gyre Cursor}
-  }
+  \focrequirefont{\setmonofont}{$monofont$}{Scale=MatchLowercase}
 $else$
   \setmonofont[Scale=MatchLowercase]{TeX Gyre Cursor}
 $endif$

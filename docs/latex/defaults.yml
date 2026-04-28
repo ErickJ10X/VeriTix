@@ -1,5 +1,4 @@
-standalone: true
-from: markdown+smart+pipe_tables+fenced_code_blocks+fenced_divs
+from: markdown
 metadata-file: metadata.yml
 template: template.tex
 pdf-engine: xelatex

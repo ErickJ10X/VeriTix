@@ -48,6 +48,8 @@ Nota: los ERD se generan directamente como PNG en `build/assets/` desde Prisma E
 - `pandoc`
 - `xelatex` (TeX Live)
 
+Si definís `mainfont`, `sansfont` o `monofont` en los metadatos, esas fuentes deben estar instaladas en el sistema: el build falla con un error claro si no existen.
+
 ## Instalacion de requisitos en ubuntu
 
 ```bash
