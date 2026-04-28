@@ -41,6 +41,15 @@
   }%
 }
 
+\newcommand{\focrequirefontfamily}[3]{%
+  \IfFontExistsTF{#2}{%
+    \newfontfamily#1[#3]{#2}%
+  }{%
+    \PackageError{VeriTix}{Fuente requerida no encontrada: #2}{%
+      Instalá esa fuente en el sistema o indicá una fuente disponible en el metadata del documento.}%
+  }%
+}
+
 $if(mainfont)$
   \focrequirefont{\setmainfont}{$mainfont$}{Numbers=OldStyle}
 $else$
@@ -58,6 +67,8 @@ $if(monofont)$
 $else$
   \setmonofont[Scale=MatchLowercase]{TeX Gyre Cursor}
 $endif$
+
+\focrequirefontfamily{\foccodeblockfont}{Maple Mono NF}{Scale=MatchLowercase}
 
 
 % %%────────────────────────────────────────────────────
@@ -210,6 +221,7 @@ $if(linestretch)$\setstretch{$linestretch$}$endif$
   frame=single,
   rulecolor=\color{focmid},
   fillcolor=\color{foccodebg},
+  formatcom=\foccodeblockfont,
 }
 
 

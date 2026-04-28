@@ -47,8 +47,7 @@ Nota: los ERD se generan directamente como PNG en `build/assets/` desde Prisma E
 
 - `pandoc`
 - `xelatex` (TeX Live)
-
-Si definís `mainfont`, `sansfont` o `monofont` en los metadatos, esas fuentes deben estar instaladas en el sistema: el build falla con un error claro si no existen.
+- `monofont` controla el texto monoespaciado inline. Los bloques de código usan `Maple Mono NF`.
 
 ## Instalacion de requisitos en ubuntu
 
@@ -56,6 +55,8 @@ Si definís `mainfont`, `sansfont` o `monofont` en los metadatos, esas fuentes d
 sudo apt update
 sudo apt install pandoc texlive-xetex
 ```
+
+Y para la fuente, la puedes descargar desde [Maple Mono NF en GitHub](https://github.com/subframe7536/maple-font/releases) y luego instalarla en tu sistema operativo.
 
 ## Uso
 
