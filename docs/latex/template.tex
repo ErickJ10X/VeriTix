@@ -117,18 +117,17 @@ $if(linestretch)$\setstretch{$linestretch$}$endif$
 \setlength{\heavyrulewidth}{0.09em}
 \setlength{\lightrulewidth}{0.05em}
 \setlength{\cmidrulewidth}{0.04em}
-\setlength{\aboverulesep}{0.45ex}
-\setlength{\belowrulesep}{0.35ex}
-\renewcommand{\arraystretch}{1.17}
+\setlength{\aboverulesep}{0.6ex}
+\setlength{\belowrulesep}{0.5ex}
+\setlength{\extrarowheight}{1.5pt}
+\renewcommand{\arraystretch}{1.25}
 \setlength{\tabcolsep}{5.5pt}
 
 \newcolumntype{L}[1]{>{\raggedright\arraybackslash}p{#1}}
 \newcolumntype{C}[1]{>{\centering\arraybackslash}p{#1}}
 \newcolumntype{R}[1]{>{\raggedleft\arraybackslash}p{#1}}
 
-\newcommand{\focheadcell}[1]{\cellcolor{focmid}\color{white}\textbf{#1}}
-\newcommand{\focheadrow}{\rowcolor{focblue}\color{white}\bfseries\sffamily}
-\newcommand{\foctheadrow}{\focheadrow}
+\definecolor{foctableheader}{HTML}{395D8D}
 
 \newcommand{\focapplytablestyle}{%
   \arrayrulecolor{foctableline}%

@@ -53,7 +53,7 @@ local function format_header_cell(cell)
   local text = pandoc.utils.stringify(cell.contents or cell.content or {})
   local content = pandoc.Blocks({
     pandoc.Plain({
-      pandoc.RawInline('latex', '\\focheadcell{' .. escape_latex(text) .. '}')
+      pandoc.RawInline('latex', '\\cellcolor{foctableheader}\\color{white}\\bfseries\\sffamily\\fontsize{12.4}{14.4}\\selectfont\\strut ' .. escape_latex(text))
     })
   })
 
