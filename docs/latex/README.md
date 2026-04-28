@@ -75,7 +75,7 @@ Salida esperada: `build/memoria.pdf`.
 | `::: pagebreak :::`                                          | `\newpage`                                              |
 | `::: clearpage :::`                                          | `\clearpage`                                            |
 
-### Ejemplos:
+### Ejemplos
 
 ```md
 | Columna 1 | Columna 2 |
