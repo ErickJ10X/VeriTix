@@ -86,7 +86,19 @@ $else$
   \setmonofont[Scale=MatchLowercase]{TeX Gyre Cursor}
 $endif$
 
-\focrequirefontfamily{\foccodeblockfont}{Maple Mono NF}{Scale=MatchLowercase}
+\IfFontExistsTF{Maple Mono NF}{%
+  \newfontfamily\foccodeblockfont[Scale=MatchLowercase]{Maple Mono NF}%
+}{%
+  $if(codeblockfontpath)$
+    \IfFileExists{$codeblockfontpath$MapleMono-NF-Regular.ttf}{%
+      \newfontfamily\foccodeblockfont[Scale=MatchLowercase,Path=$codeblockfontpath$,UprightFont=MapleMono-NF-Regular.ttf]{Maple Mono NF}%
+    }{%
+      \focfontmissing{Maple Mono NF}%
+    }%
+  $else$
+    \focfontmissing{Maple Mono NF}%
+  $endif$
+}%
 
 
 % %%────────────────────────────────────────────────────

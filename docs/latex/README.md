@@ -47,7 +47,7 @@ Nota: los ERD se generan directamente como PDF vectorial ajustado al contenido e
 
 - `pandoc`
 - `xelatex` (TeX Live)
-  `monofont` controla el texto monoespaciado inline. En `metadata.yml` usamos `Noto Sans Mono` y `template.tex` cae a `TeX Gyre Cursor` si no está disponible; los bloques de código usan `Maple Mono NF`.
+  `monofont` controla el texto monoespaciado inline. En `metadata.yml` usamos `Noto Sans Mono` y `template.tex` cae a `TeX Gyre Cursor` si no está disponible; los bloques de código usan `Maple Mono NF` y, si no está instalada, el build toma `docs/latex/assets/MapleMono-NF-Regular.ttf`.
 
 ## Instalacion de requisitos en ubuntu
 

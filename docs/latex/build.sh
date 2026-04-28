@@ -89,6 +89,11 @@ build() {
     echo -e "${YELLOW}⚠ Logo no disponible, se usará fallback tipográfico en portada${NC}"
   fi
 
+  local -a pandoc_codeblock_args=()
+  if [ -s "$LATEX_DIR/assets/MapleMono-NF-Regular.ttf" ]; then
+    pandoc_codeblock_args+=("--variable=codeblockfontpath:$LATEX_DIR/assets/")
+  fi
+
   export LUA_PATH="$FILTER_DIR/?.lua;$FILTER_DIR/?/init.lua;${LUA_PATH:-}"
 
   ensure_erd_assets
@@ -107,6 +112,7 @@ build() {
     pandoc "${src_files[@]}" \
       --defaults="$DEFAULTS" \
       "${pandoc_logo_args[@]}" \
+      "${pandoc_codeblock_args[@]}" \
       --output "$OUTPUT"
   )
 
