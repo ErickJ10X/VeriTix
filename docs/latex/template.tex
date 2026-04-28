@@ -195,9 +195,23 @@ $if(linestretch)$\setstretch{$linestretch$}$endif$
 % %% CÓDIGO FUENTE
 % %%────────────────────────────────────────────────────
 % Bloques Shaded de pandoc
-\usepackage{framed}
+\usepackage[most]{tcolorbox}
 \definecolor{shadecolor}{HTML}{282C34}
-\newenvironment{Shaded}{\begin{snugshade}}{\end{snugshade}}
+\newtcolorbox{Shaded}{%
+  enhanced,
+  breakable,
+  boxrule=0pt,
+  frame hidden,
+  colback=shadecolor,
+  arc=1.8mm,
+  left=5mm,
+  right=5mm,
+  top=3mm,
+  bottom=3mm,
+  boxsep=0pt,
+  before skip=0.8em,
+  after skip=0.8em,
+}
 \usepackage{fancyvrb}
 \newcommand{\VerbBar}{|}
 \newcommand{\VERB}{\Verb[commandchars=\\\{\}]}
@@ -237,10 +251,10 @@ $if(linestretch)$\setstretch{$linestretch$}$endif$
 \DefineVerbatimEnvironment{Highlighting}{Verbatim}{
   commandchars=\\\{\},
   fontsize=\small,
-  frame=single,
-  rulecolor=\color{focmid},
-  fillcolor=\color{foccodebg},
   formatcom=\foccodeblockfont,
+  baselinestretch=1.02,
+  xleftmargin=0pt,
+  xrightmargin=0pt,
 }
 
 
