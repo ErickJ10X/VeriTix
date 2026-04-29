@@ -2,14 +2,6 @@
 const { isAuthenticated } = useAuth()
 const route = useRoute()
 
-const showGuestActions = computed(() => {
-  return !isAuthenticated.value
-})
-
-const showAccountAction = computed(() => {
-  return isAuthenticated.value
-})
-
 const isEventsRoute = computed(() => {
   return route.path.startsWith('/events')
 })
@@ -46,33 +38,31 @@ const isEventsRoute = computed(() => {
         </nav>
 
         <div class="flex shrink-0 items-center gap-3">
-          <ClientOnly>
-            <div class="flex shrink-0 items-center gap-2">
-              <template v-if="showGuestActions">
-                <BaseButton
-                  to="/login"
-                  kind="secondary"
-                  size="xs"
-                  class="px-3.5 text-xs tracking-wide uppercase"
-                >
-                  Iniciar sesión
-                </BaseButton>
+          <div class="flex shrink-0 items-center gap-2">
+            <template v-if="!isAuthenticated">
+              <BaseButton
+                to="/login"
+                kind="secondary"
+                size="xs"
+                class="px-3.5 text-xs tracking-wide uppercase"
+              >
+                Iniciar sesión
+              </BaseButton>
 
-                <BaseButton
-                  to="/register"
-                  kind="primary"
-                  size="xs"
-                  class="px-3.5 text-xs tracking-wide uppercase"
-                >
-                  Registrarse
-                </BaseButton>
-              </template>
+              <BaseButton
+                to="/register"
+                kind="primary"
+                size="xs"
+                class="px-3.5 text-xs tracking-wide uppercase"
+              >
+                Registrarse
+              </BaseButton>
+            </template>
 
-              <template v-else-if="showAccountAction">
-                <LayoutAccountMenu />
-              </template>
-            </div>
-          </ClientOnly>
+            <template v-else>
+              <LayoutAccountMenu />
+            </template>
+          </div>
         </div>
       </div>
     </UContainer>

@@ -8,6 +8,7 @@ generator erd_overview {
   output   = "../../docs/latex/build/assets/er-overview.pdf"
   theme    = "default"
   tableOnly = true
+  disabled = true
   mermaidConfig = "./prisma/mermaidConfig.js"
   mmdcPath = "./prisma"
 }
@@ -17,6 +18,7 @@ generator erd_core {
   output        = "../../docs/latex/build/assets/er-core-transaccional.pdf"
   theme         = "default"
   tableOnly     = true
+  disabled      = true
   ignorePattern = "Venue,ConcertFormat,Genre,Artist,EventArtist,RefreshToken"
   mermaidConfig = "./prisma/mermaidConfig.js"
   mmdcPath = "./prisma"

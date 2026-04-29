@@ -126,6 +126,7 @@ clean() {
 
 erd() {
   require_cmd bunx
+  require_cmd python3
   validate_inputs
 
   if [ ! -d "$BACKEND_DIR" ]; then
@@ -137,9 +138,24 @@ erd() {
   mkdir -p "$ASSET_BUILD_DIR"
 
   rm -f "${ERD_FILES[@]}"
+  local temp_schema
+  temp_schema="$(mktemp "$BACKEND_DIR/prisma/schema.erd.XXXXXX.prisma")"
+  trap "rm -f '$temp_schema'" EXIT
+python3 - "$BACKEND_DIR/prisma/schema.prisma" "$temp_schema" <<'PY'
+from pathlib import Path
+import re
+import sys
+
+src = Path(sys.argv[1])
+dst = Path(sys.argv[2])
+content = src.read_text()
+content = re.sub(r'(^\s*disabled\s*=\s*)true', r'\1false', content, flags=re.M)
+dst.write_text(content)
+PY
+
   (
     cd "$BACKEND_DIR"
-    bunx prisma generate
+    bunx prisma generate --schema="$temp_schema"
   )
 
   ensure_erd_assets

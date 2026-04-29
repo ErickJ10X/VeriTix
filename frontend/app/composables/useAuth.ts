@@ -37,10 +37,6 @@ export function useAuth() {
   }
 
   async function ensureSession(): Promise<boolean> {
-    if (import.meta.server) {
-      return isAuthenticated.value
-    }
-
     if (isAuthenticated.value) {
       hydrated.value = true
       return true

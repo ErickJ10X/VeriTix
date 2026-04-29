@@ -62,6 +62,7 @@ Y para la fuente, la puedes descargar desde [Maple Mono NF en GitHub](https://gi
 
 Desde `docs/latex/`:
 Para compilar, primero ejecutá `make erd` para generar `build/assets/er-*.pdf`.
+Ese target usa un schema temporal que habilita los ERD solo para esa ejecución; el schema base los deja deshabilitados por defecto.
 
 ```bash
 make erd && make build
