@@ -60,159 +60,157 @@ async function onSubmit() {
 </script>
 
 <template>
-  <AuthPageShell variant="register">
-    <AuthContainer>
-      <div class="w-full max-w-lg px-4 sm:px-0">
-        <section class="space-y-8">
-          <header class="text-center">
-            <UiMetaLabel tone="accent" class="mb-3 text-secondary/90">
-              VeriTix
-            </UiMetaLabel>
+  <AuthShell variant="register">
+    <div class="w-full max-w-lg px-4 sm:px-0">
+      <section class="space-y-8">
+        <header class="text-center">
+          <UiMetaLabel tone="accent" class="mb-3 text-secondary/90">
+            VeriTix
+          </UiMetaLabel>
 
-            <h1 class="font-display text-3xl text-highlighted md:text-4xl">
-              Crea tu cuenta
-            </h1>
+          <h1 class="font-display text-3xl text-highlighted md:text-4xl">
+            Crea tu cuenta
+          </h1>
 
-            <p class="mx-auto mt-3 max-w-md text-sm text-toned">
-              Unite a VeriTix y descubrí tu próximo concierto
-            </p>
-          </header>
+          <p class="mx-auto mt-3 max-w-md text-sm text-toned">
+            Unite a VeriTix y descubrí tu próximo concierto
+          </p>
+        </header>
 
-          <div class="mb-7 flex items-center justify-center">
-            <span class="inline-flex items-center gap-2 rounded-full border border-secondary/30 bg-secondary/10 px-3 py-1 text-xs font-semibold tracking-wide text-secondary uppercase">
-              <UIcon name="i-lucide-sparkles" class="size-3.5" />
-              Alta de cuenta
-            </span>
+        <div class="mb-7 flex items-center justify-center">
+          <span class="inline-flex items-center gap-2 rounded-full border border-secondary/30 bg-secondary/10 px-3 py-1 text-xs font-semibold tracking-wide text-secondary uppercase">
+            <UIcon name="i-lucide-sparkles" class="size-3.5" />
+            Alta de cuenta
+          </span>
+        </div>
+
+        <UForm
+          ref="form"
+          :state="state"
+          :schema="schema"
+          :validate-on="[]"
+          class="flex flex-col gap-4"
+          @submit="onSubmit"
+        >
+          <!-- All fields stacked vertically with equal spacing -->
+          <FormField
+            v-model="state.email"
+            name="email"
+            label="Email"
+            help="Te servirá para iniciar sesión y recuperar acceso."
+            type="email"
+            placeholder="tu@email.com"
+            icon="i-lucide-mail"
+            required
+            class="w-full"
+          />
+
+          <div class="grid gap-4 md:grid-cols-2">
+            <FormField
+              v-model="state.name"
+              name="name"
+              label="Nombre"
+              placeholder="Juan"
+              icon="i-lucide-user"
+              required
+              class="w-full"
+            />
+
+            <FormField
+              v-model="state.lastName"
+              name="lastName"
+              label="Apellido"
+              placeholder="García"
+              icon="i-lucide-user-round"
+              required
+              class="w-full"
+            />
           </div>
 
-          <UForm
-            ref="form"
-            :state="state"
-            :schema="schema"
-            :validate-on="[]"
-            class="flex flex-col gap-4"
-            @submit="onSubmit"
-          >
-            <!-- All fields stacked vertically with equal spacing -->
-            <FormField
-              v-model="state.email"
-              name="email"
-              label="Email"
-              help="Te servirá para iniciar sesión y recuperar acceso."
-              type="email"
-              placeholder="tu@email.com"
-              icon="i-lucide-mail"
-              required
-              class="w-full"
-            />
+          <FormField
+            v-model="state.phone"
+            name="phone"
+            label="Teléfono"
+            help="Formato internacional E.164. Ejemplo: +34958123456"
+            type="tel"
+            placeholder="+34958123456"
+            icon="i-lucide-phone"
+            required
+            class="w-full"
+          />
 
-            <div class="grid gap-4 md:grid-cols-2">
-              <FormField
-                v-model="state.name"
-                name="name"
-                label="Nombre"
-                placeholder="Juan"
-                icon="i-lucide-user"
-                required
-                class="w-full"
-              />
+          <FormPassword
+            v-model="state.password"
+            name="password"
+            label="Contraseña"
+            help="Incluye mayúscula, minúscula y un número."
+            placeholder="Minimo 8 caracteres"
+            icon="i-lucide-lock"
+            :show="showPassword"
+            required
+            class="w-full"
+            @update:show="showPassword = $event"
+          />
 
-              <FormField
-                v-model="state.lastName"
-                name="lastName"
-                label="Apellido"
-                placeholder="García"
-                icon="i-lucide-user-round"
-                required
-                class="w-full"
-              />
-            </div>
+          <FormPassword
+            v-model="state.confirmPassword"
+            name="confirmPassword"
+            label="Confirmar contraseña"
+            placeholder="Repetí tu contraseña"
+            icon="i-lucide-lock"
+            :show="showPassword"
+            required
+            class="w-full"
+            @update:show="showPassword = $event"
+          />
 
-            <FormField
-              v-model="state.phone"
-              name="phone"
-              label="Teléfono"
-              help="Formato internacional E.164. Ejemplo: +34958123456"
-              type="tel"
-              placeholder="+34958123456"
-              icon="i-lucide-phone"
-              required
-              class="w-full"
-            />
-
-            <FormPassword
-              v-model="state.password"
-              name="password"
-              label="Contraseña"
-              help="Incluye mayúscula, minúscula y un número."
-              placeholder="Minimo 8 caracteres"
-              icon="i-lucide-lock"
-              :show="showPassword"
-              required
-              class="w-full"
-              @update:show="showPassword = $event"
-            />
-
-            <FormPassword
-              v-model="state.confirmPassword"
-              name="confirmPassword"
-              label="Confirmar contraseña"
-              placeholder="Repetí tu contraseña"
-              icon="i-lucide-lock"
-              :show="showPassword"
-              required
-              class="w-full"
-              @update:show="showPassword = $event"
-            />
-
-            <!-- Terms -->
-            <p class="mt-2 text-center text-xs text-muted">
-              Al registrarte, aceptas nuestros
-              <NuxtLink
-                to="/terminos"
-                class="rounded-sm text-auric-400 transition-colors duration-200 hover:text-auric-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/45"
-              >
-                Términos de Servicio
-              </NuxtLink>
-              y
-              <NuxtLink
-                to="/privacidad"
-                class="rounded-sm text-auric-400 transition-colors duration-200 hover:text-auric-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/45"
-              >
-                Política de Privacidad
-              </NuxtLink>.
-            </p>
-
-            <!-- Submit button -->
-            <BaseButton
-              kind="primary"
-              type="submit"
-              size="lg"
-              block
-              :loading="pending"
-              class="mt-2"
+          <!-- Terms -->
+          <p class="mt-2 text-center text-xs text-muted">
+            Al registrarte, aceptas nuestros
+            <NuxtLink
+              to="/terminos"
+              class="rounded-sm text-auric-400 transition-colors duration-200 hover:text-auric-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/45"
             >
-              Crear cuenta
-            </BaseButton>
+              Términos de Servicio
+            </NuxtLink>
+            y
+            <NuxtLink
+              to="/privacidad"
+              class="rounded-sm text-auric-400 transition-colors duration-200 hover:text-auric-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/45"
+            >
+              Política de Privacidad
+            </NuxtLink>.
+          </p>
 
-            <p class="text-center text-xs text-toned">
-              Tu cuenta se crea en segundos y podrás gestionar eventos de inmediato.
-            </p>
-          </UForm>
+          <!-- Submit button -->
+          <BaseButton
+            kind="primary"
+            type="submit"
+            size="lg"
+            block
+            :loading="pending"
+            class="mt-2"
+          >
+            Crear cuenta
+          </BaseButton>
 
-          <footer class="pt-1">
-            <p class="text-center text-sm text-muted">
-              ¿Ya tenés cuenta?
-              <NuxtLink
-                to="/login"
-                class="rounded-sm font-medium text-auric-400 transition-colors duration-200 hover:text-auric-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/45"
-              >
-                Iniciá sesión
-              </NuxtLink>
-            </p>
-          </footer>
-        </section>
-      </div>
-    </AuthContainer>
-  </AuthPageShell>
+          <p class="text-center text-xs text-toned">
+            Tu cuenta se crea en segundos y podrás gestionar eventos de inmediato.
+          </p>
+        </UForm>
+
+        <footer class="pt-1">
+          <p class="text-center text-sm text-muted">
+            ¿Ya tenés cuenta?
+            <NuxtLink
+              to="/login"
+              class="rounded-sm font-medium text-auric-400 transition-colors duration-200 hover:text-auric-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/45"
+            >
+              Iniciá sesión
+            </NuxtLink>
+          </p>
+        </footer>
+      </section>
+    </div>
+  </AuthShell>
 </template>

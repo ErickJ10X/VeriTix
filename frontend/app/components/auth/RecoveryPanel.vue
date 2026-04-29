@@ -1,61 +1,59 @@
 <template>
-    <AuthPageShell variant="login">
-      <AuthContainer>
-      <div class="w-full max-w-lg px-4 sm:px-0">
-        <section class="space-y-8">
-          <header class="text-center">
-            <UiMetaLabel tone="accent" class="mb-3 text-secondary/90">
-              VeriTix
-            </UiMetaLabel>
+  <AuthShell variant="login">
+    <div class="w-full max-w-lg px-4 sm:px-0">
+      <section class="space-y-8">
+        <header class="text-center">
+          <UiMetaLabel tone="accent" class="mb-3 text-secondary/90">
+            VeriTix
+          </UiMetaLabel>
 
-            <h1 class="font-display text-3xl text-highlighted md:text-4xl">
-              Recupera tu acceso
-            </h1>
+          <h1 class="font-display text-3xl text-highlighted md:text-4xl">
+            Recupera tu acceso
+          </h1>
 
-            <p class="mx-auto mt-3 max-w-md text-sm text-toned">
-              Esta pantalla ahora sigue la misma familia visual que inicio de sesión y te guía solo hacia las acciones reales disponibles.
+          <p class="mx-auto mt-3 max-w-md text-sm text-toned">
+            Esta pantalla ahora sigue la misma familia visual que inicio de sesión y te guía solo hacia las acciones reales disponibles.
+          </p>
+        </header>
+
+        <div class="mb-7 flex items-center justify-center">
+          <span class="inline-flex items-center gap-2 rounded-full border border-auric-300/30 bg-auric-400/10 px-3 py-1 text-xs font-semibold tracking-wide text-auric-200 uppercase">
+            <UIcon name="i-lucide-key-round" class="size-3.5" />
+            Recuperación no disponible
+          </span>
+        </div>
+
+        <div class="space-y-4 text-center">
+          <p class="text-sm leading-relaxed text-toned">
+            El restablecimiento automático de contraseña todavía no está habilitado. Si aún recordás tu clave, volvé a iniciar sesión. Si conservás una sesión activa en otro dispositivo, cambiá la contraseña desde seguridad dentro de tu cuenta.
+          </p>
+
+          <div class="vtx-recovery-note">
+            <UIcon name="i-lucide-shield-check" class="size-4 text-auric-300" />
+            <p>
+              Evitamos prometer un flujo que aún no existe y te dejamos las rutas seguras que sí funcionan hoy.
             </p>
-          </header>
-
-          <div class="mb-7 flex items-center justify-center">
-            <span class="inline-flex items-center gap-2 rounded-full border border-auric-300/30 bg-auric-400/10 px-3 py-1 text-xs font-semibold tracking-wide text-auric-200 uppercase">
-              <UIcon name="i-lucide-key-round" class="size-3.5" />
-              Recuperación no disponible
-            </span>
           </div>
+        </div>
 
-          <div class="space-y-4 text-center">
-            <p class="text-sm leading-relaxed text-toned">
-              El restablecimiento automático de contraseña todavía no está habilitado. Si aún recordás tu clave, volvé a iniciar sesión. Si conservás una sesión activa en otro dispositivo, cambiá la contraseña desde seguridad dentro de tu cuenta.
-            </p>
+        <div class="flex flex-col gap-3">
+          <BaseButton kind="primary" to="/login" size="lg" block>
+            Volvé a iniciar sesión
+          </BaseButton>
 
-            <div class="vtx-recovery-note">
-              <UIcon name="i-lucide-shield-check" class="size-4 text-auric-300" />
-              <p>
-                Evitamos prometer un flujo que aún no existe y te dejamos las rutas seguras que sí funcionan hoy.
-              </p>
-            </div>
-          </div>
+          <BaseButton kind="secondary" to="/" size="lg" block>
+            Ir al inicio
+          </BaseButton>
+        </div>
 
-          <div class="flex flex-col gap-3">
-            <BaseButton kind="primary" to="/login" size="lg" block>
-              Volvé a iniciar sesión
-            </BaseButton>
-
-            <BaseButton kind="secondary" to="/" size="lg" block>
-              Ir al inicio
-            </BaseButton>
-          </div>
-
-          <footer class="pt-1">
-            <p class="text-center text-xs text-toned">
-              Cuando el flujo de recuperación exista, esta pantalla podrá conectarse a él sin romper la experiencia visual de autenticación.
-            </p>
-          </footer>
-        </section>
-      </div>
-      </AuthContainer>
-    </AuthPageShell>
+        <footer class="pt-1">
+          <p class="text-center text-xs text-toned">
+            Cuando el flujo de recuperación exista, esta pantalla podrá conectarse a él sin romper la experiencia visual de autenticación.
+          </p>
+        </footer>
+      </section>
+    </div>
+  </AuthShell>
 </template>
 
 <style scoped>
