@@ -19,22 +19,22 @@ updated: 2026-04-30
 
 ## 📑 Tabla de Contenidos
 
--   [1. Descripción General](#1-descripción-general)
-    -   [1.1 Descripción del Proyecto](#11-descripción-del-proyecto)
-    -   [1.2 Propósito](#12-propósito)
-    -   [1.3 Alcance](#13-alcance)
-    -   [1.4 Objetivos](#14-objetivos)
--   [2. Requerimientos Funcionales](#2-requerimientos-funcionales)
-    -   [2.1 Autenticación y Usuarios](#21-módulo-de-autenticación-y-gestión-de-usuarios)
-    -   [2.2 Eventos](#22-módulo-de-eventos)
-    -   [2.3 Tipos de Ticket](#23-módulo-de-tipos-de-ticket)
-    -   [2.4 Tickets](#24-módulo-de-tickets)
-    -   [2.5 Validación](#25-módulo-de-validación)
--   [3. Requerimientos No Funcionales](#3-requerimientos-no-funcionales)
--   [4. Modelo de Datos](#4-modelo-de-datos)
--   [5. Flujos de Trabajo](#5-flujos-de-trabajo)
--   [6. Roles de Usuario](#6-roles-de-usuario)
--   [7. Interfaces de Usuario](#7-interfaces-de-usuario)
+- [1. Descripción General](#1-descripción-general)
+  - [1.1 Descripción del Proyecto](#11-descripción-del-proyecto)
+  - [1.2 Propósito](#12-propósito)
+  - [1.3 Alcance](#13-alcance)
+  - [1.4 Objetivos](#14-objetivos)
+- [2. Requerimientos Funcionales](#2-requerimientos-funcionales)
+  - [2.1 Autenticación y Usuarios](#21-módulo-de-autenticación-y-gestión-de-usuarios)
+  - [2.2 Eventos](#22-módulo-de-eventos)
+  - [2.3 Tipos de Ticket](#23-módulo-de-tipos-de-ticket)
+  - [2.4 Tickets](#24-módulo-de-tickets)
+  - [2.5 Validación](#25-módulo-de-validación)
+- [3. Requerimientos No Funcionales](#3-requerimientos-no-funcionales)
+- [4. Modelo de Datos](#4-modelo-de-datos)
+- [5. Flujos de Trabajo](#5-flujos-de-trabajo)
+- [6. Roles de Usuario](#6-roles-de-usuario)
+- [7. Interfaces de Usuario](#7-interfaces-de-usuario)
 
 ---
 
@@ -72,11 +72,11 @@ La aplicación facilita todo el ciclo de vida de un evento:
 
 | #   | Objetivo                                                            |
 | --- | ------------------------------------------------------------------- |
-| 🎯  | Proporcionar una plataforma centralizada para la gestión de eventos |
-| 🎯  | Automatizar el proceso de venta y distribución de tickets digitales |
-| 🎯  | Garantizar la seguridad en el acceso mediante validación QR         |
-| 🎯  | Prevenir fraudes y duplicación de tickets                           |
-| 🎯  | Optimizar el control de aforo en eventos                            |
+| 🎯   | Proporcionar una plataforma centralizada para la gestión de eventos |
+| 🎯   | Automatizar el proceso de venta y distribución de tickets digitales |
+| 🎯   | Garantizar la seguridad en el acceso mediante validación QR         |
+| 🎯   | Prevenir fraudes y duplicación de tickets                           |
+| 🎯   | Optimizar el control de aforo en eventos                            |
 
 ---
 
@@ -204,10 +204,10 @@ Cada evento puede tener múltiples tipos de tickets:
 
 | Información mostrada |
 | -------------------- |
-| ✅ Evento asociado   |
-| ✅ Tipo de ticket    |
-| ✅ Código QR         |
-| ✅ Estado actual     |
+| ✅ Evento asociado    |
+| ✅ Tipo de ticket     |
+| ✅ Código QR          |
+| ✅ Estado actual      |
 
 #### RF-14: Envío de tickets
 
@@ -246,8 +246,8 @@ Verificaciones realizadas:
 
 #### RF-19: Respuesta de validación
 
-| Estado      | Color       | Mensaje             |
-| ----------- | ----------- | ------------------- |
+| Estado     | Color      | Mensaje             |
+| ---------- | ---------- | ------------------- |
 | ✅ Válido   | 🟢 Verde    | Acceso permitido    |
 | ⚠️ Ya usado | 🟡 Amarillo | Ticket ya utilizado |
 | ❌ Inválido | 🔴 Rojo     | Acceso denegado     |
@@ -580,8 +580,8 @@ flowchart TD
 
 **Casos de respuesta:**
 
-| Caso             | Condición                                                                    | Acción                                   | Respuesta Visual                                   |
-| ---------------- | ---------------------------------------------------------------------------- | ---------------------------------------- | -------------------------------------------------- |
+| Caso             | Condición                                                                    | Acción                                   | Respuesta Visual                                  |
+| ---------------- | ---------------------------------------------------------------------------- | ---------------------------------------- | ------------------------------------------------- |
 | **A - Válido**   | Status = 'active', evento coincide                                           | Marcar como 'used', registrar validación | 🟢 **ACCESO PERMITIDO** + datos del titular        |
 | **B - Ya usado** | Status = 'used'                                                              | Solo mostrar información                 | 🟡 **TICKET YA UTILIZADO** + fecha/hora uso previo |
 | **C - Inválido** | No existe, hash incorrecto, evento incorrecto, status 'cancelled'/'refunded' | Registrar en logs de seguridad           | 🔴 **ACCESO DENEGADO**                             |
@@ -598,21 +598,21 @@ flowchart TD
 
 **✅ Permisos**
 
--   Ver listado de eventos públicos
--   Ver detalles de eventos
--   Comprar tickets (dentro de límites)
--   Ver sus propios tickets
--   Descargar tickets en PDF
--   Gestionar su perfil
+- Ver listado de eventos públicos
+- Ver detalles de eventos
+- Comprar tickets (dentro de límites)
+- Ver sus propios tickets
+- Descargar tickets en PDF
+- Gestionar su perfil
 
 </td>
 <td width="50%">
 
 **❌ Restricciones**
 
--   No puede crear eventos
--   No puede validar tickets
--   Solo puede ver sus propias compras
+- No puede crear eventos
+- No puede validar tickets
+- Solo puede ver sus propias compras
 
 </td>
 </tr>
@@ -628,22 +628,22 @@ flowchart TD
 
 **✅ Permisos**
 
--   _Todos los permisos de Comprador_
--   Crear nuevos eventos
--   Editar eventos propios
--   Definir tipos de tickets
--   Ver estadísticas de sus eventos
--   Cancelar eventos propios
--   Ver listado de tickets vendidos
--   Exportar datos de ventas
+- _Todos los permisos de Comprador_
+- Crear nuevos eventos
+- Editar eventos propios
+- Definir tipos de tickets
+- Ver estadísticas de sus eventos
+- Cancelar eventos propios
+- Ver listado de tickets vendidos
+- Exportar datos de ventas
 
 </td>
 <td width="50%">
 
 **❌ Restricciones**
 
--   No puede editar eventos de otros
--   No puede validar tickets (sin rol adicional)
+- No puede editar eventos de otros
+- No puede validar tickets (sin rol adicional)
 
 </td>
 </tr>
@@ -659,19 +659,19 @@ flowchart TD
 
 **✅ Permisos**
 
--   Acceder a modo de escaneo QR
--   Validar tickets
--   Ver historial de validaciones
--   Ver estadísticas de acceso en tiempo real
+- Acceder a modo de escaneo QR
+- Validar tickets
+- Ver historial de validaciones
+- Ver estadísticas de acceso en tiempo real
 
 </td>
 <td width="50%">
 
 **❌ Restricciones**
 
--   Solo puede validar eventos asignados
--   No puede crear eventos
--   No puede comprar en modo validador
+- Solo puede validar eventos asignados
+- No puede crear eventos
+- No puede comprar en modo validador
 
 </td>
 </tr>
@@ -687,24 +687,24 @@ flowchart TD
 
 **✅ Permisos**
 
--   _Todos los permisos del sistema_
--   Gestionar usuarios (CRUD, cambiar roles)
--   Ver todos los eventos
--   Editar/cancelar cualquier evento
--   Ver todas las transacciones
--   Panel de administración
--   Ver logs del sistema
--   Configurar parámetros
+- _Todos los permisos del sistema_
+- Gestionar usuarios (CRUD, cambiar roles)
+- Ver todos los eventos
+- Editar/cancelar cualquier evento
+- Ver todas las transacciones
+- Panel de administración
+- Ver logs del sistema
+- Configurar parámetros
 
 </td>
 <td width="50%">
 
 **📋 Responsabilidades**
 
--   Moderación de contenido
--   Resolución de conflictos
--   Gestión de incidencias
--   Monitoreo del sistema
+- Moderación de contenido
+- Resolución de conflictos
+- Gestión de incidencias
+- Monitoreo del sistema
 
 </td>
 </tr>

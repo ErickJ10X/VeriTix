@@ -11,6 +11,7 @@ updated: 2026-04-30
 Vault de conocimiento en Markdown para el proyecto.
 
 ## Reference
+
 - [Architecture](reference/architecture.md)
 - [API](reference/api.md)
 - [Database](reference/database.md)
@@ -18,10 +19,13 @@ Vault de conocimiento en Markdown para el proyecto.
 - [TFG](reference/tfg.md)
 
 ## Status
+
 - [Current status](status/status.md)
 
 ## Archive
+
 - [Legacy LaTeX backup](archive/latex-bak.md)
 
 ## Notes
+
 - La documentación académica vive en `docs/latex/`.

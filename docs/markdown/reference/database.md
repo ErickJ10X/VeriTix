@@ -48,6 +48,7 @@ Fuente de verdad: `backend/prisma/schema.prisma`.
   - Constraint: `@@unique([eventId, artistId])`.
 
 Relaciones clave:
+
 - `User (creator) 1:N Event`
 - `Venue 1:N Event`
 - `ConcertFormat 1:N Event`
@@ -64,6 +65,7 @@ Relaciones clave:
 - `payments` (`Payment`) — estado de pago (Stripe).
 
 Relaciones clave:
+
 - `User (buyer) 1:N Order`
 - `Order 1:N OrderItem`
 - `Order 1:N Ticket`
