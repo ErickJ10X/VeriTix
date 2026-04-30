@@ -13,6 +13,40 @@ export interface AdminOption {
   name: string
 }
 
+export type AdminFilterVisibility = 'city' | 'artistName' | 'pageSize' | 'genre' | 'format' | 'dateRange'
+
+export interface AdminFilterOption {
+  label: string
+  value: string | number
+}
+
+export interface AdminFilterFieldControl {
+  key: string
+  kind: 'field'
+  name: string
+  label: string
+  modelValue: string
+  placeholder?: string
+  icon?: string
+  type?: string
+  disabled?: boolean
+  onUpdate: (value: string) => void
+}
+
+export interface AdminFilterSelectControl {
+  key: string
+  kind: 'select'
+  name: string
+  label: string
+  modelValue: string | number
+  items: AdminFilterOption[]
+  size?: 'sm' | 'md' | 'lg'
+  disabled?: boolean
+  onUpdate: (value: string | number) => void
+}
+
+export type AdminFilterControl = AdminFilterFieldControl | AdminFilterSelectControl
+
 export interface AdminEventRecord {
   id: string
   name: string

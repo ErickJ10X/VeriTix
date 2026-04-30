@@ -33,6 +33,8 @@ const props = withDefaults(
       </template>
     </div>
 
-    <slot />
+    <div class="relative z-10 flex min-h-screen items-center justify-center py-16 sm:py-20">
+      <slot />
+    </div>
   </div>
 </template>

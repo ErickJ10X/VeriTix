@@ -55,8 +55,12 @@ const accountSubtitle = computed(() => {
     </button>
 
     <template #content>
-      <div class="vtx-account-panel">
-        <div class="vtx-account-panel-hero">
+      <AccountMenuPanel
+        :title="accountDisplayName"
+        :subtitle="accountSubtitle"
+        :items="accountMenuItems"
+      >
+        <template #avatar>
           <UAvatar
             :src="user?.avatarUrl || undefined"
             :alt="accountAvatarAlt"
@@ -64,39 +68,8 @@ const accountSubtitle = computed(() => {
             size="lg"
             class="vtx-account-panel-avatar"
           />
-
-          <div class="min-w-0">
-            <p class="vtx-account-panel-title truncate">
-              {{ accountDisplayName }}
-            </p>
-            <p class="vtx-account-panel-subtitle truncate">
-              {{ accountSubtitle }}
-            </p>
-          </div>
-        </div>
-
-        <NuxtLink
-          v-for="item in accountMenuItems"
-          :key="item.to"
-          :to="item.to"
-          class="vtx-account-panel-link"
-        >
-          <div class="vtx-account-panel-link-icon-wrap" aria-hidden="true">
-            <UIcon :name="item.icon" class="vtx-account-panel-link-icon" />
-          </div>
-
-          <div class="min-w-0 flex-1">
-            <p class="vtx-account-panel-link-title">
-              {{ item.label }}
-            </p>
-            <p class="vtx-account-panel-link-subtitle truncate">
-              {{ item.description }}
-            </p>
-          </div>
-
-          <UIcon name="i-lucide-arrow-up-right" class="vtx-account-panel-link-arrow" aria-hidden="true" />
-        </NuxtLink>
-      </div>
+        </template>
+      </AccountMenuPanel>
     </template>
   </UPopover>
 </template>

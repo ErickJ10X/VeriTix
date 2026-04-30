@@ -58,12 +58,15 @@ function handleSubscribe() {
               Correo para newsletter
             </label>
 
-            <FormInput
+            <UInput
               id="newsletter-email"
               v-model="email"
               type="email"
               placeholder="tu@email.com"
               aria-label="Correo para newsletter"
+              color="neutral"
+              variant="subtle"
+              size="lg"
               class="w-full sm:w-64"
             />
 
