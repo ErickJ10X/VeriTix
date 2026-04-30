@@ -1,3 +1,11 @@
+---
+type: note
+status: stable
+tags: [api, backend, frontend]
+created: 2026-04-30
+updated: 2026-04-30
+---
+
 # API — VeriTix
 
 ## Convenciones base

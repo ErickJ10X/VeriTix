@@ -4,16 +4,16 @@ Este directorio está separado en dos módulos claros:
 
 ## 1) Markdown puro (`docs/markdown/`)
 
-Solo archivos `.md` de documentación funcional/técnica (sin scripts ni configuración de compilación).
+KB del proyecto en Markdown (Obsidian-friendly), separada por tipo de nota.
 
-- [`markdown/STATUS.md`](./markdown/STATUS.md)
-- [`markdown/ARCHITECHTURE.md`](./markdown/ARCHITECHTURE.md)
-- [`markdown/API.md`](./markdown/API.md)
-- [`markdown/DATABASE.md`](./markdown/DATABASE.md)
-- [`markdown/REQUIREMENTS.md`](./markdown/REQUIREMENTS.md)
-- [`markdown/tfg.md`](./markdown/tfg.md)
-- [`markdown/doc2.md`](./markdown/doc2.md)
-- [`markdown/Latex.md`](./markdown/Latex.md) (histórico de conversación)
+- [`markdown/_index.md`](./markdown/_index.md)
+- [`markdown/reference/architecture.md`](./markdown/reference/architecture.md)
+- [`markdown/reference/api.md`](./markdown/reference/api.md)
+- [`markdown/reference/database.md`](./markdown/reference/database.md)
+- [`markdown/reference/requirements.md`](./markdown/reference/requirements.md)
+- [`markdown/reference/tfg.md`](./markdown/reference/tfg.md)
+- [`markdown/status/status.md`](./markdown/status/status.md)
+- [`markdown/archive/latex-bak.md`](./markdown/archive/latex-bak.md)
 
 ## 2) Módulo LaTeX (`docs/latex/`)
 
@@ -33,7 +33,7 @@ Guía operativa: [`docs/latex/README.md`](./latex/README.md).
 ## Regla de fuente de verdad
 
 1. **Código del repo** (backend/frontend/prisma)
-2. `docs/markdown/tfg.md` para alcance/roadmap explícito
-3. Documentación como síntesis operativa
+2. `docs/markdown/reference/tfg.md` para alcance/roadmap explícito
+3. `docs/markdown/` como síntesis operativa
 
 Si hay contradicción entre documentación y código, **manda el código**.

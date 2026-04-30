@@ -1,3 +1,11 @@
+---
+type: note
+status: stable
+tags: [database, prisma, backend]
+created: 2026-04-30
+updated: 2026-04-30
+---
+
 # DATABASE — Modelo de datos real (Prisma)
 
 Fuente de verdad: `backend/prisma/schema.prisma`.

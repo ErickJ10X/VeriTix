@@ -1,3 +1,11 @@
+---
+type: note
+status: stable
+tags: [status, snapshot]
+created: 2026-04-30
+updated: 2026-04-30
+---
+
 # STATUS — VeriTix
 
 **Fecha de actualización:** 2026-04-25
@@ -55,7 +63,7 @@
 4. **Cache key incompleta para artistas**
    - `CACHE_KEYS.ARTISTS_LIST` solo usa página/límite y no filtros (`backend/src/cache/cache-keys.ts`, `backend/src/modules/artists/artists.service.ts`)
 
-## Futuro (solo explícito en `docs/markdown/tfg.md`)
+## Futuro (solo explícito en `reference/tfg.md`)
 
 - Flujo real de recuperación de contraseña por email (RF-04).
 - Flujo completo de validación QR en UI de scanner (RF-16 a RF-19).

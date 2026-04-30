@@ -1,11 +1,19 @@
+---
+type: note
+status: stable
+tags: [requirements, tfg, status]
+created: 2026-04-30
+updated: 2026-04-30
+---
+
 # REQUIREMENTS — Implementado vs pendiente
 
-Base de alcance: `docs/markdown/tfg.md`.
+Base de alcance: `reference/tfg.md`.
 
 ## Criterio
 
 - **Implementado**: existe evidencia en código ejecutable (backend/frontend).
-- **Pendiente**: solo se marca si el punto está explícito en `docs/markdown/tfg.md`.
+- **Pendiente**: solo se marca si el punto está explícito en `reference/tfg.md`.
 
 ## Requerimientos funcionales del TFG
 
@@ -44,7 +52,7 @@ Base de alcance: `docs/markdown/tfg.md`.
 - **RF-19 Respuesta de validación por estado/color** -> ⚠️ Parcial: backend devuelve errores/éxito, pero no está implementada UI de semáforo/scanner.
 - **RF-20 Estadísticas de acceso en tiempo real** -> ❌ Pendiente específico de validación de accesos; existen métricas de ventas/capacidad por evento, no dashboard de accesos de puerta en tiempo real.
 
-## Futuro (explícito en `tfg.md`, no implementado completo)
+## Futuro (explícito en `reference/tfg.md`, no implementado completo)
 
 1. Recuperación de contraseña end-to-end (RF-04).
 2. Flujo UX completo de escaneo/validación en frontend (RF-16 a RF-19).

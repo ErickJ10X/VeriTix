@@ -1,4 +1,12 @@
-# ARCHITECHTURE — VeriTix (estado implementado)
+---
+type: note
+status: stable
+tags: [architecture, backend, frontend]
+created: 2026-04-30
+updated: 2026-04-30
+---
+
+# Architecture — VeriTix (estado implementado)
 
 ## 1) Vista general
 
